@@ -21,6 +21,22 @@ type Opt struct {
 	ProjName string
 }
 
+type FormatRule struct {
+	Pattern string
+	Message string
+}
+
+var rules = []FormatRule{
+	FormatRule{
+		Pattern: "else{",
+		Message: "Space must be inserted after else",
+	},
+	FormatRule{
+		Pattern: "}else",
+		Message: "Space must be inserted before else",
+	},
+}
+
 func getOpts() (*Opt, error) {
 	srcRoot := flag.String("s", ".", "Project source root dir")
 	projName := flag.String("p", "", "Project name")
@@ -29,7 +45,7 @@ func getOpts() (*Opt, error) {
 	return opt, nil
 }
 
-func grep(pattern, filename string) int {
+func checkSourceFile(filename string) int {
 	var violationInFile int = 0
 	f, err := os.Open(filename)
 	if err != nil {
@@ -49,9 +65,11 @@ func grep(pattern, filename string) int {
 			fmt.Println(err)
 			return 1
 		}
-		if matched, _ := regexp.MatchString(pattern, line); matched {
-			violationInFile++
-			fmt.Printf("%s:%d:1: warning: format error\n", filename, n)
+		for i := range rules {
+			if matched, _ := regexp.MatchString(rules[i].Pattern, line); matched {
+				violationInFile++
+				fmt.Printf("%s:%d:1: warning: %s\n", filename, n, rules[i].Message)
+			}
 		}
 		if err == io.EOF {
 			break
@@ -64,7 +82,7 @@ var violationCount int = 0
 
 func checkFile(path string, f os.FileInfo, err error) error {
 	if matched, _ := regexp.MatchString(".*\\.(m|mm|h)$", path); matched {
-		violationCount += grep("else{", path)
+		violationCount += checkSourceFile(path)
 	}
 	return nil
 }
