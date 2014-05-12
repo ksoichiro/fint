@@ -33,6 +33,7 @@ func grep(pattern, filename string) bool {
 	var matchedAny bool = false
 	f, err := os.Open(filename)
 	if err != nil {
+		fmt.Println("Cannot open " + filename)
 		return true
 	}
 	defer f.Close()
@@ -59,6 +60,15 @@ func grep(pattern, filename string) bool {
 	return matchedAny
 }
 
+var hasError bool = false
+
+func checkFile(path string, f os.FileInfo, err error) error {
+	if matched, _ := regexp.MatchString(".*\\.(m|mm|h)$", path); matched {
+		hasError = grep("else{", path) || hasError
+	}
+	return nil
+}
+
 func main() {
 	opt, err := getOpts()
 	if err != nil {
@@ -67,14 +77,9 @@ func main() {
 	}
 
 	os.Chdir(opt.SrcRoot)
-	globPattern := opt.ProjName + "/*.[m|mm|h]"
-	files, _ := filepath.Glob(globPattern)
-	var matched bool = false
-	for value := range files {
-		filename := files[value]
-		matched = matched || grep("else{", filename)
-	}
-	if matched {
+	err = filepath.Walk(opt.ProjName, checkFile)
+
+	if hasError {
 		os.Exit(1)
 	}
 }
