@@ -29,12 +29,12 @@ func getOpts() (*Opt, error) {
 	return opt, nil
 }
 
-func grep(pattern, filename string) bool {
-	var matchedAny bool = false
+func grep(pattern, filename string) int {
+	var violationInFile int = 0
 	f, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Cannot open " + filename)
-		return true
+		return 1
 	}
 	defer f.Close()
 	r := bufio.NewReaderSize(f, BufSize)
@@ -42,31 +42,38 @@ func grep(pattern, filename string) bool {
 		lineBytes, isPrefix, err := r.ReadLine()
 		if isPrefix {
 			fmt.Printf("Too long line: %s", filename)
-			return true
+			return 1
 		}
 		line := string(lineBytes)
 		if err != io.EOF && err != nil {
 			fmt.Println(err)
-			return true
+			return 1
 		}
 		if matched, _ := regexp.MatchString(pattern, line); matched {
-			matchedAny = true
+			violationInFile++
 			fmt.Printf("%s:%d:1: warning: format error\n", filename, n)
 		}
 		if err == io.EOF {
 			break
 		}
 	}
-	return matchedAny
+	return violationInFile
 }
 
-var hasError bool = false
+var violationCount int = 0
 
 func checkFile(path string, f os.FileInfo, err error) error {
 	if matched, _ := regexp.MatchString(".*\\.(m|mm|h)$", path); matched {
-		hasError = grep("else{", path) || hasError
+		violationCount += grep("else{", path)
 	}
 	return nil
+}
+
+func pluralize(value int, singular, plural string) string {
+	if value < 2 {
+		return singular
+	}
+	return plural
 }
 
 func main() {
@@ -79,7 +86,9 @@ func main() {
 	os.Chdir(opt.SrcRoot)
 	err = filepath.Walk(opt.ProjName, checkFile)
 
-	if hasError {
+	if 0 < violationCount {
+		fmt.Printf("\n%d %s generated.\n",
+			violationCount, pluralize(violationCount, "warning", "warnings"))
 		os.Exit(1)
 	}
 }
