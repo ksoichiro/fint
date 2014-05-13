@@ -40,6 +40,10 @@ type FintConfig struct {
 	RuleSets []RuleSet
 }
 
+var opt *Opt
+var fintConfig *FintConfig
+var violationCount int = 0
+
 func getOpts() (*Opt, error) {
 	srcRoot := flag.String("s", ".", "Project source root dir")
 	projName := flag.String("p", "", "Project name")
@@ -49,9 +53,6 @@ func getOpts() (*Opt, error) {
 	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName, ConfigPath: *configPath, Locale: *locale}
 	return opt, nil
 }
-
-var opt *Opt
-var fintConfig *FintConfig
 
 func loadFintConfig(file []byte) *FintConfig {
 	var fc FintConfig
@@ -92,8 +93,6 @@ func checkSourceFile(filename string) int {
 	}
 	return violationInFile
 }
-
-var violationCount int = 0
 
 func checkFile(path string, f os.FileInfo, err error) error {
 	if matched, _ := regexp.MatchString(".*\\.(m|mm|h)$", path); matched {
