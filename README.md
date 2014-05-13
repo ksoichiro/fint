@@ -1,6 +1,6 @@
-# fint
+# fint - a fake of lint
 
-**F**ake l**INT** - fint is a lightweight, simple source code check tool,  
+fint is a lightweight, simple source code check tool,  
 but doesn't have syntax analysis feature -- so it is a fake lint.
 
 fint is portable, executable on multiple platform, easy to integrate into your build process.
