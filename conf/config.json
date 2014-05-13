@@ -31,6 +31,13 @@
             "default": "Space must be inserted between ')' and '{'",
             "ja": "')'と'{'の間にはスペースを入れてください"
           }
+        },
+        {
+          "pattern": ",[^ $]",
+          "message": {
+            "default": "Space must be inserted after ','",
+            "ja": "','の後にはスペースを入れてください"
+          }
         }
       ]
     }
