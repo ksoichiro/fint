@@ -15,7 +15,21 @@
           "pattern": "}else",
           "message": {
             "default": "Space must be inserted before else",
-            "ja": "elseの後にはスペースを入れてください"
+            "ja": "elseの前にはスペースを入れてください"
+          }
+        },
+        {
+          "pattern": "if(",
+          "message": {
+            "default": "Space must be inserted before if",
+            "ja": "ifの後にはスペースを入れてください"
+          }
+        },
+        {
+          "pattern": "){",
+          "message": {
+            "default": "Space must be inserted between ')' and '{'",
+            "ja": "')'と'{'の間にはスペースを入れてください"
           }
         }
       ]
