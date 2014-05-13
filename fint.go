@@ -22,26 +22,35 @@ type Opt struct {
 	SrcRoot    string
 	ProjName   string
 	ConfigPath string
+	Locale     string
 }
 
-type FormatRule struct {
+type Rule struct {
 	Pattern string
-	Message string
+	Message map[string]string
+}
+
+type RuleSet struct {
+	Id          string
+	Description string
+	Rules       []Rule
 }
 
 type FintConfig struct {
-	Rules []FormatRule
+	RuleSets []RuleSet
 }
 
 func getOpts() (*Opt, error) {
 	srcRoot := flag.String("s", ".", "Project source root dir")
 	projName := flag.String("p", "", "Project name")
 	configPath := flag.String("c", "conf/config.json", "Config file path")
+	locale := flag.String("l", "default", "Message locale")
 	flag.Parse()
-	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName, ConfigPath: *configPath}
+	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName, ConfigPath: *configPath, Locale: *locale}
 	return opt, nil
 }
 
+var opt *Opt
 var fintConfig *FintConfig
 
 func loadFintConfig(file []byte) *FintConfig {
@@ -70,10 +79,11 @@ func checkSourceFile(filename string) int {
 			fmt.Println(err)
 			return 1
 		}
-		for i := range fintConfig.Rules {
-			if matched, _ := regexp.MatchString(fintConfig.Rules[i].Pattern, line); matched {
+		var rs RuleSet = fintConfig.RuleSets[0]
+		for i := range rs.Rules {
+			if matched, _ := regexp.MatchString(rs.Rules[i].Pattern, line); matched {
 				violationInFile++
-				fmt.Printf("%s:%d:1: warning: %s\n", filename, n, fintConfig.Rules[i].Message)
+				fmt.Printf("%s:%d:1: warning: %s\n", filename, n, rs.Rules[i].Message[opt.Locale])
 			}
 		}
 		if err == io.EOF {
@@ -100,7 +110,8 @@ func pluralize(value int, singular, plural string) string {
 }
 
 func main() {
-	opt, err := getOpts()
+	var err error
+	opt, err = getOpts()
 	if err != nil {
 		log.Print(err)
 		os.Exit(1)

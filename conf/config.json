@@ -1,12 +1,24 @@
 {
-  "rules": [
+  "rulesets" : [
     {
-      "pattern": "else{",
-      "message": "Space must be inserted after else"
-    },
-    {
-      "pattern": "}else",
-      "message": "Space must be inserted before else"
+      "id": "objc",
+      "description": "Objective-C",
+      "rules": [
+        {
+          "pattern": "else{",
+          "message": {
+            "default": "Space must be inserted after else",
+            "ja": "elseの後にはスペースを入れてください"
+          }
+        },
+        {
+          "pattern": "}else",
+          "message": {
+            "default": "Space must be inserted before else",
+            "ja": "elseの後にはスペースを入れてください"
+          }
+        }
+      ]
     }
   ]
 }
