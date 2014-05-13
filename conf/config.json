@@ -1,0 +1,12 @@
+{
+  "rules": [
+    {
+      "pattern": "else{",
+      "message": "Space must be inserted after else"
+    },
+    {
+      "pattern": "}else",
+      "message": "Space must be inserted before else"
+    }
+  ]
+}

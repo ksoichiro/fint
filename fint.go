@@ -5,9 +5,11 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,8 +19,9 @@ import (
 const BufSize = 4096
 
 type Opt struct {
-	SrcRoot  string
-	ProjName string
+	SrcRoot    string
+	ProjName   string
+	ConfigPath string
 }
 
 type FormatRule struct {
@@ -26,23 +29,25 @@ type FormatRule struct {
 	Message string
 }
 
-var rules = []FormatRule{
-	FormatRule{
-		Pattern: "else{",
-		Message: "Space must be inserted after else",
-	},
-	FormatRule{
-		Pattern: "}else",
-		Message: "Space must be inserted before else",
-	},
+type FintConfig struct {
+	Rules []FormatRule
 }
 
 func getOpts() (*Opt, error) {
 	srcRoot := flag.String("s", ".", "Project source root dir")
 	projName := flag.String("p", "", "Project name")
+	configPath := flag.String("c", "conf/config.json", "Config file path")
 	flag.Parse()
-	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName}
+	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName, ConfigPath: *configPath}
 	return opt, nil
+}
+
+var fintConfig *FintConfig
+
+func loadFintConfig(file []byte) *FintConfig {
+	var fc FintConfig
+	json.Unmarshal(file, &fc)
+	return &fc
 }
 
 func checkSourceFile(filename string) int {
@@ -65,10 +70,10 @@ func checkSourceFile(filename string) int {
 			fmt.Println(err)
 			return 1
 		}
-		for i := range rules {
-			if matched, _ := regexp.MatchString(rules[i].Pattern, line); matched {
+		for i := range fintConfig.Rules {
+			if matched, _ := regexp.MatchString(fintConfig.Rules[i].Pattern, line); matched {
 				violationInFile++
-				fmt.Printf("%s:%d:1: warning: %s\n", filename, n, rules[i].Message)
+				fmt.Printf("%s:%d:1: warning: %s\n", filename, n, fintConfig.Rules[i].Message)
 			}
 		}
 		if err == io.EOF {
@@ -100,6 +105,13 @@ func main() {
 		log.Print(err)
 		os.Exit(1)
 	}
+
+	conf, err := ioutil.ReadFile(opt.ConfigPath)
+	if err != nil {
+		fmt.Println("Config file not found.")
+		os.Exit(1)
+	}
+	fintConfig = loadFintConfig(conf)
 
 	os.Chdir(opt.SrcRoot)
 	err = filepath.Walk(opt.ProjName, checkFile)
