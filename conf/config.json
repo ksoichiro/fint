@@ -3,6 +3,7 @@
     {
       "id": "objc",
       "description": "Objective-C",
+      "pattern": ".*\\.(m|mm|h)$",
       "rules": [
         {
           "pattern": "else{",

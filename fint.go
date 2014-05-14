@@ -33,6 +33,7 @@ type Rule struct {
 type RuleSet struct {
 	Id          string
 	Description string
+	Pattern     string
 	Rules       []Rule
 }
 
@@ -95,7 +96,8 @@ func checkSourceFile(filename string) int {
 }
 
 func checkFile(path string, f os.FileInfo, err error) error {
-	if matched, _ := regexp.MatchString(".*\\.(m|mm|h)$", path); matched {
+	pattern := fintConfig.RuleSets[0].Pattern
+	if matched, _ := regexp.MatchString(pattern, path); matched {
 		violationCount += checkSourceFile(path)
 	}
 	return nil
