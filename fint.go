@@ -23,6 +23,7 @@ type Opt struct {
 	ProjName   string
 	ConfigPath string
 	Locale     string
+	Id         string
 }
 
 type Rule struct {
@@ -50,8 +51,9 @@ func getOpts() (*Opt, error) {
 	projName := flag.String("p", "", "Project name")
 	configPath := flag.String("c", "conf/config.json", "Config file path")
 	locale := flag.String("l", "default", "Message locale")
+	id := flag.String("i", "", "ID of the rule set")
 	flag.Parse()
-	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName, ConfigPath: *configPath, Locale: *locale}
+	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName, ConfigPath: *configPath, Locale: *locale, Id: *id}
 	return opt, nil
 }
 
@@ -61,7 +63,7 @@ func loadFintConfig(file []byte) *FintConfig {
 	return &fc
 }
 
-func checkSourceFile(filename string) int {
+func checkSourceFile(filename string, rs RuleSet) int {
 	var violationInFile int = 0
 	f, err := os.Open(filename)
 	if err != nil {
@@ -81,7 +83,6 @@ func checkSourceFile(filename string) int {
 			fmt.Println(err)
 			return 1
 		}
-		var rs RuleSet = fintConfig.RuleSets[0]
 		for i := range rs.Rules {
 			if matched, _ := regexp.MatchString(rs.Rules[i].Pattern, line); matched {
 				violationInFile++
@@ -95,10 +96,24 @@ func checkSourceFile(filename string) int {
 	return violationInFile
 }
 
+func findRuleSet() RuleSet {
+	var rs RuleSet
+	for i := range fintConfig.RuleSets {
+		r := fintConfig.RuleSets[i]
+		if r.Id == opt.Id {
+			rs = r
+		}
+	}
+	if rs.Id == "" {
+		panic("No matching ruleset to [" + opt.Id + "]")
+	}
+	return rs
+}
+
 func checkFile(path string, f os.FileInfo, err error) error {
-	pattern := fintConfig.RuleSets[0].Pattern
-	if matched, _ := regexp.MatchString(pattern, path); matched {
-		violationCount += checkSourceFile(path)
+	rs := findRuleSet()
+	if matched, _ := regexp.MatchString(rs.Pattern, path); matched {
+		violationCount += checkSourceFile(path, rs)
 	}
 	return nil
 }
