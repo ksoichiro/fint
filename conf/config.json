@@ -52,7 +52,7 @@
               "pattern": ".*",
               "args": [80],
               "message": {
-                "default": "Too long line. max length=%d",
+                "default": "Line length exceeds %d characters",
                 "ja": "1行の長さが%d文字を超えています"
               }
             }
