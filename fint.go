@@ -28,14 +28,20 @@ type Opt struct {
 
 type Rule struct {
 	Pattern string
+	Args    []interface{}
 	Message map[string]string
+}
+
+type Module struct {
+	Id    string
+	Rules []Rule
 }
 
 type RuleSet struct {
 	Id          string
 	Description string
 	Pattern     string
-	Rules       []Rule
+	Modules     []Module
 }
 
 type FintConfig struct {
@@ -83,10 +89,25 @@ func checkSourceFile(filename string, rs RuleSet) int {
 			fmt.Println(err)
 			return 1
 		}
-		for i := range rs.Rules {
-			if matched, _ := regexp.MatchString(rs.Rules[i].Pattern, line); matched {
-				violationInFile++
-				fmt.Printf("%s:%d:1: warning: %s\n", filename, n, rs.Rules[i].Message[opt.Locale])
+		for i := range rs.Modules {
+			switch rs.Modules[i].Id {
+			case "pattern_match":
+				for j := range rs.Modules[i].Rules {
+					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
+						violationInFile++
+						fmt.Printf("%s:%d:1: warning: %s\n", filename, n, rs.Modules[i].Rules[j].Message[opt.Locale])
+					}
+				}
+			case "max_length":
+				for j := range rs.Modules[i].Rules {
+					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
+						max_len := int(rs.Modules[i].Rules[j].Args[0].(float64))
+						if too_long := max_len < len(line); too_long {
+							violationInFile++
+							fmt.Printf("%s:%d:1: warning: "+rs.Modules[i].Rules[j].Message[opt.Locale]+"\n", filename, n, max_len)
+						}
+					}
+				}
 			}
 		}
 		if err == io.EOF {
