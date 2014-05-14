@@ -16,7 +16,7 @@ import (
 	"regexp"
 )
 
-const BufSize = 4096
+const bufSize = 4096
 
 type Opt struct {
 	SrcRoot    string
@@ -68,7 +68,7 @@ func checkSourceFile(filename string) int {
 		return 1
 	}
 	defer f.Close()
-	r := bufio.NewReaderSize(f, BufSize)
+	r := bufio.NewReaderSize(f, bufSize)
 	for n := 1; true; n++ {
 		lineBytes, isPrefix, err := r.ReadLine()
 		if isPrefix {
