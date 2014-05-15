@@ -51,6 +51,7 @@ type FintConfig struct {
 var opt *Opt
 var fintConfig *FintConfig
 var violationCount int = 0
+var term string
 
 func getOpts() (*Opt, error) {
 	srcRoot := flag.String("s", ".", "Project source root dir")
@@ -61,6 +62,16 @@ func getOpts() (*Opt, error) {
 	flag.Parse()
 	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName, ConfigPath: *configPath, Locale: *locale, Id: *id}
 	return opt, nil
+}
+
+func printViolation(filename string, n int, msg string) {
+	var format string
+	if term == "dumb" {
+		format = "%s:%d:1: warning: %s\n"
+	} else {
+		format = "[1;37m%s:%d:1: [1;35mwarning:[1;37m %s[m\n"
+	}
+	fmt.Printf(format, filename, n, msg)
 }
 
 func loadFintConfig(file []byte) *FintConfig {
@@ -95,7 +106,7 @@ func checkSourceFile(filename string, rs RuleSet) int {
 				for j := range rs.Modules[i].Rules {
 					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
 						violationInFile++
-						fmt.Printf("%s:%d:1: warning: %s\n", filename, n, rs.Modules[i].Rules[j].Message[opt.Locale])
+						printViolation(filename, n, rs.Modules[i].Rules[j].Message[opt.Locale])
 					}
 				}
 			case "max_length":
@@ -104,7 +115,7 @@ func checkSourceFile(filename string, rs RuleSet) int {
 						max_len := int(rs.Modules[i].Rules[j].Args[0].(float64))
 						if too_long := max_len < len(line); too_long {
 							violationInFile++
-							fmt.Printf("%s:%d:1: warning: "+rs.Modules[i].Rules[j].Message[opt.Locale]+"\n", filename, n, max_len)
+							printViolation(filename, n, fmt.Sprintf(rs.Modules[i].Rules[j].Message[opt.Locale], max_len))
 						}
 					}
 				}
@@ -153,6 +164,8 @@ func main() {
 		log.Print(err)
 		os.Exit(1)
 	}
+
+	term = os.Getenv("TERM")
 
 	conf, err := ioutil.ReadFile(opt.ConfigPath)
 	if err != nil {
