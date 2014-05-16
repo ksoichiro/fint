@@ -74,9 +74,9 @@ func getOpts() (*Opt, error) {
 func printViolation(v Violation) {
 	var format string
 	if term == "dumb" {
-		format = "%s:%d:1: HOGE! warning: %s\n"
+		format = "%s:%d:1: warning: %s\n"
 	} else {
-		format = "[1;37m%s:%d:1: HOGE! [1;35mwarning:[1;37m %s[m\n"
+		format = "[1;37m%s:%d:1: [1;35mwarning:[1;37m %s[m\n"
 	}
 	fmt.Printf(format, v.Filename, v.Line, v.Message)
 }
