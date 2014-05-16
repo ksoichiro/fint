@@ -6,11 +6,11 @@ package fint
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -59,14 +59,13 @@ var config *Config
 var violations []Violation
 var term string
 
-func getOpts() (*Opt, error) {
+func getOpts() {
 	srcRoot := flag.String("s", ".", "Project source directory")
 	configPath := flag.String("c", "conf/config.json", "Config file path")
 	locale := flag.String("l", "default", "Message locale")
 	id := flag.String("i", "", "ID of the rule set")
 	flag.Parse()
-	opt := &Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id}
-	return opt, nil
+	opt = &Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id}
 }
 
 func printViolation(v Violation) {
@@ -85,25 +84,28 @@ func LoadConfig(file []byte) *Config {
 	return &c
 }
 
-func checkSourceFile(filename string, rs RuleSet) []Violation {
-	var vs []Violation
-	f, err := os.Open(filename)
+func checkSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
+	var f *os.File
+	f, err = os.Open(filename)
 	if err != nil {
-		fmt.Println("Cannot open " + filename)
-		return vs
+		err = errors.New("fint: cannot open " + filename)
+		return
 	}
 	defer f.Close()
 	r := bufio.NewReaderSize(f, bufSize)
 	for n := 1; true; n++ {
-		lineBytes, isPrefix, err := r.ReadLine()
+		var (
+			lineBytes []byte
+			isPrefix  bool
+		)
+		lineBytes, isPrefix, err = r.ReadLine()
 		if isPrefix {
-			fmt.Printf("Too long line: %s", filename)
-			return vs
+			err = errors.New(fmt.Sprintf("fint: too long line: %s", filename))
+			return
 		}
 		line := string(lineBytes)
 		if err != io.EOF && err != nil {
-			fmt.Println(err)
-			return vs
+			return
 		}
 		for i := range rs.Modules {
 			switch rs.Modules[i].Id {
@@ -125,14 +127,14 @@ func checkSourceFile(filename string, rs RuleSet) []Violation {
 			}
 		}
 		if err == io.EOF {
+			err = nil
 			break
 		}
 	}
-	return vs
+	return
 }
 
-func findRuleSet() RuleSet {
-	var rs RuleSet
+func findRuleSet() (rs RuleSet, err error) {
 	for i := range config.RuleSets {
 		r := config.RuleSets[i]
 		if r.Id == opt.Id {
@@ -140,15 +142,27 @@ func findRuleSet() RuleSet {
 		}
 	}
 	if rs.Id == "" {
-		panic("No matching ruleset to [" + opt.Id + "]")
+		err = errors.New("fint: no matching ruleset to [" + opt.Id + "]")
 	}
-	return rs
+	return
 }
 
 func checkFile(path string, f os.FileInfo, err error) error {
-	rs := findRuleSet()
+	if err != nil {
+		return err
+	}
+
+	rs, errRs := findRuleSet()
+	if errRs != nil {
+		return errRs
+	}
+
 	if matched, _ := regexp.MatchString(rs.Pattern, path); matched {
-		violations = append(violations, checkSourceFile(path, rs)...)
+		v, e := checkSourceFile(path, rs)
+		if e != nil {
+			return e
+		}
+		violations = append(violations, v...)
 	}
 	return nil
 }
@@ -160,24 +174,28 @@ func pluralize(value int, singular, plural string) string {
 	return plural
 }
 
-func ExecuteAsCommand() {
-	var err error
-	opt, err = getOpts()
-	if err != nil {
-		log.Print(err)
-		os.Exit(1)
-	}
-
-	term = os.Getenv("TERM")
-
+func Execute() (err error) {
 	conf, err := ioutil.ReadFile(opt.ConfigPath)
 	if err != nil {
-		fmt.Println("Config file not found.")
-		os.Exit(1)
+		return
 	}
 	config = LoadConfig(conf)
 
 	err = filepath.Walk(opt.SrcRoot, checkFile)
+	return
+}
+
+func ExecuteAsCommand() {
+	getOpts()
+
+	term = os.Getenv("TERM")
+
+	err := Execute()
+	if err != nil {
+		fmt.Printf("fint: %v\n", err)
+		fmt.Println("fint: error while executing lint")
+		os.Exit(1)
+	}
 	for i := range violations {
 		printViolation(violations[i])
 	}
