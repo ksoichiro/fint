@@ -20,7 +20,6 @@ const bufSize = 4096
 
 type Opt struct {
 	SrcRoot    string
-	ProjName   string
 	ConfigPath string
 	Locale     string
 	Id         string
@@ -61,13 +60,12 @@ var violations []Violation
 var term string
 
 func getOpts() (*Opt, error) {
-	srcRoot := flag.String("s", ".", "Project source root dir")
-	projName := flag.String("p", "", "Project name")
+	srcRoot := flag.String("s", ".", "Project source directory")
 	configPath := flag.String("c", "conf/config.json", "Config file path")
 	locale := flag.String("l", "default", "Message locale")
 	id := flag.String("i", "", "ID of the rule set")
 	flag.Parse()
-	opt := &Opt{SrcRoot: *srcRoot, ProjName: *projName, ConfigPath: *configPath, Locale: *locale, Id: *id}
+	opt := &Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id}
 	return opt, nil
 }
 
@@ -179,8 +177,7 @@ func ExecuteAsCommand() {
 	}
 	config = LoadConfig(conf)
 
-	os.Chdir(opt.SrcRoot)
-	err = filepath.Walk(opt.ProjName, checkFile)
+	err = filepath.Walk(opt.SrcRoot, checkFile)
 	for i := range violations {
 		printViolation(violations[i])
 	}
