@@ -105,7 +105,7 @@ func checkSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 	var f *os.File
 	f, err = os.Open(filename)
 	if err != nil {
-		err = newError("fint: cannot open " + filename)
+		err = newError("cannot open " + filename)
 		return
 	}
 	defer f.Close()
