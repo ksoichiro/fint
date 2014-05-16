@@ -48,9 +48,16 @@ type FintConfig struct {
 	RuleSets []RuleSet
 }
 
+type Violation struct {
+	Filename string
+	Line     int
+	Message  string
+}
+
 var opt *Opt
 var fintConfig *FintConfig
-var violationCount int = 0
+
+var violations []Violation
 var term string
 
 func getOpts() (*Opt, error) {
@@ -64,14 +71,14 @@ func getOpts() (*Opt, error) {
 	return opt, nil
 }
 
-func printViolation(filename string, n int, msg string) {
+func printViolation(v Violation) {
 	var format string
 	if term == "dumb" {
-		format = "%s:%d:1: warning: %s\n"
+		format = "%s:%d:1: HOGE! warning: %s\n"
 	} else {
-		format = "[1;37m%s:%d:1: [1;35mwarning:[1;37m %s[m\n"
+		format = "[1;37m%s:%d:1: HOGE! [1;35mwarning:[1;37m %s[m\n"
 	}
-	fmt.Printf(format, filename, n, msg)
+	fmt.Printf(format, v.Filename, v.Line, v.Message)
 }
 
 func loadFintConfig(file []byte) *FintConfig {
@@ -80,12 +87,12 @@ func loadFintConfig(file []byte) *FintConfig {
 	return &fc
 }
 
-func checkSourceFile(filename string, rs RuleSet) int {
-	var violationInFile int = 0
+func checkSourceFile(filename string, rs RuleSet) []Violation {
+	var vs []Violation
 	f, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Cannot open " + filename)
-		return 1
+		return vs
 	}
 	defer f.Close()
 	r := bufio.NewReaderSize(f, bufSize)
@@ -93,20 +100,19 @@ func checkSourceFile(filename string, rs RuleSet) int {
 		lineBytes, isPrefix, err := r.ReadLine()
 		if isPrefix {
 			fmt.Printf("Too long line: %s", filename)
-			return 1
+			return vs
 		}
 		line := string(lineBytes)
 		if err != io.EOF && err != nil {
 			fmt.Println(err)
-			return 1
+			return vs
 		}
 		for i := range rs.Modules {
 			switch rs.Modules[i].Id {
 			case "pattern_match":
 				for j := range rs.Modules[i].Rules {
 					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
-						violationInFile++
-						printViolation(filename, n, rs.Modules[i].Rules[j].Message[opt.Locale])
+						vs = append(vs, Violation{Filename: filename, Line: n, Message: rs.Modules[i].Rules[j].Message[opt.Locale]})
 					}
 				}
 			case "max_length":
@@ -114,8 +120,7 @@ func checkSourceFile(filename string, rs RuleSet) int {
 					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
 						max_len := int(rs.Modules[i].Rules[j].Args[0].(float64))
 						if too_long := max_len < len(line); too_long {
-							violationInFile++
-							printViolation(filename, n, fmt.Sprintf(rs.Modules[i].Rules[j].Message[opt.Locale], max_len))
+							vs = append(vs, Violation{Filename: filename, Line: n, Message: fmt.Sprintf(rs.Modules[i].Rules[j].Message[opt.Locale], max_len)})
 						}
 					}
 				}
@@ -125,7 +130,7 @@ func checkSourceFile(filename string, rs RuleSet) int {
 			break
 		}
 	}
-	return violationInFile
+	return vs
 }
 
 func findRuleSet() RuleSet {
@@ -145,7 +150,7 @@ func findRuleSet() RuleSet {
 func checkFile(path string, f os.FileInfo, err error) error {
 	rs := findRuleSet()
 	if matched, _ := regexp.MatchString(rs.Pattern, path); matched {
-		violationCount += checkSourceFile(path, rs)
+		violations = append(violations, checkSourceFile(path, rs)...)
 	}
 	return nil
 }
@@ -176,10 +181,13 @@ func ExecuteAsCommand() {
 
 	os.Chdir(opt.SrcRoot)
 	err = filepath.Walk(opt.ProjName, checkFile)
+	for i := range violations {
+		printViolation(violations[i])
+	}
 
-	if 0 < violationCount {
+	if 0 < len(violations) {
 		fmt.Printf("\n%d %s generated.\n",
-			violationCount, pluralize(violationCount, "warning", "warnings"))
+			len(violations), pluralize(len(violations), "warning", "warnings"))
 		os.Exit(1)
 	}
 }
