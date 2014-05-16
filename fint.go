@@ -16,7 +16,10 @@ import (
 	"regexp"
 )
 
-const bufSize = 4096
+const (
+	errPrefix = "fint: "
+	bufSize   = 4096
+)
 
 type Opt struct {
 	SrcRoot    string
@@ -60,6 +63,10 @@ var (
 	term       string
 )
 
+func newError(message string) error {
+	return errors.New(errPrefix + message)
+}
+
 func getOpts() (err error) {
 	srcRoot := flag.String("s", "", "Source directory")
 	configPath := flag.String("c", "conf/config.json", "Config file path")
@@ -67,11 +74,11 @@ func getOpts() (err error) {
 	id := flag.String("i", "", "ID of the rule set")
 	flag.Parse()
 	if *srcRoot == "" {
-		err = errors.New("fint: source directory is required.")
+		err = newError("source directory is required.")
 		return
 	}
 	if *id == "" {
-		err = errors.New("fint: ID of the rule set is required.")
+		err = newError("ID of the rule set is required.")
 		return
 	}
 	opt = &Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id}
@@ -98,7 +105,7 @@ func checkSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 	var f *os.File
 	f, err = os.Open(filename)
 	if err != nil {
-		err = errors.New("fint: cannot open " + filename)
+		err = newError("fint: cannot open " + filename)
 		return
 	}
 	defer f.Close()
@@ -110,7 +117,7 @@ func checkSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 		)
 		lineBytes, isPrefix, err = r.ReadLine()
 		if isPrefix {
-			err = errors.New(fmt.Sprintf("fint: too long line: %s", filename))
+			err = newError(fmt.Sprintf("too long line: %s", filename))
 			return
 		}
 		line := string(lineBytes)
@@ -152,7 +159,7 @@ func findRuleSet() (rs RuleSet, err error) {
 		}
 	}
 	if rs.Id == "" {
-		err = errors.New("fint: no matching ruleset to [" + opt.Id + "]")
+		err = newError("no matching ruleset to [" + opt.Id + "]")
 	}
 	return
 }
@@ -198,8 +205,7 @@ func Execute() (err error) {
 func ExecuteAsCommand() {
 	err := getOpts()
 	if err != nil {
-		fmt.Printf("fint: %v\n", err)
-		fmt.Println("fint: error while executing lint")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
@@ -207,8 +213,7 @@ func ExecuteAsCommand() {
 
 	err = Execute()
 	if err != nil {
-		fmt.Printf("fint: %v\n", err)
-		fmt.Println("fint: error while executing lint")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 	for i := range violations {
