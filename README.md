@@ -21,10 +21,11 @@ If your `GOPATH` is `~/go`, then put the following command
 to shell script form:
 
 ```sh
-$ ~/go/bin/fint -s ${SRCROOT} -p ${PROJECT_NAME} -i objc -l default
+$ ~/go/bin/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc -l default
 ```
 
-If format error found, the command will exit with code 1, otherwise 0.
+If format error found, the command will exit with code 1, otherwise 0.  
+The results will be shown to the source code like normal syntax warnings.
 
 ### Execute on command line
 
@@ -38,7 +39,7 @@ FormatCheck/FCAppDelegate.m:14:1: warning: format error
 Or if you include `$GOPATH/bin` to `PATH` simply execute command:
 
 ```sh
-$ fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
+$ fint -s ~/Workspace/FormatCheck -i objc -l default
 FormatCheck/FCAppDelegate.m:14:1: warning: format error
 ```
 
@@ -49,7 +50,6 @@ FormatCheck/FCAppDelegate.m:14:1: warning: format error
 | `-c`   | Config file path. Default value is `conf/config.json`. |
 | `-i`   | ID of the rule set.  Required.                         |
 | `-l`   | Message locale. Default value is `default`(English). Currently, `default` and `ja` is supported. |
-| `-p`   | Project name.                                          |
 | `-s`   | Project source root directory. Default value is `.`.   |
 
 ## License
