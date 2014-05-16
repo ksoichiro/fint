@@ -31,7 +31,7 @@ If format error found, the command will exit with code 1, otherwise 0.
 If you export `GOPATH` then:
 
 ```sh
-$ $GOPATH/bin/fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
+$ ${GOPATH}/bin/fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
 FormatCheck/FCAppDelegate.m:14:1: warning: format error
 ```
 
@@ -41,6 +41,16 @@ Or if you include `$GOPATH/bin` to `PATH` simply execute command:
 $ fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
 FormatCheck/FCAppDelegate.m:14:1: warning: format error
 ```
+
+### Command line options
+
+| Option | Description                                            |
+| ------ | ------------------------------------------------------ |
+| `-c`   | Config file path. Default value is `conf/config.json`. |
+| `-i`   | ID of the rule set.  Required.                         |
+| `-l`   | Message locale. Default value is `default`(English). Currently, `default` and `ja` is supported. |
+| `-p`   | Project name.                                          |
+| `-s`   | Project source root directory. Default value is `.`.   |
 
 ## License
 
