@@ -9,7 +9,9 @@ fint is portable, executable on multiple platform, easy to integrate into your b
 
 For now, you can use this tool with golang environment.
 
-    $ go get github.com/ksoichiro/fint
+```sh
+$ go get github.com/ksoichiro/fint
+```
 
 ## Usage
 
@@ -18,7 +20,9 @@ For now, you can use this tool with golang environment.
 If your `GOPATH` is `~/go`, then put the following command
 to shell script form:
 
-    ~/go/bin/fint -s ${SRCROOT} -p ${PROJECT_NAME} -i objc -l default
+```sh
+$ ~/go/bin/fint -s ${SRCROOT} -p ${PROJECT_NAME} -i objc -l default
+```
 
 If format error found, the command will exit with code 1, otherwise 0.
 
@@ -26,13 +30,17 @@ If format error found, the command will exit with code 1, otherwise 0.
 
 If you export `GOPATH` then:
 
-    $ $GOPATH/bin/fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
-    FormatCheck/FCAppDelegate.m:14:1: warning: format error
+```sh
+$ $GOPATH/bin/fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
+FormatCheck/FCAppDelegate.m:14:1: warning: format error
+```
 
 Or if you include `$GOPATH/bin` to `PATH` simply execute command:
 
-    $ fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
-    FormatCheck/FCAppDelegate.m:14:1: warning: format error
+```sh
+$ fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
+FormatCheck/FCAppDelegate.m:14:1: warning: format error
+```
 
 ## License
 
