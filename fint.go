@@ -44,7 +44,7 @@ type RuleSet struct {
 	Modules     []Module
 }
 
-type FintConfig struct {
+type Config struct {
 	RuleSets []RuleSet
 }
 
@@ -55,7 +55,7 @@ type Violation struct {
 }
 
 var opt *Opt
-var fintConfig *FintConfig
+var config *Config
 
 var violations []Violation
 var term string
@@ -81,10 +81,10 @@ func printViolation(v Violation) {
 	fmt.Printf(format, v.Filename, v.Line, v.Message)
 }
 
-func loadFintConfig(file []byte) *FintConfig {
-	var fc FintConfig
-	json.Unmarshal(file, &fc)
-	return &fc
+func LoadConfig(file []byte) *Config {
+	var c Config
+	json.Unmarshal(file, &c)
+	return &c
 }
 
 func checkSourceFile(filename string, rs RuleSet) []Violation {
@@ -135,8 +135,8 @@ func checkSourceFile(filename string, rs RuleSet) []Violation {
 
 func findRuleSet() RuleSet {
 	var rs RuleSet
-	for i := range fintConfig.RuleSets {
-		r := fintConfig.RuleSets[i]
+	for i := range config.RuleSets {
+		r := config.RuleSets[i]
 		if r.Id == opt.Id {
 			rs = r
 		}
@@ -177,7 +177,7 @@ func ExecuteAsCommand() {
 		fmt.Println("Config file not found.")
 		os.Exit(1)
 	}
-	fintConfig = loadFintConfig(conf)
+	config = LoadConfig(conf)
 
 	os.Chdir(opt.SrcRoot)
 	err = filepath.Walk(opt.ProjName, checkFile)
