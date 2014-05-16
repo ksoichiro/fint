@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2014 Soichiro Kashima
 */
-package main
+package fint
 
 import (
 	"bufio"
@@ -157,7 +157,7 @@ func pluralize(value int, singular, plural string) string {
 	return plural
 }
 
-func main() {
+func ExecuteAsCommand() {
 	var err error
 	opt, err = getOpts()
 	if err != nil {
