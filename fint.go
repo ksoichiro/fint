@@ -60,13 +60,22 @@ var (
 	term       string
 )
 
-func getOpts() {
-	srcRoot := flag.String("s", ".", "Project source directory")
+func getOpts() (err error) {
+	srcRoot := flag.String("s", "", "Source directory")
 	configPath := flag.String("c", "conf/config.json", "Config file path")
 	locale := flag.String("l", "default", "Message locale")
 	id := flag.String("i", "", "ID of the rule set")
 	flag.Parse()
+	if *srcRoot == "" {
+		err = errors.New("fint: source directory is required.")
+		return
+	}
+	if *id == "" {
+		err = errors.New("fint: ID of the rule set is required.")
+		return
+	}
 	opt = &Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id}
+	return
 }
 
 func printViolation(v Violation) {
@@ -187,11 +196,16 @@ func Execute() (err error) {
 }
 
 func ExecuteAsCommand() {
-	getOpts()
+	err := getOpts()
+	if err != nil {
+		fmt.Printf("fint: %v\n", err)
+		fmt.Println("fint: error while executing lint")
+		os.Exit(1)
+	}
 
 	term = os.Getenv("TERM")
 
-	err := Execute()
+	err = Execute()
 	if err != nil {
 		fmt.Printf("fint: %v\n", err)
 		fmt.Println("fint: error while executing lint")
