@@ -53,11 +53,12 @@ type Violation struct {
 	Message  string
 }
 
-var opt *Opt
-var config *Config
-
-var violations []Violation
-var term string
+var (
+	opt        *Opt
+	config     *Config
+	violations []Violation
+	term       string
+)
 
 func getOpts() {
 	srcRoot := flag.String("s", ".", "Project source directory")
