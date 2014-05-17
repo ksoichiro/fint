@@ -11,4 +11,5 @@ script:
   - go test -covermode=count -coverprofile=profile.cov
 
 after_success:
-  - $HOME/gopath/bin/goveralls -v -coverprofile=profile.cov -service=travis-ci
+  - sed -e "s|^github.com/ksoichiro/fint||" profile.cov > coveralls.cov
+  - $HOME/gopath/bin/goveralls -v -coverprofile=coveralls.cov -service=travis-ci
