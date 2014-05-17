@@ -192,6 +192,8 @@ func pluralize(value int, singular, plural string) string {
 }
 
 func Execute(o *Opt) (v []Violation, err error) {
+	violations = []Violation{}
+
 	opt = o
 
 	var conf []byte
