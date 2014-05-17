@@ -22,6 +22,11 @@ func TestExecuteAsCommand(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
 	}
+
+	fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	if err == nil {
+		t.Errorf("Expected error but not occurred")
+	}
 }
 
 func TestExecute(t *testing.T) {
