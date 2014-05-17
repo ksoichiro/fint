@@ -16,6 +16,8 @@ func TestExecute(t *testing.T) {
 func TestExecuteError(t *testing.T) {
 	testExecuteError(t, &fint.Opt{SrcRoot: "", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"},
 		"fint: source directory is required.")
+	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: ""},
+		"fint: ID of the rule set is required.")
 }
 
 func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
