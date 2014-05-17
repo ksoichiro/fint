@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestMain(t *testing.T) {
-	// FIXME This test fails
-	fint.ExecuteAsCommand()
+func TestExecute(t *testing.T) {
+	opt := &fint.Opt{SrcRoot: "testdata/objc/FormatCheck", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"}
+	fint.Execute(opt)
 }
