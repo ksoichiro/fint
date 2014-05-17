@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		DEA194A6192753E30096AC9E /* Fint */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = DEA194A7192753E30096AC9E /* Build configuration list for PBXAggregateTarget "Fint" */;
+			buildPhases = (
+				DEA194AA192753EA0096AC9E /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Fint;
+			productName = Fint;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		DEA194781927472C0096AC9E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA194771927472C0096AC9E /* Foundation.framework */; };
 		DEA1947A1927472C0096AC9E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEA194791927472C0096AC9E /* CoreGraphics.framework */; };
@@ -211,6 +225,7 @@
 			targets = (
 				DEA194731927472B0096AC9E /* FintExample */,
 				DEA1948E1927472C0096AC9E /* FintExampleTests */,
+				DEA194A6192753E30096AC9E /* Fint */,
 			);
 		};
 /* End PBXProject section */
@@ -234,6 +249,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DEA194AA192753EA0096AC9E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TERM=dumb ${SRCROOT}/../../../fint/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc -c ${SRCROOT}/../../../conf/config.json";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DEA194701927472B0096AC9E /* Sources */ = {
@@ -419,6 +450,20 @@
 			};
 			name = Release;
 		};
+		DEA194A8192753E30096AC9E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		DEA194A9192753E30096AC9E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -444,6 +489,14 @@
 			buildConfigurations = (
 				DEA194A41927472C0096AC9E /* Debug */,
 				DEA194A51927472C0096AC9E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		DEA194A7192753E30096AC9E /* Build configuration list for PBXAggregateTarget "Fint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DEA194A8192753E30096AC9E /* Debug */,
+				DEA194A9192753E30096AC9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
