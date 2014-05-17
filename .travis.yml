@@ -5,11 +5,14 @@ go:
 
 install:
   - go get code.google.com/p/go.tools/cmd/cover
+  - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
+
+before_script:
+  - export PATH=$HOME/gopath/bin:$PATH
 
 script:
   - go test -covermode=count -coverprofile=profile.cov
 
 after_success:
-  - sed -e "s|^github.com/ksoichiro/fint||" profile.cov > coveralls.cov
-  - $HOME/gopath/bin/goveralls -v -coverprofile=coveralls.cov -service=travis-ci
+  - goveralls -v -service=travis-ci
