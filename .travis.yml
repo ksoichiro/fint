@@ -5,7 +5,7 @@ go:
 
 env:
   global:
-    - COVERALLS_TOKEN=RvJ8hng3HdBB9IFfvoREmFKHezP8H09LS
+    - COVERALLS_TOKEN=vIP7p1xutIOHbLkAx64FqxFDSGE0p3iio
 
 install:
   - go get code.google.com/p/go.tools/cmd/cover
@@ -15,4 +15,4 @@ script:
   - go test -covermode=count -coverprofile=profile.cov
 
 after_success:
-  - goveralls -coverprofile=profile.cov -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - goveralls -coverprofile=profile.cov -service=travis-ci-free -repotoken $COVERALLS_TOKEN
