@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>3A8D3A7E-E771-45DA-96F6-B8F3A0E803DD</string>
+	<key>IDESourceControlProjectName</key>
+	<string>FintExample</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>64984921-AA1A-4FE6-A761-B83615876816</key>
+		<string>ssh://github.com/ksoichiro/fint.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>testdata/objc/FintExample/FintExample.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>64984921-AA1A-4FE6-A761-B83615876816</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://github.com/ksoichiro/fint.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>64984921-AA1A-4FE6-A761-B83615876816</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>64984921-AA1A-4FE6-A761-B83615876816</string>
+			<key>IDESourceControlWCCName</key>
+			<string>fint</string>
+		</dict>
+	</array>
+</dict>
+</plist>
