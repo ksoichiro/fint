@@ -4,6 +4,7 @@ go:
    - 1.2
 
 install:
+  go get code.google.com/p/go.tools/cmd/cover
   go get github.com/mattn/goveralls
 
 script:
