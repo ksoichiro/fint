@@ -155,7 +155,7 @@ func findRuleSet() (rs RuleSet, err error) {
 	return
 }
 
-func checkFile(path string, f os.FileInfo, err error) error {
+func CheckFile(path string, f os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
@@ -202,7 +202,7 @@ func Execute(o *Opt) (v []Violation, err error) {
 	}
 	config = LoadConfig(conf)
 
-	err = filepath.Walk(opt.SrcRoot, checkFile)
+	err = filepath.Walk(opt.SrcRoot, CheckFile)
 	return violations, err
 }
 

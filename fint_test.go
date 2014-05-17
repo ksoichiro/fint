@@ -4,6 +4,7 @@
 package fint_test
 
 import (
+	"errors"
 	"github.com/ksoichiro/fint"
 	"os"
 	"testing"
@@ -65,6 +66,15 @@ func TestCheckSourceFile(t *testing.T) {
 	msg := "fint: cannot open " + filename
 	if err.Error() != msg {
 		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
+	}
+}
+
+func TestCheckFile(t *testing.T) {
+	errIn := errors.New("test message")
+	f, _ := os.Stat(".")
+	err := fint.CheckFile("", f, errIn)
+	if err.Error() != errIn.Error() {
+		t.Errorf("Expected error message [%s] but was [%s]", errIn.Error(), err.Error())
 	}
 }
 
