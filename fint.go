@@ -67,22 +67,13 @@ func newError(message string) error {
 	return errors.New(errPrefix + message)
 }
 
-func getOpts() (err error) {
+func getOpts() {
 	srcRoot := flag.String("s", "", "Source directory")
 	configPath := flag.String("c", "conf/config.json", "Config file path")
 	locale := flag.String("l", "default", "Message locale")
 	id := flag.String("i", "", "ID of the rule set")
 	flag.Parse()
-	if *srcRoot == "" {
-		err = newError("source directory is required.")
-		return
-	}
-	if *id == "" {
-		err = newError("ID of the rule set is required.")
-		return
-	}
 	opt = &Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id}
-	return
 }
 
 func printViolation(v Violation) {
@@ -194,6 +185,14 @@ func pluralize(value int, singular, plural string) string {
 func Execute(o *Opt) (v []Violation, err error) {
 	violations = []Violation{}
 
+	if o.SrcRoot == "" {
+		err = newError("source directory is required.")
+		return
+	}
+	if o.Id == "" {
+		err = newError("ID of the rule set is required.")
+		return
+	}
 	opt = o
 
 	var conf []byte
@@ -208,15 +207,10 @@ func Execute(o *Opt) (v []Violation, err error) {
 }
 
 func ExecuteAsCommand() {
-	err := getOpts()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
+	getOpts()
 	term = os.Getenv("TERM")
 
-	_, err = Execute(opt)
+	_, err := Execute(opt)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
