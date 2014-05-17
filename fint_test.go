@@ -53,6 +53,28 @@ func TestCheckSourceFile(t *testing.T) {
 	}
 }
 
+func TestSetbufsize(t *testing.T) {
+	var (
+		filename = "testdata/objc/FintExample/FintExample/FEAppDelegate.m"
+		msg      string
+	)
+	fint.Setbufsize(0)
+	_, err := fint.CheckSourceFile(filename, fint.RuleSet{})
+	if err != nil {
+		t.Errorf("Unexpected error occurred: %v", err)
+	}
+
+	fint.Setbufsize(1)
+	_, err = fint.CheckSourceFile(filename, fint.RuleSet{})
+	if err == nil {
+		t.Errorf("Expected error but not occurred")
+	}
+	msg = "fint: too long line: " + filename
+	if err.Error() != msg {
+		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
+	}
+}
+
 func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
 	v, _ := fint.Execute(opt)
 	if len(v) != expectedViolations {

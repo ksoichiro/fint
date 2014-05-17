@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	errPrefix = "fint: "
-	bufSize   = 4096
+	errPrefix      = "fint: "
+	defaultBufSize = 4096
 )
 
 type Opt struct {
@@ -60,6 +60,7 @@ var (
 	config     *Config
 	violations []Violation
 	term       string
+	bufSize    int
 )
 
 func newError(message string) error {
@@ -82,6 +83,12 @@ func LoadConfig(file []byte) *Config {
 	return &c
 }
 
+func Setbufsize(size int) {
+	if 0 < size {
+		bufSize = size
+	}
+}
+
 func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 	var f *os.File
 	f, err = os.Open(filename)
@@ -90,6 +97,9 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 		return
 	}
 	defer f.Close()
+	if bufSize == 0 {
+		bufSize = defaultBufSize
+	}
 	r := bufio.NewReaderSize(f, bufSize)
 	for n := 1; true; n++ {
 		var (
