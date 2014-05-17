@@ -9,7 +9,7 @@ import (
 )
 
 func TestExecute(t *testing.T) {
-	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"}, 12)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"}, 20)
 }
 
 func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {

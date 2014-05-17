@@ -15,6 +15,15 @@
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    if(floor(NSFoundationVersionNumber_iOS_6_1) < NSFoundationVersionNumber){
+        // Do something
+    }else if(YES){
+        // Do something
+    }else{
+        // Do something
+        NSString *msg = [self doSomething:0 withOptions:@[@"foo",@"bar"]];
+        NSLog(@"%@", msg);
+    }
     return YES;
 }
 
@@ -43,6 +52,11 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (NSString *)doSomething:(int)type withOptions:(NSArray *)options
+{
+    return @"Hello, World!";
 }
 
 @end
