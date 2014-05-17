@@ -21,6 +21,8 @@ func TestExecuteError(t *testing.T) {
 		"fint: ID of the rule set is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "", Locale: "default", Id: "objc"},
 		"open : no such file or directory")
+	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "foo"},
+		"fint: no matching ruleset to [foo]")
 }
 
 func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
