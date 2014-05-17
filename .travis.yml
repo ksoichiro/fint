@@ -11,4 +11,4 @@ script:
   - go test -covermode=count -coverprofile=profile.cov
 
 after_success:
-  - $(echo $GOPATH | cut -d ':' -f 2)/bin/goveralls -v -coverprofile=profile.cov -service=travis-ci
+  - $HOME/gopath/bin/goveralls -v -coverprofile=profile.cov -service=travis-ci
