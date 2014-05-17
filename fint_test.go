@@ -5,8 +5,24 @@ package fint_test
 
 import (
 	"github.com/ksoichiro/fint"
+	"os"
 	"testing"
 )
+
+func TestExecuteAsCommand(t *testing.T) {
+	var err error
+	os.Setenv("TERM", "dumb")
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	if err == nil {
+		t.Errorf("Expected error but not occurred")
+	}
+
+	os.Setenv("TERM", "xterm-256color")
+	fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	if err == nil {
+		t.Errorf("Expected error but not occurred")
+	}
+}
 
 func TestExecute(t *testing.T) {
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"}, 20)

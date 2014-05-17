@@ -7,7 +7,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -65,15 +64,6 @@ var (
 
 func newError(message string) error {
 	return errors.New(errPrefix + message)
-}
-
-func getOpts() {
-	srcRoot := flag.String("s", "", "Source directory")
-	configPath := flag.String("c", "conf/config.json", "Config file path")
-	locale := flag.String("l", "default", "Message locale")
-	id := flag.String("i", "", "ID of the rule set")
-	flag.Parse()
-	opt = &Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id}
 }
 
 func printViolation(v Violation) {
@@ -206,14 +196,12 @@ func Execute(o *Opt) (v []Violation, err error) {
 	return violations, err
 }
 
-func ExecuteAsCommand() {
-	getOpts()
+func ExecuteAsCommand(o *Opt) (err error) {
 	term = os.Getenv("TERM")
-
-	_, err := Execute(opt)
+	_, err = Execute(o)
 	if err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		return
 	}
 	for i := range violations {
 		printViolation(violations[i])
@@ -222,6 +210,7 @@ func ExecuteAsCommand() {
 	if 0 < len(violations) {
 		fmt.Printf("\n%d %s generated.\n",
 			len(violations), pluralize(len(violations), "warning", "warnings"))
-		os.Exit(1)
+		err = newError("error while executing lint")
 	}
+	return
 }
