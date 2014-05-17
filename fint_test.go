@@ -9,6 +9,12 @@ import (
 )
 
 func TestExecute(t *testing.T) {
-	opt := &fint.Opt{SrcRoot: "testdata/objc/FormatCheck", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"}
-	fint.Execute(opt)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"}, 12)
+}
+
+func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
+	v, _ := fint.Execute(opt)
+	if len(v) != expectedViolations {
+		t.Errorf("Expected violations are %d but %d found", expectedViolations, len(v))
+	}
 }
