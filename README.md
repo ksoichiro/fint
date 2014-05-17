@@ -1,5 +1,7 @@
 # fint - a fake of lint
 
+[![Build Status](https://travis-ci.org/ksoichiro/fint.svg?branch=master)](https://travis-ci.org/ksoichiro/fint)
+
 fint is a lightweight, simple source code check tool,  
 but doesn't have syntax analysis feature -- so it is a fake lint.
 
