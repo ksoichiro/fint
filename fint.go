@@ -82,7 +82,7 @@ func LoadConfig(file []byte) *Config {
 	return &c
 }
 
-func checkSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
+func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 	var f *os.File
 	f, err = os.Open(filename)
 	if err != nil {
@@ -156,7 +156,7 @@ func checkFile(path string, f os.FileInfo, err error) error {
 	}
 
 	if matched, _ := regexp.MatchString(rs.Pattern, path); matched {
-		v, e := checkSourceFile(path, rs)
+		v, e := CheckSourceFile(path, rs)
 		if e != nil {
 			return e
 		}

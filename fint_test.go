@@ -41,6 +41,18 @@ func TestExecuteError(t *testing.T) {
 		"fint: no matching ruleset to [foo]")
 }
 
+func TestCheckSourceFile(t *testing.T) {
+	filename := "testdata/non_existent_file"
+	_, err := fint.CheckSourceFile(filename, fint.RuleSet{})
+	if err == nil {
+		t.Errorf("Expected error but not occurred")
+	}
+	msg := "fint: cannot open " + filename
+	if err.Error() != msg {
+		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
+	}
+}
+
 func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
 	v, _ := fint.Execute(opt)
 	if len(v) != expectedViolations {
