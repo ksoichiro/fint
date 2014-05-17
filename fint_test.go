@@ -11,6 +11,7 @@ import (
 func TestExecute(t *testing.T) {
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"}, 20)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 20)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_Empty", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 0)
 }
 
 func TestExecuteError(t *testing.T) {
@@ -18,6 +19,8 @@ func TestExecuteError(t *testing.T) {
 		"fint: source directory is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: ""},
 		"fint: ID of the rule set is required.")
+	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "", Locale: "default", Id: "objc"},
+		"open : no such file or directory")
 }
 
 func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
