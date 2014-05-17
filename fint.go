@@ -191,15 +191,18 @@ func pluralize(value int, singular, plural string) string {
 	return plural
 }
 
-func Execute() (err error) {
-	conf, err := ioutil.ReadFile(opt.ConfigPath)
+func Execute(o *Opt) (v []Violation, err error) {
+	opt = o
+
+	var conf []byte
+	conf, err = ioutil.ReadFile(opt.ConfigPath)
 	if err != nil {
 		return
 	}
 	config = LoadConfig(conf)
 
 	err = filepath.Walk(opt.SrcRoot, checkFile)
-	return
+	return violations, err
 }
 
 func ExecuteAsCommand() {
@@ -211,7 +214,7 @@ func ExecuteAsCommand() {
 
 	term = os.Getenv("TERM")
 
-	err = Execute()
+	_, err = Execute(opt)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
