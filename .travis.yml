@@ -4,6 +4,9 @@ go:
   - 1.2
 
 install:
+  # for go test -covermode=count
+  - go get code.google.com/p/go.tools/cmd/cover
+  # for goveralls using gocov
   - go get github.com/axw/gocov/gocov
   - go get github.com/mattn/goveralls
 
