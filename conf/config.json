@@ -23,14 +23,14 @@
               }
             },
             {
-              "pattern": "if(",
+              "pattern": "if\\(",
               "message": {
                 "default": "Space must be inserted before if",
                 "ja": "ifの後にはスペースを入れてください"
               }
             },
             {
-              "pattern": "){",
+              "pattern": "\\){",
               "message": {
                 "default": "Space must be inserted between ')' and '{'",
                 "ja": "')'と'{'の間にはスペースを入れてください"
