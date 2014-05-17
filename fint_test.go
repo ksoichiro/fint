@@ -18,14 +18,23 @@ func TestExecuteAsCommand(t *testing.T) {
 	}
 
 	os.Setenv("TERM", "xterm-256color")
-	fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
 	}
 
-	fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
+	}
+
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	if err == nil {
+		t.Errorf("Expected error but not occurred")
+	}
+	msg := "fint: source directory is required."
+	if err.Error() != msg {
+		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
 	}
 }
 
