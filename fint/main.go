@@ -6,6 +6,7 @@ package main
 import (
 	"flag"
 	"github.com/ksoichiro/fint"
+	"os"
 )
 
 func main() {
@@ -17,5 +18,8 @@ func main() {
 	)
 	flag.Parse()
 
-	fint.ExecuteAsCommand(&fint.Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id})
+	err := fint.ExecuteAsCommand(&fint.Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id})
+	if err != nil {
+		os.Exit(1)
+	}
 }
