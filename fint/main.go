@@ -9,6 +9,10 @@ import (
 	"os"
 )
 
+const (
+	ExitCodeError = 1
+)
+
 func main() {
 	var (
 		srcRoot    = flag.String("s", "", "Source directory")
@@ -20,6 +24,6 @@ func main() {
 
 	err := fint.ExecuteAsCommand(&fint.Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id})
 	if err != nil {
-		os.Exit(1)
+		os.Exit(ExitCodeError)
 	}
 }
