@@ -55,6 +55,59 @@ FormatCheck/FCAppDelegate.m:14:1: warning: format error
 | `-c`   | Config file path. Default value is `conf/config.json`. |
 | `-l`   | Message locale. Default value is `default`(English). Currently, `default` and `ja` is supported. |
 
+## Configuration
+
+### Config file
+
+Config file(JSON) is set by `-c` option.  
+
+### Rule sets
+
+Config file includes lint rule sets, which is the top level element. Array.
+
+| Item  | Description |
+| ----- | ----------- |
+| `id` |  ID of the rule set. This will be used to select rule set by option `-i`. |
+| `description` |  Description of this rule set. This will not be used from the program for now. |
+| `pattern` |  File path pattern to apply this rule set. Regular expression. |
+| `modules` |  Details of the rule set. See 'Modules'. |
+
+### Modules
+
+Modules describe parameters, warning messages for the lint logics.  
+Each element of the array describes one lint logic type.  
+Basic structure is below.
+
+| Item  | Description |
+| ----- | ----------- |
+| `id` | ID of the lint logic. This is predefined in the program and not changeable. |
+| `rules` | Array of the specific rules. |
+| `rules` > `pattern` | Pattern for the lint logic. |
+| `rules` > `args` | Argument for the lint logic. Optional. |
+| `rules` > `message` | Message to show when there is a violation of the rule. It is an array which has default(`default`) and localized message(`ja`). |
+
+Currently, the following modules are defined.
+
+#### Pattern match
+
+This module checks if the line matching the `pattern`.  
+
+| Item  | Description |
+| ----- | ----------- |
+| `id` | `pattern_match` |
+| `rules` > `pattern` | Forbidden pattern of the line. |
+| `rules` > `args` | Not used. |
+
+#### Max length
+
+This module checks if the line exceeds a certain length.
+
+| Item  | Description |
+| ----- | ----------- |
+| `id` | `max_length` |
+| `rules` > `pattern` | Pattern of the line to check length. |
+| `rules` > `args` | One element with max length. |
+
 ## License
 
 Copyright (c) 2014 Soichiro Kashima  
