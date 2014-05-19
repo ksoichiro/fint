@@ -19,10 +19,12 @@ func main() {
 		configPath = flag.String("c", "conf/config.json", "Config file path")
 		locale     = flag.String("l", "default", "Message locale")
 		id         = flag.String("i", "", "ID of the rule set")
+		html       = flag.String("h", "", "Generate result as HTML")
+		force      = flag.Bool("f", false, "Force generating result to existing directory")
 	)
 	flag.Parse()
 
-	err := fint.ExecuteAsCommand(&fint.Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id})
+	err := fint.ExecuteAsCommand(&fint.Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id, Html: *html, Force: *force})
 	if err != nil {
 		os.Exit(ExitCodeError)
 	}

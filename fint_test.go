@@ -40,7 +40,8 @@ func TestExecuteAsCommand(t *testing.T) {
 }
 
 func TestExecute(t *testing.T) {
-	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"}, 20)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, true, false)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, false, true)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 20)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_Empty", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 0)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 1)
@@ -55,6 +56,10 @@ func TestExecuteError(t *testing.T) {
 		"open : no such file or directory")
 	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "foo"},
 		"fint: no matching ruleset to [foo]")
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, true, false)
+	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal"},
+		"fint: report directory already exists. use `-f` option to force reporting.",
+		false, true)
 }
 
 func TestCheckSourceFile(t *testing.T) {
@@ -100,10 +105,39 @@ func TestSetbufsize(t *testing.T) {
 	}
 }
 
+func testExecuteNormalWithReport(t *testing.T,
+	opt *fint.Opt,
+	expectedViolations int,
+	removeReportBefore bool,
+	removeReportAfter bool) {
+	if removeReportBefore {
+		os.RemoveAll(opt.Html)
+	}
+	testExecuteNormal(t, opt, expectedViolations)
+	if removeReportAfter {
+		os.RemoveAll(opt.Html)
+	}
+}
+
 func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
 	v, _ := fint.Execute(opt)
 	if len(v) != expectedViolations {
 		t.Errorf("Expected violations are [%d] but [%d] found", expectedViolations, len(v))
+	}
+}
+
+func testExecuteErrorWithReport(
+	t *testing.T,
+	opt *fint.Opt,
+	msg string,
+	removeReportBefore bool,
+	removeReportAfter bool) {
+	if removeReportBefore {
+		os.RemoveAll(opt.Html)
+	}
+	testExecuteError(t, opt, msg)
+	if removeReportAfter {
+		os.RemoveAll(opt.Html)
 	}
 }
 

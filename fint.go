@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 const (
@@ -25,6 +26,8 @@ type Opt struct {
 	ConfigPath string
 	Locale     string
 	Id         string
+	Html       string
+	Force      bool
 }
 
 type Rule struct {
@@ -75,6 +78,82 @@ func printViolation(v Violation) {
 		format = "[1;37m%s:%d:1: [1;35mwarning:[1;37m %s[m\n"
 	}
 	fmt.Printf(format, v.Filename, v.Line, v.Message)
+}
+
+func printReportHeader() error {
+	if opt.Html == "" {
+		return nil
+	}
+	f, err := os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	f.WriteString(`<!DOCTYPE html>
+<html><head>
+<title>fint result</title>
+<style type="text/css">
+body{background:#fff;}
+table{border:1px solid #999;border-collapse:collapse;}
+th,td{border:1px solid #999;padding:0.4em;}
+</style>
+</head><body>
+<h1>fint result</h1>
+<table>
+<thead>
+<tr><th>File</th><th>Violations</th></tr>
+</thead>
+<tbody>
+`)
+
+	f.Close()
+	return nil
+}
+
+func printReportBody(filename string, vs []Violation) error {
+	if opt.Html == "" {
+		return nil
+	}
+	err := MkReportDir(true)
+	if err != nil {
+		return err
+	}
+	var f *os.File
+	f, err = os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	var path = ".."
+	for c := 0; c < strings.Count(strings.Trim(opt.Html, "/"), "/"); c++ {
+		path = path + "../"
+	}
+	path = fmt.Sprintf("%s/%s", path, filename)
+	f.WriteString(fmt.Sprintf("<tr><td><a href=\"%s\">%s</a></td><td>%d</td></tr>\r\n", path, path, len(vs)))
+
+	f.Close()
+	return nil
+}
+
+func printReportFooter() error {
+	if opt.Html == "" {
+		return nil
+	}
+	f, err := os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	f.WriteString(`</tbody>
+</table>
+</body></html>
+`)
+
+	f.Close()
+	return nil
 }
 
 func LoadConfig(file []byte) *Config {
@@ -139,6 +218,13 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 			break
 		}
 	}
+
+	eb := printReportBody(filename, vs)
+	if eb != nil {
+		err = eb
+		return
+	}
+
 	return
 }
 
@@ -182,6 +268,27 @@ func pluralize(value int, singular, plural string) string {
 	return plural
 }
 
+func MkReportDir(whenNotExist bool) (err error) {
+	if opt.Html == "" {
+		return
+	}
+	if _, err = os.Stat(opt.Html); err != nil {
+		if !os.IsNotExist(err) {
+			return
+		}
+	} else if !whenNotExist && opt.Force {
+		err = os.RemoveAll(opt.Html)
+		if err != nil {
+			return
+		}
+	} else if !whenNotExist {
+		err = newError("report directory already exists. use `-f` option to force reporting.")
+		return
+	}
+	err = os.MkdirAll(opt.Html, 0777)
+	return
+}
+
 func Execute(o *Opt) (v []Violation, err error) {
 	violations = []Violation{}
 
@@ -194,6 +301,10 @@ func Execute(o *Opt) (v []Violation, err error) {
 		return
 	}
 	opt = o
+	err = MkReportDir(false)
+	if err != nil {
+		return
+	}
 
 	var conf []byte
 	conf, err = ioutil.ReadFile(opt.ConfigPath)
@@ -202,7 +313,19 @@ func Execute(o *Opt) (v []Violation, err error) {
 	}
 	config = LoadConfig(conf)
 
+	eh := printReportHeader()
+	if eh != nil {
+		err = eh
+		return
+	}
+
 	err = filepath.Walk(opt.SrcRoot, CheckFile)
+
+	ef := printReportFooter()
+	if ef != nil {
+		err = ef
+	}
+
 	return violations, err
 }
 
