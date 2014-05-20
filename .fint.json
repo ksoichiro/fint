@@ -42,6 +42,20 @@
                 "default": "Space must be inserted after ','",
                 "ja": "','の後にはスペースを入れてください"
               }
+            },
+            {
+              "pattern": "//[^ ]",
+              "message": {
+                "default": "Space must be inserted between '//' and following comment",
+                "ja": "'//'とコメントの間にはスペースを入れてください"
+              }
+            },
+            {
+              "pattern": "\\][a-zA-Z0-9_]",
+              "message": {
+                "default": "Space must be inserted between ']' and following message",
+                "ja": "']'とメッセージの間にはスペースを入れてください"
+              }
             }
           ]
         },
