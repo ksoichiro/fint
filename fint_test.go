@@ -106,6 +106,10 @@ func TestSetbufsize(t *testing.T) {
 	}
 }
 
+func TestClean(t *testing.T) {
+	os.RemoveAll("report_test_normal")
+}
+
 func testExecuteNormalWithReport(t *testing.T,
 	opt *fint.Opt,
 	expectedViolations int,
