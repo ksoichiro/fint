@@ -10,104 +10,93 @@ import (
 	"testing"
 )
 
+const (
+	EnvTerm                 = "TERM"
+	SrcRootObjcNormal       = "testdata/objc/FintExample"
+	SrcRootObjcEmpty        = "testdata/objc/FintExample_Empty"
+	SrcRootObjcSingleError  = "testdata/objc/FintExample_SingleError"
+	SrcSingleFile           = "testdata/objc/FintExample/FintExample/FEAppDelegate.m"
+	SrcNonExistent          = "testdata/non_existent_file"
+	TestReportDir           = "report_test_normal"
+	TestReportDirWithSubdir = "report_test_normal/subdir"
+	ConfigDefault           = ".fint.json"
+	LintIdObjc              = "objc"
+	LocaleDefault           = "default"
+	LocaleJa                = "ja"
+	ErrorsObjcNormal        = 22
+)
+
 func TestExecuteAsCommand(t *testing.T) {
 	var err error
-	os.Setenv("TERM", "dumb")
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc"})
-	if err == nil {
-		t.Errorf("Expected error but not occurred")
-	}
 
-	os.Setenv("TERM", "xterm-256color")
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc"})
-	if err == nil {
-		t.Errorf("Expected error but not occurred")
-	}
+	// When using dumb TERM, messages should not be colorized.
+	os.Setenv(EnvTerm, "dumb")
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
+	testExpectError(t, err)
 
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: ".fint.json", Locale: "default", Id: "objc"})
-	if err == nil {
-		t.Errorf("Expected error but not occurred")
-	}
+	// When using other than dumb TERM, messages should be colorized.
+	os.Setenv(EnvTerm, "xterm-256color")
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
+	testExpectError(t, err)
 
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "", ConfigPath: ".fint.json", Locale: "default", Id: "objc"})
-	if err == nil {
-		t.Errorf("Expected error but not occurred")
-	}
-	msg := "fint: source directory is required."
-	if err.Error() != msg {
-		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
-	}
+	// When there is only one violation, result message form should be singular.
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
+	testExpectError(t, err)
+
+	// When SrcRoot is empty, lint should not be executed.
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "", ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
+	testExpectErrorWithMessage(t, err, "fint: source directory is required.")
 }
 
 func TestExecute(t *testing.T) {
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 22, true, false)
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 22, false, true)
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal/subdir", Force: true}, 22, true, true)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "ja", Id: "objc"}, 22)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_Empty", ConfigPath: ".fint.json", Locale: "ja", Id: "objc"}, 0)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: ".fint.json", Locale: "ja", Id: "objc"}, 1)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Force: true}, ErrorsObjcNormal, true, false)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Force: true}, ErrorsObjcNormal, false, true)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDirWithSubdir, Force: true}, ErrorsObjcNormal, true, true)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, ErrorsObjcNormal)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcEmpty, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 0)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 1)
 }
 
 func TestExecuteError(t *testing.T) {
-	testExecuteError(t, &fint.Opt{SrcRoot: "", ConfigPath: ".fint.json", Locale: "default", Id: "objc"},
-		"fint: source directory is required.")
-	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: ""},
-		"fint: ID of the rule set is required.")
-	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "", Locale: "default", Id: "objc"},
-		"open : no such file or directory")
-	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "foo"},
-		"fint: no matching ruleset to [foo]")
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 22, true, false)
-	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal"},
+	testExecuteError(t, &fint.Opt{SrcRoot: "", ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, "fint: source directory is required.")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: ""}, "fint: ID of the rule set is required.")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: "", Locale: LocaleDefault, Id: LintIdObjc}, "open : no such file or directory")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: "foo"}, "fint: no matching ruleset to [foo]")
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Force: true}, ErrorsObjcNormal, true, false)
+	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir},
 		"fint: report directory already exists. use `-f` option to force reporting.",
 		false, true)
 }
 
 func TestCheckSourceFile(t *testing.T) {
-	filename := "testdata/non_existent_file"
-	_, err := fint.CheckSourceFile(filename, fint.RuleSet{})
-	if err == nil {
-		t.Errorf("Expected error but not occurred")
-	}
-	msg := "fint: cannot open " + filename
-	if err.Error() != msg {
-		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
-	}
+	_, err := fint.CheckSourceFile(SrcNonExistent, fint.RuleSet{})
+	testExpectErrorWithMessage(t, err, "fint: cannot open "+SrcNonExistent)
 }
 
 func TestCheckFile(t *testing.T) {
+	// Pass an error message as filepath.Walk will do.
 	errIn := errors.New("test message")
 	f, _ := os.Stat(".")
 	err := fint.CheckFile("", f, errIn)
-	if err.Error() != errIn.Error() {
-		t.Errorf("Expected error message [%s] but was [%s]", errIn.Error(), err.Error())
-	}
+	testExpectErrorWithMessage(t, err, errIn.Error())
 }
 
 func TestSetbufsize(t *testing.T) {
-	var (
-		filename = "testdata/objc/FintExample/FintExample/FEAppDelegate.m"
-		msg      string
-	)
+	// When the bufSize is set to 0, default size will be set.
 	fint.Setbufsize(0)
-	_, err := fint.CheckSourceFile(filename, fint.RuleSet{})
+	_, err := fint.CheckSourceFile(SrcSingleFile, fint.RuleSet{})
 	if err != nil {
 		t.Errorf("Unexpected error occurred: %v", err)
 	}
 
 	fint.Setbufsize(1)
-	_, err = fint.CheckSourceFile(filename, fint.RuleSet{})
-	if err == nil {
-		t.Errorf("Expected error but not occurred")
-	}
-	msg = "fint: too long line: " + filename
-	if err.Error() != msg {
-		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
-	}
+	_, err = fint.CheckSourceFile(SrcSingleFile, fint.RuleSet{})
+	testExpectErrorWithMessage(t, err, "fint: too long line: "+SrcSingleFile)
 }
 
 func TestClean(t *testing.T) {
-	os.RemoveAll("report_test_normal")
+	// Remove directories for test
+	os.RemoveAll(TestReportDir)
 }
 
 func testExecuteNormalWithReport(t *testing.T,
@@ -115,10 +104,14 @@ func testExecuteNormalWithReport(t *testing.T,
 	expectedViolations int,
 	removeReportBefore bool,
 	removeReportAfter bool) {
+	// Ensure that the report directory does not exist
 	if removeReportBefore {
 		os.RemoveAll(opt.Html)
 	}
+
 	testExecuteNormal(t, opt, expectedViolations)
+
+	// Remove report directory
 	if removeReportAfter {
 		os.RemoveAll(opt.Html)
 	}
@@ -137,10 +130,14 @@ func testExecuteErrorWithReport(
 	msg string,
 	removeReportBefore bool,
 	removeReportAfter bool) {
+	// Ensure that the report directory does not exist
 	if removeReportBefore {
 		os.RemoveAll(opt.Html)
 	}
+
 	testExecuteError(t, opt, msg)
+
+	// Remove report directory
 	if removeReportAfter {
 		os.RemoveAll(opt.Html)
 	}
@@ -148,10 +145,17 @@ func testExecuteErrorWithReport(
 
 func testExecuteError(t *testing.T, opt *fint.Opt, msg string) {
 	_, err := fint.Execute(opt)
+	testExpectErrorWithMessage(t, err, msg)
+}
+
+func testExpectError(t *testing.T, err error) {
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
-		return
 	}
+}
+
+func testExpectErrorWithMessage(t *testing.T, err error, msg string) {
+	testExpectError(t, err)
 	if err.Error() != msg {
 		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
 	}
