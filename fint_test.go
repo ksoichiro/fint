@@ -13,23 +13,23 @@ import (
 func TestExecuteAsCommand(t *testing.T) {
 	var err error
 	os.Setenv("TERM", "dumb")
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc"})
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
 	}
 
 	os.Setenv("TERM", "xterm-256color")
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc"})
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
 	}
 
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: ".fint.json", Locale: "default", Id: "objc"})
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
 	}
 
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"})
+	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "", ConfigPath: ".fint.json", Locale: "default", Id: "objc"})
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
 	}
@@ -40,25 +40,25 @@ func TestExecuteAsCommand(t *testing.T) {
 }
 
 func TestExecute(t *testing.T) {
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, true, false)
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, false, true)
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal/subdir", Force: true}, 20, true, true)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 20)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_Empty", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 0)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 1)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, true, false)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, false, true)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal/subdir", Force: true}, 20, true, true)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "ja", Id: "objc"}, 20)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_Empty", ConfigPath: ".fint.json", Locale: "ja", Id: "objc"}, 0)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: ".fint.json", Locale: "ja", Id: "objc"}, 1)
 }
 
 func TestExecuteError(t *testing.T) {
-	testExecuteError(t, &fint.Opt{SrcRoot: "", ConfigPath: "conf/config.json", Locale: "default", Id: "objc"},
+	testExecuteError(t, &fint.Opt{SrcRoot: "", ConfigPath: ".fint.json", Locale: "default", Id: "objc"},
 		"fint: source directory is required.")
-	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: ""},
+	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: ""},
 		"fint: ID of the rule set is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "", Locale: "default", Id: "objc"},
 		"open : no such file or directory")
-	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "foo"},
+	testExecuteError(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "foo"},
 		"fint: no matching ruleset to [foo]")
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, true, false)
-	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal"},
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, true, false)
+	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: ".fint.json", Locale: "default", Id: "objc", Html: "report_test_normal"},
 		"fint: report directory already exists. use `-f` option to force reporting.",
 		false, true)
 }

@@ -52,7 +52,7 @@ FormatCheck/FCAppDelegate.m:14:1: warning: format error
 | ------ | ------------------------------------------------------ |
 | `-i`   | ID of the rule set.  Required.                         |
 | `-s`   | Project source root directory. Required.               |
-| `-c`   | Config file path. Default value is `conf/config.json`. |
+| `-c`   | Config file path. Default value is `.fint.json`. |
 | `-l`   | Message locale. Default value is `default`(English). Currently, `default` and `ja` is supported. |
 
 ## Configuration
