@@ -1,16 +1,18 @@
-# fint - a fake of lint
+# fint
 
 [![Build Status](https://travis-ci.org/ksoichiro/fint.svg?branch=master)](https://travis-ci.org/ksoichiro/fint)
 [![Coverage Status](https://coveralls.io/repos/ksoichiro/fint/badge.png?branch=master)](https://coveralls.io/r/ksoichiro/fint?branch=master)
 
-fint is a lightweight, simple source code check tool,  
-but doesn't have syntax analysis feature -- so it is a fake lint.
-
-fint is portable, executable on multiple platform, easy to integrate into your build process.
+**fint** is a lightweight, simple source code check tool,  
+but doesn't have syntax analysis feature -- so it is a fake lint :P  
+**fint** is portable, executable on multiple platform, easy to integrate into your build process.
 
 ## Installation
 
-For now, you can use this tool with golang environment.
+[Get the latest release binary](https://github.com/ksoichiro/fint/releases/latest) for your environment.
+
+You can also install it from master branch with golang environment.  
+This is slightly unstable than release binaries, but may have some new useful features.
 
 ```sh
 $ go get github.com/ksoichiro/fint
@@ -24,11 +26,13 @@ If your `GOPATH` is `~/go`, then put the following command
 to shell script form:
 
 ```sh
-$ ~/go/bin/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc
+TERM=dumb ~/go/bin/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc
 ```
 
 If format error found, the command will exit with code 1, otherwise 0.  
 The results will be shown to the source code like normal syntax warnings.
+
+See sample Xcode projects in [`testdata/objc`](testdata/objc) directory for details.
 
 ### Execute on command line
 
