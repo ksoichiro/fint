@@ -42,6 +42,7 @@ func TestExecuteAsCommand(t *testing.T) {
 func TestExecute(t *testing.T) {
 	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, true, false)
 	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal", Force: true}, 20, false, true)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "default", Id: "objc", Html: "report_test_normal/subdir", Force: true}, 20, true, true)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 20)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_Empty", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 0)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: "testdata/objc/FintExample_SingleError", ConfigPath: "conf/config.json", Locale: "ja", Id: "objc"}, 1)
