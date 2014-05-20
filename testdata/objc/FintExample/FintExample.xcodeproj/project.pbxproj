@@ -262,7 +262,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "TERM=dumb ${SRCROOT}/../../../fint/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc -c ${SRCROOT}/../../../conf/config.json";
+			shellScript = "TERM=dumb ${SRCROOT}/../../../fint/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc -c ${SRCROOT}/../../../.fint.json";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -483,6 +483,7 @@
 				DEA194A21927472C0096AC9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DEA194A31927472C0096AC9E /* Build configuration list for PBXNativeTarget "FintExampleTests" */ = {
 			isa = XCConfigurationList;
@@ -491,6 +492,7 @@
 				DEA194A51927472C0096AC9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DEA194A7192753E30096AC9E /* Build configuration list for PBXAggregateTarget "Fint" */ = {
 			isa = XCConfigurationList;
@@ -499,6 +501,7 @@
 				DEA194A9192753E30096AC9E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
