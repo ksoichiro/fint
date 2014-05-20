@@ -24,7 +24,7 @@ If your `GOPATH` is `~/go`, then put the following command
 to shell script form:
 
 ```sh
-$ ~/go/bin/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc -l default
+$ ~/go/bin/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc
 ```
 
 If format error found, the command will exit with code 1, otherwise 0.  
@@ -32,18 +32,34 @@ The results will be shown to the source code like normal syntax warnings.
 
 ### Execute on command line
 
-If you export `GOPATH` then:
+If you exported `GOPATH` and `${GOPATH}/bin` is in your `PATH` then:
 
 ```sh
-$ ${GOPATH}/bin/fint -s ~/Workspace/FormatCheck -p FormatCheck -i objc -l default
-FormatCheck/FCAppDelegate.m:14:1: warning: format error
-```
+$ fint -s testdata/objc/FintExample -i objc
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:12:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:14:1: warning: Space must be inserted between ']' and following message
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:14:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:18:1: warning: Space must be inserted before if
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:18:1: warning: Space must be inserted between ')' and '{'
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:19:1: warning: Space must be inserted between '//' and following comment
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:20:1: warning: Space must be inserted before else
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:20:1: warning: Space must be inserted before if
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:20:1: warning: Space must be inserted between ')' and '{'
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:22:1: warning: Space must be inserted after else
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:22:1: warning: Space must be inserted before else
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:24:1: warning: Space must be inserted after ','
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:32:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:33:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:38:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:39:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:44:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:49:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/FEAppDelegate.m:54:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExample/main.m:15:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:19:1: warning: Line length exceeds 80 characters
+testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Line length exceeds 80 characters
 
-Or if you include `$GOPATH/bin` to `PATH` simply execute command:
-
-```sh
-$ fint -s ~/Workspace/FormatCheck -i objc -l default
-FormatCheck/FCAppDelegate.m:14:1: warning: format error
+22 warnings generated.
 ```
 
 ### Command line options
