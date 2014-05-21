@@ -146,7 +146,10 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	fdetail, _ := os.OpenFile(opt.Html+"/src/"+filename+".html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer fdetail.Close()
 	fdetail.WriteString(`<!DOCTYPE html>
-<html><head>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>fint result</title>
 <link rel="stylesheet" type="text/css" href="`)
 	fdetail.WriteString(rootPath + "css/main.css")
