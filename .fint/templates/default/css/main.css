@@ -4,3 +4,11 @@
 body{
   background:#fff;
 }
+#footer{
+  margin-top:1em;
+  color:#999;
+}
+#footer a{
+  color:#999;
+  text-decoration:underline;
+}
