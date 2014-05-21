@@ -104,7 +104,13 @@ func printReportHeader() {
 	if opt.Html == "" {
 		return
 	}
+	os.MkdirAll(opt.Html+"/js", 0777)
+	os.MkdirAll(opt.Html+"/css", 0777)
 	CopyFile(opt.ConfigPath+"/templates/default/_index.html", opt.Html+"/index.html")
+	CopyFile(opt.ConfigPath+"/templates/default/js/src.js", opt.Html+"/js/src.js")
+	CopyFile(opt.ConfigPath+"/templates/default/css/main.css", opt.Html+"/css/main.css")
+	CopyFile(opt.ConfigPath+"/templates/default/css/index.css", opt.Html+"/css/index.css")
+	CopyFile(opt.ConfigPath+"/templates/default/css/src.css", opt.Html+"/css/src.css")
 }
 
 func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) {
@@ -136,12 +142,6 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	fileexp, _ := regexp.Compile("/[^/]*$")
 	var dirname = fileexp.ReplaceAllString(filename, "")
 	os.MkdirAll(opt.Html+"/src/"+dirname, 0777)
-	os.MkdirAll(opt.Html+"/js", 0777)
-	os.MkdirAll(opt.Html+"/css", 0777)
-	CopyFile(opt.ConfigPath+"/templates/default/js/src.js", opt.Html+"/js/src.js")
-	CopyFile(opt.ConfigPath+"/templates/default/css/main.css", opt.Html+"/css/main.css")
-	CopyFile(opt.ConfigPath+"/templates/default/css/index.css", opt.Html+"/css/index.css")
-	CopyFile(opt.ConfigPath+"/templates/default/css/src.css", opt.Html+"/css/src.css")
 
 	fdetail, _ := os.OpenFile(opt.Html+"/src/"+filename+".html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer fdetail.Close()
