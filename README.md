@@ -74,6 +74,9 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 | `-s`   | Project source root directory. Required.               |
 | `-c`   | Config file path. Default value is `.fint.json`. |
 | `-l`   | Message locale. Default value is `default`(English). Currently, `default` and `ja` is supported. |
+| `-h`   | Generate result as HTML. |
+| `-f`   | Force generating result to existing directory. Default is `false`. |
+| `-q`   | Quiet mode. Suppresses output. Default is `false`. |
 
 ## Configuration
 
