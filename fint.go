@@ -92,9 +92,20 @@ func printReportHeader() {
 <html><head>
 <title>fint result</title>
 <style type="text/css">
-body{background:#fff;}
-table{border:1px solid #999;border-collapse:collapse;}
-th,td{border:1px solid #999;padding:0.4em;}
+* {
+	font-family: Tahoma,Verdana,sans-serif;
+}
+body{
+	background:#fff;
+}
+table{
+	border:1px solid #999;
+	border-collapse:collapse;
+}
+th,td{
+	border:1px solid #999;
+	padding:0.4em;
+}
 </style>
 </head><body>
 <h1>fint result</h1>
@@ -108,23 +119,152 @@ th,td{border:1px solid #999;padding:0.4em;}
 	f.Close()
 }
 
-func printReportBody(filename string, vs []Violation) {
+func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) {
 	if opt.Html == "" {
 		return
 	}
 	MkReportDir(true)
-	var f *os.File
-	f, _ = os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, _ := os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer f.Close()
 
-	var path = ".."
-	for c := 0; c < strings.Count(strings.Trim(opt.Html, "/"), "/"); c++ {
-		path = path + "../"
-	}
-	path = fmt.Sprintf("%s/%s", path, filename)
-	f.WriteString(fmt.Sprintf("<tr><td><a href=\"%s\">%s</a></td><td>%d</td></tr>\r\n", path, path, len(vs)))
-
+	f.WriteString(fmt.Sprintf("<tr><td><a href=\"%s.html\">%s</a></td><td>%d</td></tr>\r\n", filename, filename, len(vs)))
 	f.Close()
+
+	var indexPath = ""
+	for c := 0; c < strings.Count(filename, "/"); c++ {
+		indexPath = indexPath + "../"
+	}
+	indexPath = indexPath + "index.html"
+
+	fileexp, _ := regexp.Compile("/[^/]*$")
+	var dirname = fileexp.ReplaceAllString(filename, "")
+	os.MkdirAll(opt.Html+"/"+dirname, 0777)
+
+	fdetail, _ := os.OpenFile(opt.Html+"/"+filename+".html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	defer fdetail.Close()
+	fdetail.WriteString(`<!DOCTYPE html>
+<html><head>
+<title>fint result</title>
+<style type="text/css">
+* {
+	font-family: Tahoma,Verdana,sans-serif;
+}
+body{
+	background:#fff;
+}
+#srclist{
+	background:#eee;
+	width:920px;
+	padding:10px;
+}
+table#src{
+	border:none;
+	border-collapse:collapse;
+	width:920px;
+}
+#src th,#src td{
+	border:none;
+	padding:2px;
+	font-size:0.9em;
+}
+pre{
+	margin:0px 4px;
+	white-space:pre-line;
+	font-family:'Courier New',monospace,sans-serif;
+}
+.line{
+	background:#eee;
+	font-size:0.9em;
+	text-align:right;
+	padding:4px;
+	font-size:0.9em;
+	font-family:'Courier New',monospace,sans-serif;
+}
+.code{
+	background:#fff;
+}
+.violation .line{
+	background:rgba(236, 141, 20, 0.7);
+}
+.violation .code{
+	background:#EC8D14;
+}
+tr.row_msg{
+	display:table-row;
+}
+.row_msg{
+	background:#FFC83A;
+}
+.msg{
+	font-size:0.9em;
+	padding-left:1em;
+}
+</style>
+<script type="text/javascript"><!--
+function toggleMessages(id) {
+	var elem = document.getElementById(id);
+	if (elem.style.display == "none") {
+		elem.style.display = "table-row";
+	} else {
+		elem.style.display = "none";
+	}
+}
+//--></script>
+</head><body>
+<h1><a href="`)
+	fdetail.WriteString(indexPath)
+	fdetail.WriteString(`">fint result</a></h1>
+
+<h2>Source File</h2>
+<p>`)
+	fdetail.WriteString(filename)
+	fdetail.WriteString(`</p>
+
+<h2>Result</h2>
+<div id="srclist">
+<table id="src">
+<tbody>
+`)
+
+	fsrc, _ := os.Open(filename)
+	defer fsrc.Close()
+	r := bufio.NewReaderSize(fsrc, bufSize)
+	for n := 1; true; n++ {
+		lineBytes, _, err := r.ReadLine()
+		line := string(lineBytes)
+		var vsclass string
+		var vs []Violation
+		var ok bool
+		if vs, ok = vmap[n]; ok && 0 < len(vs) {
+			vsclass = "violation"
+		} else {
+			vsclass = "ok"
+		}
+		fdetail.WriteString(fmt.Sprintf("<tr class=\"%s\" ", vsclass))
+		if 0 < len(vs) {
+			fdetail.WriteString(fmt.Sprintf("onclick=\"toggleMessages('msg_l%d');\"", n))
+		}
+		fdetail.WriteString(fmt.Sprintf("><td class=\"line\">%d</td><td class=\"code\"><pre>%s</pre></td></tr>\r\n", n, line))
+		if 0 < len(vs) {
+			fdetail.WriteString(fmt.Sprintf("<tr id=\"msg_l%d\" class=\"row_msg\"><td class=\"line\">&nbsp;</td><td class=\"list\">", n))
+			for i := range vs {
+				fdetail.WriteString(fmt.Sprintf("<div class=\"msg\">%s</div>", vs[i].Message))
+			}
+			fdetail.WriteString("</td></tr>\r\n")
+		}
+		if err == io.EOF {
+			break
+		}
+	}
+	fsrc.Close()
+
+	fdetail.WriteString(`</tbody>
+</table>
+</div>
+</body>
+</html>
+`)
+	fdetail.Close()
 }
 
 func printReportFooter() {
@@ -166,6 +306,7 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 		bufSize = defaultBufSize
 	}
 	r := bufio.NewReaderSize(f, bufSize)
+	vmap := make(map[int][]Violation)
 	for n := 1; true; n++ {
 		var (
 			lineBytes []byte
@@ -180,12 +321,16 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 		if err != io.EOF && err != nil {
 			return
 		}
+		var lvs []Violation
+		var v Violation
 		for i := range rs.Modules {
 			switch rs.Modules[i].Id {
 			case "pattern_match":
 				for j := range rs.Modules[i].Rules {
 					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
-						vs = append(vs, Violation{Filename: filename, Line: n, Message: rs.Modules[i].Rules[j].Message[opt.Locale]})
+						v = Violation{Filename: filename, Line: n, Message: rs.Modules[i].Rules[j].Message[opt.Locale]}
+						lvs = append(lvs, v)
+						vs = append(vs, v)
 					}
 				}
 			case "max_length":
@@ -193,19 +338,22 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
 						max_len := int(rs.Modules[i].Rules[j].Args[0].(float64))
 						if too_long := max_len < len(line); too_long {
-							vs = append(vs, Violation{Filename: filename, Line: n, Message: fmt.Sprintf(rs.Modules[i].Rules[j].Message[opt.Locale], max_len)})
+							v = Violation{Filename: filename, Line: n, Message: fmt.Sprintf(rs.Modules[i].Rules[j].Message[opt.Locale], max_len)}
+							lvs = append(lvs, v)
+							vs = append(vs, v)
 						}
 					}
 				}
 			}
 		}
+		vmap[n] = lvs
 		if err == io.EOF {
 			err = nil
 			break
 		}
 	}
 
-	printReportBody(filename, vs)
+	printReportBody(filename, vs, vmap)
 
 	return
 }
