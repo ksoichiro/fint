@@ -19,6 +19,7 @@ import (
 const (
 	errPrefix      = "fint: "
 	defaultBufSize = 4096
+	newlineDefault = "\r\n"
 )
 
 type Opt struct {
@@ -103,24 +104,7 @@ func printReportHeader() {
 	if opt.Html == "" {
 		return
 	}
-	f, _ := os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	defer f.Close()
-
-	f.WriteString(`<!DOCTYPE html>
-<html><head>
-<title>fint result</title>
-<link rel="stylesheet" type="text/css" href="css/main.css" />
-<link rel="stylesheet" type="text/css" href="css/index.css" />
-</head><body>
-<h1>fint result</h1>
-<table>
-<thead>
-<tr><th>File</th><th>Violations</th></tr>
-</thead>
-<tbody>
-`)
-
-	f.Close()
+	CopyFile(opt.ConfigPath+"/templates/default/_index.html", opt.Html+"/index.html")
 }
 
 func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) {
@@ -128,10 +112,19 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 		return
 	}
 	MkReportDir(true)
-	f, _ := os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+
+	// Add source file entry to index
+	f, _ := os.OpenFile(opt.Html+"/_index_srclist.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer f.Close()
 
-	f.WriteString(fmt.Sprintf("<tr><td><a href=\"src/%s.html\">%s</a></td><td>%d</td></tr>\r\n", filename, filename, len(vs)))
+	srclistTempate, _ := ioutil.ReadFile(opt.ConfigPath + "/templates/default/_index_srclist.html")
+	srclist := string(srclistTempate)
+	exp, _ := regexp.Compile("@SRCPATH@")
+	srclist = exp.ReplaceAllString(srclist, filename)
+	exp, _ = regexp.Compile("@VIOLATIONS@")
+	srclist = exp.ReplaceAllString(srclist, fmt.Sprintf("%d", len(vs)))
+
+	f.WriteString(srclist + newlineDefault)
 	f.Close()
 
 	var rootPath = "../"
@@ -221,19 +214,38 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	fdetail.Close()
 }
 
-func printReportFooter() {
+func replaceTagInFile(filename, tag, repl string) {
+	fin, _ := os.Open(filename)
+	defer fin.Close()
+	ftmp, _ := os.OpenFile(filename+".tmp", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	defer ftmp.Close()
+
+	r := bufio.NewReaderSize(fin, bufSize)
+	for n := 1; true; n++ {
+		lineBytes, _, err := r.ReadLine()
+		line := string(lineBytes)
+
+		tagRegexp, _ := regexp.Compile(tag)
+		lineReplaced := tagRegexp.ReplaceAllString(line, repl)
+		ftmp.WriteString(lineReplaced + newlineDefault)
+
+		if err == io.EOF {
+			break
+		}
+	}
+	fin.Close()
+	ftmp.Close()
+	CopyFile(filename+".tmp", filename)
+	os.Remove(filename + ".tmp")
+}
+
+func finishReportFiles() {
 	if opt.Html == "" {
 		return
 	}
-	f, _ := os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	defer f.Close()
-
-	f.WriteString(`</tbody>
-</table>
-</body></html>
-`)
-
-	f.Close()
+	srclistTemp, _ := ioutil.ReadFile(opt.Html + "/_index_srclist.html")
+	replaceTagInFile(opt.Html+"/index.html", "@SRCLIST@", string(srclistTemp))
+	os.Remove(opt.Html + "/_index_srclist.html")
 }
 
 func LoadConfig(file []byte) *Config {
@@ -402,7 +414,7 @@ func Execute(o *Opt) (v []Violation, err error) {
 
 	err = filepath.Walk(opt.SrcRoot, CheckFile)
 
-	printReportFooter()
+	finishReportFiles()
 
 	return violations, err
 }
