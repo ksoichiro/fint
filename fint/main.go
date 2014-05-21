@@ -21,10 +21,19 @@ func main() {
 		id         = flag.String("i", "", "ID of the rule set")
 		html       = flag.String("h", "", "Generate result as HTML")
 		force      = flag.Bool("f", false, "Force generating result to existing directory")
+		quiet      = flag.Bool("q", false, "Quiet mode. Suppresses output.")
 	)
 	flag.Parse()
 
-	err := fint.ExecuteAsCommand(&fint.Opt{SrcRoot: *srcRoot, ConfigPath: *configPath, Locale: *locale, Id: *id, Html: *html, Force: *force})
+	err := fint.ExecuteAsCommand(
+		&fint.Opt{
+			SrcRoot:    *srcRoot,
+			ConfigPath: *configPath,
+			Locale:     *locale,
+			Id:         *id,
+			Html:       *html,
+			Force:      *force,
+			Quiet:      *quiet})
 	if err != nil {
 		os.Exit(ExitCodeError)
 	}

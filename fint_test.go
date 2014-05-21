@@ -55,6 +55,7 @@ func TestExecute(t *testing.T) {
 	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, ErrorsObjcNormal)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcEmpty, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 0)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 1)
+	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc, Quiet: true}, 1)
 }
 
 func TestExecuteError(t *testing.T) {

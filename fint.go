@@ -28,6 +28,7 @@ type Opt struct {
 	Id         string
 	Html       string
 	Force      bool
+	Quiet      bool
 }
 
 type Rule struct {
@@ -304,16 +305,22 @@ func ExecuteAsCommand(o *Opt) (err error) {
 	term = os.Getenv("TERM")
 	_, err = Execute(o)
 	if err != nil {
-		fmt.Println(err)
+		if !o.Quiet {
+			fmt.Println(err)
+		}
 		return
 	}
-	for i := range violations {
-		printViolation(violations[i])
+	if !o.Quiet {
+		for i := range violations {
+			printViolation(violations[i])
+		}
 	}
 
 	if 0 < len(violations) {
-		fmt.Printf("\n%d %s generated.\n",
-			len(violations), pluralize(len(violations), "warning", "warnings"))
+		if !o.Quiet {
+			fmt.Printf("\n%d %s generated.\n",
+				len(violations), pluralize(len(violations), "warning", "warnings"))
+		}
 		err = newError("error while executing lint")
 	}
 	return
