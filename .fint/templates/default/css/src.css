@@ -1,0 +1,47 @@
+#srclist{
+  background:#eee;
+  width:920px;
+  padding:10px;
+}
+table#src{
+  border:none;
+  border-collapse:collapse;
+  width:920px;
+}
+#src th,#src td{
+  border:none;
+  padding:2px;
+  font-size:0.9em;
+}
+pre{
+  margin:0px 4px;
+  white-space:pre-line;
+  font-family:'Courier New',monospace,sans-serif;
+}
+.line{
+  background:#eee;
+  font-size:0.9em;
+  text-align:right;
+  padding:4px;
+  font-size:0.9em;
+  font-family:'Courier New',monospace,sans-serif;
+}
+.code{
+  background:#fff;
+}
+.violation .line{
+  background:rgba(236, 141, 20, 0.7);
+}
+.violation .code{
+  background:#EC8D14;
+}
+tr.row_msg{
+  display:table-row;
+}
+.row_msg{
+  background:#FFC83A;
+}
+.msg{
+  font-size:0.9em;
+  padding-left:1em;
+}

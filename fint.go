@@ -67,6 +67,24 @@ var (
 	bufSize    int
 )
 
+func CopyFile(src, dst string) (err error) {
+	fin, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer fin.Close()
+	fout, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer fout.Close()
+	if _, err = io.Copy(fout, fin); err != nil {
+		return
+	}
+	err = fout.Sync()
+	return
+}
+
 func newError(message string) error {
 	return errors.New(errPrefix + message)
 }
@@ -91,22 +109,8 @@ func printReportHeader() {
 	f.WriteString(`<!DOCTYPE html>
 <html><head>
 <title>fint result</title>
-<style type="text/css">
-* {
-	font-family: Tahoma,Verdana,sans-serif;
-}
-body{
-	background:#fff;
-}
-table{
-	border:1px solid #999;
-	border-collapse:collapse;
-}
-th,td{
-	border:1px solid #999;
-	padding:0.4em;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<link rel="stylesheet" type="text/css" href="css/index.css" />
 </head><body>
 <h1>fint result</h1>
 <table>
@@ -127,89 +131,39 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	f, _ := os.OpenFile(opt.Html+"/index.html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer f.Close()
 
-	f.WriteString(fmt.Sprintf("<tr><td><a href=\"%s.html\">%s</a></td><td>%d</td></tr>\r\n", filename, filename, len(vs)))
+	f.WriteString(fmt.Sprintf("<tr><td><a href=\"src/%s.html\">%s</a></td><td>%d</td></tr>\r\n", filename, filename, len(vs)))
 	f.Close()
 
-	var indexPath = ""
+	var rootPath = "../"
 	for c := 0; c < strings.Count(filename, "/"); c++ {
-		indexPath = indexPath + "../"
+		rootPath = rootPath + "../"
 	}
-	indexPath = indexPath + "index.html"
+	var indexPath = rootPath + "index.html"
 
 	fileexp, _ := regexp.Compile("/[^/]*$")
 	var dirname = fileexp.ReplaceAllString(filename, "")
-	os.MkdirAll(opt.Html+"/"+dirname, 0777)
+	os.MkdirAll(opt.Html+"/src/"+dirname, 0777)
+	os.MkdirAll(opt.Html+"/js", 0777)
+	os.MkdirAll(opt.Html+"/css", 0777)
+	CopyFile(opt.ConfigPath+"/templates/default/js/src.js", opt.Html+"/js/src.js")
+	CopyFile(opt.ConfigPath+"/templates/default/css/main.css", opt.Html+"/css/main.css")
+	CopyFile(opt.ConfigPath+"/templates/default/css/index.css", opt.Html+"/css/index.css")
+	CopyFile(opt.ConfigPath+"/templates/default/css/src.css", opt.Html+"/css/src.css")
 
-	fdetail, _ := os.OpenFile(opt.Html+"/"+filename+".html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	fdetail, _ := os.OpenFile(opt.Html+"/src/"+filename+".html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer fdetail.Close()
 	fdetail.WriteString(`<!DOCTYPE html>
 <html><head>
 <title>fint result</title>
-<style type="text/css">
-* {
-	font-family: Tahoma,Verdana,sans-serif;
-}
-body{
-	background:#fff;
-}
-#srclist{
-	background:#eee;
-	width:920px;
-	padding:10px;
-}
-table#src{
-	border:none;
-	border-collapse:collapse;
-	width:920px;
-}
-#src th,#src td{
-	border:none;
-	padding:2px;
-	font-size:0.9em;
-}
-pre{
-	margin:0px 4px;
-	white-space:pre-line;
-	font-family:'Courier New',monospace,sans-serif;
-}
-.line{
-	background:#eee;
-	font-size:0.9em;
-	text-align:right;
-	padding:4px;
-	font-size:0.9em;
-	font-family:'Courier New',monospace,sans-serif;
-}
-.code{
-	background:#fff;
-}
-.violation .line{
-	background:rgba(236, 141, 20, 0.7);
-}
-.violation .code{
-	background:#EC8D14;
-}
-tr.row_msg{
-	display:table-row;
-}
-.row_msg{
-	background:#FFC83A;
-}
-.msg{
-	font-size:0.9em;
-	padding-left:1em;
-}
-</style>
-<script type="text/javascript"><!--
-function toggleMessages(id) {
-	var elem = document.getElementById(id);
-	if (elem.style.display == "none") {
-		elem.style.display = "table-row";
-	} else {
-		elem.style.display = "none";
-	}
-}
-//--></script>
+<link rel="stylesheet" type="text/css" href="`)
+	fdetail.WriteString(rootPath + "css/main.css")
+	fdetail.WriteString(`" />
+<link rel="stylesheet" type="text/css" href="`)
+	fdetail.WriteString(rootPath + "css/src.css")
+	fdetail.WriteString(`" />
+<script type="text/javascript" src="`)
+	fdetail.WriteString(rootPath + "js/src.js")
+	fdetail.WriteString(`"></script>
 </head><body>
 <h1><a href="`)
 	fdetail.WriteString(indexPath)
@@ -434,7 +388,11 @@ func Execute(o *Opt) (v []Violation, err error) {
 	}
 
 	var conf []byte
-	conf, err = ioutil.ReadFile(opt.ConfigPath)
+	if opt.ConfigPath == "" {
+		err = newError("config directory is required.")
+		return
+	}
+	conf, err = ioutil.ReadFile(opt.ConfigPath + "/config.json")
 	if err != nil {
 		return
 	}

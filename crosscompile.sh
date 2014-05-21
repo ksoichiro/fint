@@ -18,7 +18,7 @@ function build() {
   popd > /dev/null 2>&1
   if [ $status -eq 0 ]; then
     mv fint/fint* ${bin_dir}/
-    cp -pR conf ${bin_dir}/
+    cp -pR .fint ${bin_dir}/
     pushd build > /dev/null 2>&1
     tar czf ${arch_dir}.tar.gz ${arch_dir}
     zip -ry ${arch_dir}.zip ${arch_dir} > /dev/null

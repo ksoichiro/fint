@@ -19,7 +19,8 @@ const (
 	SrcNonExistent          = "testdata/non_existent_file"
 	TestReportDir           = "report_test_normal"
 	TestReportDirWithSubdir = "report_test_normal/subdir"
-	ConfigDefault           = ".fint.json"
+	ConfigDefault           = ".fint"
+	ConfigNonExistent       = "non_existent_dir"
 	LintIdObjc              = "objc"
 	LocaleDefault           = "default"
 	LocaleJa                = "ja"
@@ -61,12 +62,13 @@ func TestExecute(t *testing.T) {
 func TestExecuteError(t *testing.T) {
 	testExecuteError(t, &fint.Opt{SrcRoot: "", ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, "fint: source directory is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: ""}, "fint: ID of the rule set is required.")
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: "", Locale: LocaleDefault, Id: LintIdObjc}, "open : no such file or directory")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: "", Locale: LocaleDefault, Id: LintIdObjc}, "fint: config directory is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: "foo"}, "fint: no matching ruleset to [foo]")
 	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Force: true}, ErrorsObjcNormal, true, false)
 	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir},
 		"fint: report directory already exists. use `-f` option to force reporting.",
 		false, true)
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNonExistent, Locale: LocaleDefault, Id: LintIdObjc}, "open non_existent_dir/config.json: no such file or directory")
 }
 
 func TestCheckSourceFile(t *testing.T) {
@@ -93,6 +95,14 @@ func TestSetbufsize(t *testing.T) {
 	fint.Setbufsize(1)
 	_, err = fint.CheckSourceFile(SrcSingleFile, fint.RuleSet{})
 	testExpectErrorWithMessage(t, err, "fint: too long line: "+SrcSingleFile)
+}
+
+func TestCopyFile(t *testing.T) {
+	err := fint.CopyFile(".fint/templates/non_existent_file", "")
+	testExpectErrorWithMessage(t, err, "open .fint/templates/non_existent_file: no such file or directory")
+
+	err = fint.CopyFile(".fint/config.json", "non_existent_dir/config.json")
+	testExpectErrorWithMessage(t, err, "open non_existent_dir/config.json: no such file or directory")
 }
 
 func TestClean(t *testing.T) {

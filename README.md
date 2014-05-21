@@ -72,7 +72,7 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 | ------ | ------------------------------------------------------ |
 | `-i`   | ID of the rule set.  Required.                         |
 | `-s`   | Project source root directory. Required.               |
-| `-c`   | Config file path. Default value is `.fint.json`. |
+| `-c`   | Config files directory. Default value is `.fint`. |
 | `-l`   | Message locale. Default value is `default`(English). Currently, `default` and `ja` is supported. |
 | `-h`   | Generate result as HTML. |
 | `-f`   | Force generating result to existing directory. Default is `false`. |
@@ -80,9 +80,23 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 
 ## Configuration
 
+### Structure
+
+    .fint
+    ├── config.json
+    └── templates
+        └── default
+            ├── css
+            │   ├── index.css
+            │   ├── main.css
+            │   └── src.css
+            └── js
+                └── src.js
+
 ### Config file
 
-Config file(JSON) is set by `-c` option.  
+Config file(JSON) name must be `config.json`,  
+which must be located to the directory set by `-c` option.  
 
 ### Rule sets
 

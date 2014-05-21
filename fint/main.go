@@ -16,7 +16,7 @@ const (
 func main() {
 	var (
 		srcRoot    = flag.String("s", "", "Source directory")
-		configPath = flag.String("c", ".fint.json", "Config file path")
+		configPath = flag.String("c", ".fint", "Config files directory")
 		locale     = flag.String("l", "default", "Message locale")
 		id         = flag.String("i", "", "ID of the rule set")
 		html       = flag.String("h", "", "Generate result as HTML")
