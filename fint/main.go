@@ -22,6 +22,7 @@ func main() {
 		html       = flag.String("h", "", "Generate result as HTML")
 		force      = flag.Bool("f", false, "Force generating result to existing directory")
 		quiet      = flag.Bool("q", false, "Quiet mode. Suppresses output.")
+		template   = flag.String("template", "default", "HTML report template")
 	)
 	flag.Parse()
 
@@ -33,7 +34,8 @@ func main() {
 			Id:         *id,
 			Html:       *html,
 			Force:      *force,
-			Quiet:      *quiet})
+			Quiet:      *quiet,
+			Template:   *template})
 	if err != nil {
 		os.Exit(ExitCodeError)
 	}

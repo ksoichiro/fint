@@ -24,6 +24,7 @@ const (
 	LintIdObjc              = "objc"
 	LocaleDefault           = "default"
 	LocaleJa                = "ja"
+	TemplateDefault         = "default"
 	ErrorsObjcNormal        = 22
 )
 
@@ -50,9 +51,9 @@ func TestExecuteAsCommand(t *testing.T) {
 }
 
 func TestExecute(t *testing.T) {
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Force: true}, ErrorsObjcNormal, true, false)
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Force: true}, ErrorsObjcNormal, false, true)
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDirWithSubdir, Force: true}, ErrorsObjcNormal, true, true)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, false)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, false, true)
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDirWithSubdir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, true)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, ErrorsObjcNormal)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcEmpty, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 0)
 	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 1)
@@ -64,8 +65,8 @@ func TestExecuteError(t *testing.T) {
 	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: ""}, "fint: ID of the rule set is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: "", Locale: LocaleDefault, Id: LintIdObjc}, "fint: config directory is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: "foo"}, "fint: no matching ruleset to [foo]")
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Force: true}, ErrorsObjcNormal, true, false)
-	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir},
+	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, false)
+	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault},
 		"fint: report directory already exists. use `-f` option to force reporting.",
 		false, true)
 	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNonExistent, Locale: LocaleDefault, Id: LintIdObjc}, "open non_existent_dir/config.json: no such file or directory")
