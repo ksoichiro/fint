@@ -34,6 +34,17 @@ const (
 	HtmlTmplSrcViolationMsglist = "_src_violation_msglist.html"
 	CssMarkerClsNg              = "ng"
 	CssMarkerClsOk              = "ok"
+	TagSrcPath                  = "@SRCPATH@"
+	TagViolations               = "@VIOLATIONS@"
+	TagRootPath                 = "@ROOTPATH@"
+	TagMarkerClass              = "@MARKER_CLASS@"
+	TagHasViolations            = "@HAS_VIOLATIONS@"
+	TagLineNumber               = "@LINE@"
+	TagCode                     = "@CODE@"
+	TagViolationMsg             = "@VIOLATION_MSG@"
+	TagViolationMsglist         = "@VIOLATION_MSGLIST@"
+	TagSrclines                 = "@SRCLINES@"
+	TagSrclist                  = "@SRCLIST@"
 )
 
 type Opt struct {
@@ -154,8 +165,8 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	defer f.Close()
 
 	srclist := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplIndexSrclist))
-	srclist = replaceTag(srclist, "@SRCPATH@", filename)
-	srclist = replaceTag(srclist, "@VIOLATIONS@", fmt.Sprintf("%d", len(vs)))
+	srclist = replaceTag(srclist, TagSrcPath, filename)
+	srclist = replaceTag(srclist, TagViolations, fmt.Sprintf("%d", len(vs)))
 
 	f.WriteString(srclist + newlineDefault)
 	f.Close()
@@ -170,8 +181,8 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 
 	pathDetail := filepath.Join(opt.Html, DirSrc, filename+".html")
 	CopyFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrc), pathDetail)
-	replaceTagInFile(pathDetail, "@ROOTPATH@", rootPath)
-	replaceTagInFile(pathDetail, "@SRCFILE@", filename)
+	replaceTagInFile(pathDetail, TagRootPath, rootPath)
+	replaceTagInFile(pathDetail, TagSrcPath, filename)
 
 	pathDetailSrcline := pathDetail + ".srcline.tmp"
 	fsrcline, _ := os.OpenFile(pathDetailSrcline, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -192,32 +203,32 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 		}
 
 		srcline := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
-		srcline = replaceTag(string(srcline), "@MARKER_CLASS@", markerCls)
+		srcline = replaceTag(string(srcline), TagMarkerClass, markerCls)
 		var hasViolations string
 		if 0 < len(vs) {
 			hasViolations = "true"
 		} else {
 			hasViolations = "false"
 		}
-		srcline = replaceTag(srcline, "@HAS_VIOLATIONS@", hasViolations)
-		srcline = replaceTag(srcline, "@LINE@", fmt.Sprintf("%d", n))
-		srcline = replaceTag(srcline, "@CODE@", line)
+		srcline = replaceTag(srcline, TagHasViolations, hasViolations)
+		srcline = replaceTag(srcline, TagLineNumber, fmt.Sprintf("%d", n))
+		srcline = replaceTag(srcline, TagCode, line)
 		fsrcline.WriteString(srcline + newlineDefault)
 
 		if 0 < len(vs) {
-			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist)), "@LINE@", fmt.Sprintf("%d", n))
+			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist)), TagLineNumber, fmt.Sprintf("%d", n))
 
 			pathDetailMsg := pathDetail + ".msg.tmp"
 			fmsg, _ := os.OpenFile(pathDetailMsg, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 			defer fmsg.Close()
 			msgTmpl := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsg))
 			for i := range vs {
-				msg := replaceTag(msgTmpl, "@VIOLATION_MSG@", vs[i].Message)
+				msg := replaceTag(msgTmpl, TagViolationMsg, vs[i].Message)
 				fmsg.WriteString(msg + newlineDefault)
 			}
 			fmsg.Close()
 
-			msglist = replaceTag(msglist, "@VIOLATION_MSGLIST@", readFile(pathDetailMsg))
+			msglist = replaceTag(msglist, TagViolationMsglist, readFile(pathDetailMsg))
 			os.Remove(pathDetailMsg)
 
 			fsrcline.WriteString(msglist + newlineDefault)
@@ -229,7 +240,7 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	fsrc.Close()
 	fsrcline.Close()
 
-	replaceTagInFile(pathDetail, "@SRCLINES@", readFile(pathDetailSrcline))
+	replaceTagInFile(pathDetail, TagSrclines, readFile(pathDetailSrcline))
 	os.Remove(pathDetailSrcline)
 }
 
@@ -278,7 +289,7 @@ func finishReportFiles() {
 	if opt.Html == "" {
 		return
 	}
-	replaceTagInFile(filepath.Join(opt.Html, HtmlIndex), "@SRCLIST@", readFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist)))
+	replaceTagInFile(filepath.Join(opt.Html, HtmlIndex), TagSrclist, readFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist)))
 	os.Remove(filepath.Join(opt.Html, HtmlTmplIndexSrclist))
 }
 
