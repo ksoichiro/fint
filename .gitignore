@@ -2,4 +2,5 @@
 /fint/fint
 *.swp
 *.cov
+.DS_Store
 xcuserdata
