@@ -29,10 +29,10 @@ pre{
 .code{
   background:#fff;
 }
-.violation .line{
+.ng .line{
   background:rgba(236, 141, 20, 0.7);
 }
-.violation .code{
+.ng .code{
   background:#EC8D14;
 }
 tr.row_msg{

@@ -32,6 +32,8 @@ const (
 	HtmlTmplSrcSrcline          = "_src_srcline.html"
 	HtmlTmplSrcViolationMsg     = "_src_violation_msg.html"
 	HtmlTmplSrcViolationMsglist = "_src_violation_msglist.html"
+	CssMarkerClsNg              = "ng"
+	CssMarkerClsOk              = "ok"
 )
 
 type Opt struct {
@@ -182,17 +184,17 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	for n := 1; true; n++ {
 		lineBytes, _, err := r.ReadLine()
 		line := string(lineBytes)
-		var vsclass string
+		var markerCls string
 		var vs []Violation
 		var ok bool
 		if vs, ok = vmap[n]; ok && 0 < len(vs) {
-			vsclass = "violation"
+			markerCls = CssMarkerClsNg
 		} else {
-			vsclass = "ok"
+			markerCls = CssMarkerClsOk
 		}
 		srclineBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
 
-		srclineBaseReplaced := replaceTag(string(srclineBase), "@MARKER_CLASS@", vsclass)
+		srclineBaseReplaced := replaceTag(string(srclineBase), "@MARKER_CLASS@", markerCls)
 		var hasViolations string
 		if 0 < len(vs) {
 			hasViolations = "true"
