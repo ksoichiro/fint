@@ -153,8 +153,7 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	f, _ := os.OpenFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer f.Close()
 
-	srclistTempate, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplIndexSrclist))
-	srclist := string(srclistTempate)
+	srclist := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplIndexSrclist))
 	srclist = replaceTag(srclist, "@SRCPATH@", filename)
 	srclist = replaceTag(srclist, "@VIOLATIONS@", fmt.Sprintf("%d", len(vs)))
 
@@ -182,8 +181,7 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	defer fsrc.Close()
 	r := bufio.NewReaderSize(fsrc, bufSize)
 	for n := 1; true; n++ {
-		lineBytes, _, err := r.ReadLine()
-		line := string(lineBytes)
+		line, _, err := readLine(r)
 		var markerCls string
 		var vs []Violation
 		var ok bool
@@ -192,39 +190,37 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 		} else {
 			markerCls = CssMarkerClsOk
 		}
-		srclineBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
 
-		srclineBaseReplaced := replaceTag(string(srclineBase), "@MARKER_CLASS@", markerCls)
+		srcline := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
+		srcline = replaceTag(string(srcline), "@MARKER_CLASS@", markerCls)
 		var hasViolations string
 		if 0 < len(vs) {
 			hasViolations = "true"
 		} else {
 			hasViolations = "false"
 		}
-		srclineBaseReplaced = replaceTag(srclineBaseReplaced, "@HAS_VIOLATIONS@", hasViolations)
-		srclineBaseReplaced = replaceTag(srclineBaseReplaced, "@LINE@", fmt.Sprintf("%d", n))
-		srclineBaseReplaced = replaceTag(srclineBaseReplaced, "@CODE@", line)
-		fsrcline.WriteString(srclineBaseReplaced + newlineDefault)
+		srcline = replaceTag(srcline, "@HAS_VIOLATIONS@", hasViolations)
+		srcline = replaceTag(srcline, "@LINE@", fmt.Sprintf("%d", n))
+		srcline = replaceTag(srcline, "@CODE@", line)
+		fsrcline.WriteString(srcline + newlineDefault)
 
 		if 0 < len(vs) {
-			msglistBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist))
-			msglistBaseReplaced := replaceTag(string(msglistBase), "@LINE@", fmt.Sprintf("%d", n))
+			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist)), "@LINE@", fmt.Sprintf("%d", n))
 
 			pathDetailMsg := pathDetail + ".msg.tmp"
 			fmsg, _ := os.OpenFile(pathDetailMsg, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 			defer fmsg.Close()
-			msgBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsg))
+			msgTmpl := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsg))
 			for i := range vs {
-				msg := replaceTag(string(msgBase), "@VIOLATION_MSG@", vs[i].Message)
+				msg := replaceTag(msgTmpl, "@VIOLATION_MSG@", vs[i].Message)
 				fmsg.WriteString(msg + newlineDefault)
 			}
 			fmsg.Close()
 
-			msgTemp, _ := ioutil.ReadFile(pathDetailMsg)
-			msglistBaseReplaced = replaceTag(msglistBaseReplaced, "@VIOLATION_MSGLIST@", string(msgTemp))
+			msglist = replaceTag(msglist, "@VIOLATION_MSGLIST@", readFile(pathDetailMsg))
 			os.Remove(pathDetailMsg)
 
-			fsrcline.WriteString(msglistBaseReplaced + newlineDefault)
+			fsrcline.WriteString(msglist + newlineDefault)
 		}
 		if err == io.EOF {
 			break
@@ -233,9 +229,13 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	fsrc.Close()
 	fsrcline.Close()
 
-	srclineTemp, _ := ioutil.ReadFile(pathDetailSrcline)
-	replaceTagInFile(pathDetail, "@SRCLINES@", string(srclineTemp))
+	replaceTagInFile(pathDetail, "@SRCLINES@", readFile(pathDetailSrcline))
 	os.Remove(pathDetailSrcline)
+}
+
+func readFile(filename string) string {
+	content, _ := ioutil.ReadFile(filename)
+	return string(content)
 }
 
 func replaceTag(s, tag, repl string) string {
@@ -251,12 +251,11 @@ func replaceTagInFile(filename, tag, repl string) {
 
 	r := bufio.NewReaderSize(fin, bufSize)
 	for n := 1; true; n++ {
-		lineBytes, _, err := r.ReadLine()
-		line := string(lineBytes)
+		line, _, err := readLine(r)
 
 		tagRegexp, _ := regexp.Compile(tag)
-		lineReplaced := tagRegexp.ReplaceAllString(line, repl)
-		ftmp.WriteString(lineReplaced + newlineDefault)
+		line = tagRegexp.ReplaceAllString(line, repl)
+		ftmp.WriteString(line + newlineDefault)
 
 		if err == io.EOF {
 			break
@@ -268,12 +267,18 @@ func replaceTagInFile(filename, tag, repl string) {
 	os.Remove(filename + ".tmp")
 }
 
+func readLine(r *bufio.Reader) (line string, isPrefix bool, err error) {
+	var lineBytes []byte
+	lineBytes, isPrefix, err = r.ReadLine()
+	line = string(lineBytes)
+	return
+}
+
 func finishReportFiles() {
 	if opt.Html == "" {
 		return
 	}
-	srclistTemp, _ := ioutil.ReadFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist))
-	replaceTagInFile(filepath.Join(opt.Html, HtmlIndex), "@SRCLIST@", string(srclistTemp))
+	replaceTagInFile(filepath.Join(opt.Html, HtmlIndex), "@SRCLIST@", readFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist)))
 	os.Remove(filepath.Join(opt.Html, HtmlTmplIndexSrclist))
 }
 
