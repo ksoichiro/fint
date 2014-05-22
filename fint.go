@@ -99,6 +99,22 @@ func CopyFile(src, dst string) (err error) {
 	return
 }
 
+func CopyDir(src, dst string) {
+	fi, _ := os.Stat(src)
+	fis, _ := ioutil.ReadDir(src)
+	os.MkdirAll(dst, fi.Mode())
+	for i := range fis {
+		entry := fis[i]
+		entryPath := filepath.Join(src, entry.Name())
+		dstPath := filepath.Join(dst, filepath.Base(entry.Name()))
+		if entry.IsDir() {
+			CopyDir(entryPath, dstPath)
+		} else {
+			CopyFile(entryPath, dstPath)
+		}
+	}
+}
+
 func newError(message string) error {
 	return errors.New(errPrefix + message)
 }
@@ -121,10 +137,8 @@ func printReportHeader() {
 	os.MkdirAll(filepath.Join(opt.Html, DirCss), 0777)
 	pathTmpl := filepath.Join(opt.ConfigPath, DirTemplates, opt.Template)
 	CopyFile(filepath.Join(pathTmpl, HtmlTmplIndex), filepath.Join(opt.Html, HtmlIndex))
-	CopyFile(filepath.Join(pathTmpl, DirJs, "src.js"), filepath.Join(opt.Html, DirJs, "src.js"))
-	CopyFile(filepath.Join(pathTmpl, DirCss, "main.css"), filepath.Join(opt.Html, DirCss, "main.css"))
-	CopyFile(filepath.Join(pathTmpl, DirCss, "index.css"), filepath.Join(opt.Html, DirCss, "index.css"))
-	CopyFile(filepath.Join(pathTmpl, DirCss, "src.css"), filepath.Join(opt.Html, DirCss, "src.css"))
+	CopyDir(filepath.Join(pathTmpl, DirJs), filepath.Join(opt.Html, DirJs))
+	CopyDir(filepath.Join(pathTmpl, DirCss), filepath.Join(opt.Html, DirCss))
 }
 
 func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) {
