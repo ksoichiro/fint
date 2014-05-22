@@ -1,8 +1,16 @@
 table{
-  border:1px solid #999;
+  border:0px;
   border-collapse:collapse;
 }
-th,td{
-  border:1px solid #999;
+th{
+  text-align:left;
+  border-bottom:1px solid #999;
   padding:0.4em;
+}
+td{
+  border-bottom:1px solid #eee;
+  padding:0.4em;
+}
+tr:last-child td{
+  border-bottom:1px solid #999;
 }
