@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>fint</title>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,900' rel='stylesheet' type='text/css'/>
+    <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400' rel='stylesheet' type='text/css'/>
+    <link rel="stylesheet" type="text/css" href="stylesheets/styles.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="header">
+      <h1>fint</h1>
+      <nav>
+        <li class="report"><a href="report/index.html" title="Sample report files">sample</a></li>
+        <li class="downloads"><a href="https://github.com/ksoichiro/fint/zipball/master" title="Download the latest zipball!">zip</a></li>
+        <li class="downloads"><a href="https://github.com/ksoichiro/fint/tarball/master" title="Download the latest tarball!">tar</a></li>
+      </nav>
+      <a href="https://github.com/ksoichiro/fint"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+    </div>
+
+    <div id="contents">
+<p><strong>fint</strong> is a lightweight, simple source code check tool, <br>
+but doesn’t have syntax analysis feature – so it is a fake lint :P <br>
+<strong>fint</strong> is portable, executable on multiple platform, easy to integrate into your build process.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p><a href="https://github.com/ksoichiro/fint/releases/latest">Get the latest release binary</a> for your environment.</p>
+
+<p>You can also install it from master branch with golang environment. <br>
+This is slightly unstable than release binaries, but may have some new useful features.</p>
+
+<pre class="prettyprint prettyprinted"><code class="language-sh"><span class="pln">$ go get github</span><span class="pun">.</span><span class="pln">com</span><span class="pun">/</span><span class="pln">ksoichiro</span><span class="pun">/</span><span class="pln">fint</span></code></pre>
+
+<h2 id="usage">Usage</h2>
+
+<h3 id="for-objective-c-execute-as-a-xcodes-run-script-of-build-phase">For Objective-C, execute as a Xcode’s “Run Script” of build phase</h3>
+
+<p>If your <code>GOPATH</code> is <code>~/go</code>, then put the following command <br>
+to shell script form:</p>
+
+<pre class="prettyprint prettyprinted"><code class="language-sh"><span class="pln">TERM</span><span class="pun">=</span><span class="pln">dumb </span><span class="pun">~/</span><span class="pln">go</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">fint </span><span class="pun">-</span><span class="pln">s $</span><span class="pun">{</span><span class="pln">SRCROOT</span><span class="pun">}/</span><span class="pln">$</span><span class="pun">{</span><span class="pln">PROJECT_NAME</span><span class="pun">}</span><span class="pln"> </span><span class="pun">-</span><span class="pln">i objc</span></code></pre>
+
+<p>If format error found, the command will exit with code 1, otherwise 0. <br>
+The results will be shown to the source code like normal syntax warnings.</p>
+
+<p>See sample Xcode projects in <a href="https://github.com/ksoichiro/fint/blob/master/testdata/objc"><code>testdata/objc</code></a> directory for details.</p>
+
+<h3 id="execute-on-command-line">Execute on command line</h3>
+
+<p>If you exported <code>GOPATH</code> and <code>${GOPATH}/bin</code> is in your <code>PATH</code> then:</p>
+
+<pre class="prettyprint prettyprinted"><code class="language-sh"><span class="pln">$ fint </span><span class="pun">-</span><span class="pln">s testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pln"> </span><span class="pun">-</span><span class="pln">i objc
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">12</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">14</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted between </span><span class="str">']'</span><span class="pln"> and following message
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">14</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">18</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted before </span><span class="kwd">if</span><span class="pln">
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">18</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted between </span><span class="str">')'</span><span class="pln"> and </span><span class="str">'{'</span><span class="pln">
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">19</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted between </span><span class="str">'//'</span><span class="pln"> and following comment
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">20</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted before </span><span class="kwd">else</span><span class="pln">
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">20</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted before </span><span class="kwd">if</span><span class="pln">
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">20</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted between </span><span class="str">')'</span><span class="pln"> and </span><span class="str">'{'</span><span class="pln">
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">22</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted after </span><span class="kwd">else</span><span class="pln">
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">22</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted before </span><span class="kwd">else</span><span class="pln">
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">24</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted after </span><span class="str">','</span><span class="pln">
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">32</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">33</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">38</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">39</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">44</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">49</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">54</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="pln">main</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">15</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExampleTests</span><span class="pun">/</span><span class="typ">FintExampleTests</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">19</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExampleTests</span><span class="pun">/</span><span class="typ">FintExampleTests</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">24</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
+
+</span><span class="lit">22</span><span class="pln"> warnings generated</span><span class="pun">.</span></code></pre>
+
+<h3 id="command-line-options">Command line options</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Option</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td><code>-i</code></td>
+  <td>ID of the rule set.  Required.</td>
+</tr>
+<tr>
+  <td><code>-s</code></td>
+  <td>Project source root directory. Required.</td>
+</tr>
+<tr>
+  <td><code>-c</code></td>
+  <td>Config files directory. Default value is <code>.fint</code>.</td>
+</tr>
+<tr>
+  <td><code>-l</code></td>
+  <td>Message locale. Default value is <code>default</code>(English). Currently, <code>default</code> and <code>ja</code> is supported.</td>
+</tr>
+<tr>
+  <td><code>-h</code></td>
+  <td>Generate result as HTML.</td>
+</tr>
+<tr>
+  <td><code>-f</code></td>
+  <td>Force generating result to existing directory. Default is <code>false</code>.</td>
+</tr>
+<tr>
+  <td><code>-q</code></td>
+  <td>Quiet mode. Suppresses output. Default is <code>false</code>.</td>
+</tr>
+</tbody></table>
+
+
+<h2 id="configuration">Configuration</h2>
+
+<h3 id="structure">Structure</h3>
+
+<pre><code>.fint
+├── config.json
+└── templates
+    └── default
+        ├── css
+        │&nbsp;&nbsp; ├── index.css
+        │&nbsp;&nbsp; ├── main.css
+        │&nbsp;&nbsp; └── src.css
+        └── js
+            └── src.js
+</code></pre>
+
+<h3 id="config-file">Config file</h3>
+
+<p>Config file(JSON) name must be <code>config.json</code>, <br>
+which must be located to the directory set by <code>-c</code> option.  </p>
+
+<h3 id="rule-sets">Rule sets</h3>
+
+<p>Config file includes lint rule sets, which is the top level element. Array.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Item</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td><code>id</code></td>
+  <td>ID of the rule set. This will be used to select rule set by option <code>-i</code>.</td>
+</tr>
+<tr>
+  <td><code>description</code></td>
+  <td>Description of this rule set. This will not be used from the program for now.</td>
+</tr>
+<tr>
+  <td><code>pattern</code></td>
+  <td>File path pattern to apply this rule set. Regular expression.</td>
+</tr>
+<tr>
+  <td><code>modules</code></td>
+  <td>Details of the rule set. See ‘Modules’.</td>
+</tr>
+</tbody></table>
+
+
+<h3 id="modules">Modules</h3>
+
+<p>Modules describe parameters, warning messages for the lint logics. <br>
+Each element of the array describes one lint logic type. <br>
+Basic structure is below.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Item</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td><code>id</code></td>
+  <td>ID of the lint logic. This is predefined in the program and not changeable.</td>
+</tr>
+<tr>
+  <td><code>rules</code></td>
+  <td>Array of the specific rules.</td>
+</tr>
+<tr>
+  <td><code>rules</code> &gt; <code>pattern</code></td>
+  <td>Pattern for the lint logic.</td>
+</tr>
+<tr>
+  <td><code>rules</code> &gt; <code>args</code></td>
+  <td>Argument for the lint logic. Optional.</td>
+</tr>
+<tr>
+  <td><code>rules</code> &gt; <code>message</code></td>
+  <td>Message to show when there is a violation of the rule. It is an array which has default(<code>default</code>) and localized message(<code>ja</code>).</td>
+</tr>
+</tbody></table>
+
+
+<p>Currently, the following modules are defined.</p>
+
+<h4 id="pattern-match">Pattern match</h4>
+
+<p>This module checks if the line matching the <code>pattern</code>.  </p>
+
+<table>
+<thead>
+<tr>
+  <th>Item</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td><code>id</code></td>
+  <td><code>pattern_match</code></td>
+</tr>
+<tr>
+  <td><code>rules</code> &gt; <code>pattern</code></td>
+  <td>Forbidden pattern of the line.</td>
+</tr>
+<tr>
+  <td><code>rules</code> &gt; <code>args</code></td>
+  <td>Not used.</td>
+</tr>
+</tbody></table>
+
+
+<h4 id="max-length">Max length</h4>
+
+<p>This module checks if the line exceeds a certain length.</p>
+
+<table>
+<thead>
+<tr>
+  <th>Item</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td><code>id</code></td>
+  <td><code>max_length</code></td>
+</tr>
+<tr>
+  <td><code>rules</code> &gt; <code>pattern</code></td>
+  <td>Pattern of the line to check length.</td>
+</tr>
+<tr>
+  <td><code>rules</code> &gt; <code>args</code></td>
+  <td>One element with max length.</td>
+</tr>
+</tbody></table>
+
+
+<h2 id="license">License</h2>
+
+<p>Copyright (c) 2014 Soichiro Kashima <br>
+Licensed under MIT license. <br>
+See the bundled <a href="https://github.com/ksoichiro/fint/blob/master/LICENSE">LICENSE</a> file for details.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+* {
+  font-family: Tahoma,Verdana,sans-serif;
+}
+body{
+  background:#fff;
+  padding:32px;
+  margin:0px;
+}
+a{
+  color:#669900;
+  text-decoration:underline;
+}
+#footer{
+  margin-top:1em;
+  color:#999;
+}
+#footer a{
+  color:#999;
+  text-decoration:underline;
+}
+h1,h2{
+  color:#333;
+}
+h1{
+  margin-top:0px;
+}
