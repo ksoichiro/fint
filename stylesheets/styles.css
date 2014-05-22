@@ -3,7 +3,7 @@
   font-weight: 400;
 }
 body {
-  margin: 0;
+  margin: 0px;
   padding: 0;
 }
 #container {
@@ -70,14 +70,20 @@ body {
 }
 h2, h3, h4 {
   font-weight:600;
+  text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.4);
 }
 h2 {
+  color: #333;
   font-size: 32px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #CCC;
 }
 h3 {
+  color: #444;
   font-size: 26px;
 }
 h4 {
+  color: #444;
   font-size: 22px;
 }
 #contents {
@@ -86,7 +92,7 @@ h4 {
   padding-top:128px;
 }
 div {
-  color: #333;
+  color: #444;
   font-size: 1em;
   line-height: 1.4em;
 }
@@ -109,6 +115,12 @@ pre, p code {
   -khtml-border-radius: 4px;
   border-radius: 4px;
 }
+pre {
+  -moz-box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.2);
+  -o-box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.2);
+}
 p code {
   padding:2px 4px;
   margin: 0 2px;
@@ -127,15 +139,15 @@ th {
   background-color: #FFECC0;
 }
 th, td {
-  padding: 8px;
+  padding: 8px 16px;
 }
 th {
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #FFD060;
+  border-bottom: 1px solid #FFD060;
 }
 td {
-  border-bottom: 1px solid #efefef;
+  border-bottom: 1px solid #FFECC0;
 }
 tr:last-child td {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #FFD060;
 }
