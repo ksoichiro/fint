@@ -139,10 +139,8 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 
 	srclistTempate, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplIndexSrclist))
 	srclist := string(srclistTempate)
-	exp, _ := regexp.Compile("@SRCPATH@")
-	srclist = exp.ReplaceAllString(srclist, filename)
-	exp, _ = regexp.Compile("@VIOLATIONS@")
-	srclist = exp.ReplaceAllString(srclist, fmt.Sprintf("%d", len(vs)))
+	srclist = replaceTag(srclist, "@SRCPATH@", filename)
+	srclist = replaceTag(srclist, "@VIOLATIONS@", fmt.Sprintf("%d", len(vs)))
 
 	f.WriteString(srclist + newlineDefault)
 	f.Close()
@@ -180,41 +178,34 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 		}
 		srclineBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
 
-		exp, _ := regexp.Compile("@MARKER_CLASS@")
-		srclineBaseReplaced := exp.ReplaceAllString(string(srclineBase), vsclass)
-		exp, _ = regexp.Compile("@HAS_VIOLATIONS@")
+		srclineBaseReplaced := replaceTag(string(srclineBase), "@MARKER_CLASS@", vsclass)
 		var hasViolations string
 		if 0 < len(vs) {
 			hasViolations = "true"
 		} else {
 			hasViolations = "false"
 		}
-		srclineBaseReplaced = exp.ReplaceAllString(srclineBaseReplaced, hasViolations)
-		exp, _ = regexp.Compile("@LINE@")
-		srclineBaseReplaced = exp.ReplaceAllString(srclineBaseReplaced, fmt.Sprintf("%d", n))
-		exp, _ = regexp.Compile("@CODE@")
-		srclineBaseReplaced = exp.ReplaceAllString(srclineBaseReplaced, line)
+		srclineBaseReplaced = replaceTag(srclineBaseReplaced, "@HAS_VIOLATIONS@", hasViolations)
+		srclineBaseReplaced = replaceTag(srclineBaseReplaced, "@LINE@", fmt.Sprintf("%d", n))
+		srclineBaseReplaced = replaceTag(srclineBaseReplaced, "@CODE@", line)
 		fsrcline.WriteString(srclineBaseReplaced + newlineDefault)
 
 		if 0 < len(vs) {
 			msglistBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist))
-			msglistexp, _ := regexp.Compile("@LINE@")
-			msglistBaseReplaced := msglistexp.ReplaceAllString(string(msglistBase), fmt.Sprintf("%d", n))
+			msglistBaseReplaced := replaceTag(string(msglistBase), "@LINE@", fmt.Sprintf("%d", n))
 
 			pathDetailMsg := pathDetail + ".msg.tmp"
 			fmsg, _ := os.OpenFile(pathDetailMsg, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 			defer fmsg.Close()
 			msgBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsg))
-			msgexp, _ := regexp.Compile("@VIOLATION_MSG@")
 			for i := range vs {
-				msg := msgexp.ReplaceAllString(string(msgBase), vs[i].Message)
+				msg := replaceTag(string(msgBase), "@VIOLATION_MSG@", vs[i].Message)
 				fmsg.WriteString(msg + newlineDefault)
 			}
 			fmsg.Close()
 
 			msgTemp, _ := ioutil.ReadFile(pathDetailMsg)
-			msglistexp, _ = regexp.Compile("@VIOLATION_MSGLIST@")
-			msglistBaseReplaced = msglistexp.ReplaceAllString(msglistBaseReplaced, string(msgTemp))
+			msglistBaseReplaced = replaceTag(msglistBaseReplaced, "@VIOLATION_MSGLIST@", string(msgTemp))
 			os.Remove(pathDetailMsg)
 
 			fsrcline.WriteString(msglistBaseReplaced + newlineDefault)
@@ -229,6 +220,11 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	srclineTemp, _ := ioutil.ReadFile(pathDetailSrcline)
 	replaceTagInFile(pathDetail, "@SRCLINES@", string(srclineTemp))
 	os.Remove(pathDetailSrcline)
+}
+
+func replaceTag(s, tag, repl string) string {
+	exp, _ := regexp.Compile(tag)
+	return exp.ReplaceAllString(s, repl)
 }
 
 func replaceTagInFile(filename, tag, repl string) {
