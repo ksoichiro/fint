@@ -117,14 +117,14 @@ func printReportHeader() {
 	if opt.Html == "" {
 		return
 	}
-	os.MkdirAll(opt.Html+"/"+DirJs, 0777)
-	os.MkdirAll(opt.Html+"/"+DirCss, 0777)
-	pathTmpl := opt.ConfigPath + "/" + DirTemplates + "/" + opt.Template + "/"
-	CopyFile(pathTmpl+HtmlTmplIndex, opt.Html+"/"+HtmlIndex)
-	CopyFile(pathTmpl+DirJs+"/src.js", opt.Html+"/"+DirJs+"/src.js")
-	CopyFile(pathTmpl+DirCss+"/main.css", opt.Html+"/"+DirCss+"/main.css")
-	CopyFile(pathTmpl+DirCss+"/index.css", opt.Html+"/"+DirCss+"/index.css")
-	CopyFile(pathTmpl+DirCss+"/src.css", opt.Html+"/"+DirCss+"/src.css")
+	os.MkdirAll(filepath.Join(opt.Html, DirJs), 0777)
+	os.MkdirAll(filepath.Join(opt.Html, DirCss), 0777)
+	pathTmpl := filepath.Join(opt.ConfigPath, DirTemplates, opt.Template)
+	CopyFile(filepath.Join(pathTmpl, HtmlTmplIndex), filepath.Join(opt.Html, HtmlIndex))
+	CopyFile(filepath.Join(pathTmpl, DirJs, "src.js"), filepath.Join(opt.Html, DirJs, "src.js"))
+	CopyFile(filepath.Join(pathTmpl, DirCss, "main.css"), filepath.Join(opt.Html, DirCss, "main.css"))
+	CopyFile(filepath.Join(pathTmpl, DirCss, "index.css"), filepath.Join(opt.Html, DirCss, "index.css"))
+	CopyFile(filepath.Join(pathTmpl, DirCss, "src.css"), filepath.Join(opt.Html, DirCss, "src.css"))
 }
 
 func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) {
@@ -134,10 +134,10 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	MkReportDir(true)
 
 	// Add source file entry to index
-	f, _ := os.OpenFile(opt.Html+"/"+HtmlTmplIndexSrclist, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, _ := os.OpenFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer f.Close()
 
-	srclistTempate, _ := ioutil.ReadFile(opt.ConfigPath + "/" + DirTemplates + "/" + opt.Template + "/" + HtmlTmplIndexSrclist)
+	srclistTempate, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplIndexSrclist))
 	srclist := string(srclistTempate)
 	exp, _ := regexp.Compile("@SRCPATH@")
 	srclist = exp.ReplaceAllString(srclist, filename)
@@ -147,18 +147,16 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	f.WriteString(srclist + newlineDefault)
 	f.Close()
 
-	var rootPath = "../"
-	for c := 0; c < strings.Count(filename, "/"); c++ {
-		rootPath = rootPath + "../"
+	var rootPath = ".." + string(filepath.Separator)
+	for c := 0; c < strings.Count(filename, string(filepath.Separator)); c++ {
+		rootPath = rootPath + ".." + string(filepath.Separator)
 	}
-	rootPath = strings.TrimSuffix(rootPath, "/")
+	rootPath = strings.TrimSuffix(rootPath, string(filepath.Separator))
 
-	fileexp, _ := regexp.Compile("/[^/]*$")
-	var dirname = fileexp.ReplaceAllString(filename, "")
-	os.MkdirAll(opt.Html+"/"+DirSrc+"/"+dirname, 0777)
+	os.MkdirAll(filepath.Join(opt.Html, DirSrc, filepath.Dir(filename)), 0777)
 
-	pathDetail := opt.Html + "/" + DirSrc + "/" + filename + ".html"
-	CopyFile(opt.ConfigPath+"/"+DirTemplates+"/"+opt.Template+"/"+HtmlTmplSrc, pathDetail)
+	pathDetail := filepath.Join(opt.Html, DirSrc, filename+".html")
+	CopyFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrc), pathDetail)
 	replaceTagInFile(pathDetail, "@ROOTPATH@", rootPath)
 	replaceTagInFile(pathDetail, "@SRCFILE@", filename)
 
@@ -180,7 +178,7 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 		} else {
 			vsclass = "ok"
 		}
-		srclineBase, _ := ioutil.ReadFile(opt.ConfigPath + "/" + DirTemplates + "/" + opt.Template + "/" + HtmlTmplSrcSrcline)
+		srclineBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
 
 		exp, _ := regexp.Compile("@MARKER_CLASS@")
 		srclineBaseReplaced := exp.ReplaceAllString(string(srclineBase), vsclass)
@@ -199,14 +197,14 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 		fsrcline.WriteString(srclineBaseReplaced + newlineDefault)
 
 		if 0 < len(vs) {
-			msglistBase, _ := ioutil.ReadFile(opt.ConfigPath + "/" + DirTemplates + "/" + opt.Template + "/" + HtmlTmplSrcViolationMsglist)
+			msglistBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist))
 			msglistexp, _ := regexp.Compile("@LINE@")
 			msglistBaseReplaced := msglistexp.ReplaceAllString(string(msglistBase), fmt.Sprintf("%d", n))
 
 			pathDetailMsg := pathDetail + ".msg.tmp"
 			fmsg, _ := os.OpenFile(pathDetailMsg, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 			defer fmsg.Close()
-			msgBase, _ := ioutil.ReadFile(opt.ConfigPath + "/" + DirTemplates + "/" + opt.Template + "/" + HtmlTmplSrcViolationMsg)
+			msgBase, _ := ioutil.ReadFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsg))
 			msgexp, _ := regexp.Compile("@VIOLATION_MSG@")
 			for i := range vs {
 				msg := msgexp.ReplaceAllString(string(msgBase), vs[i].Message)
@@ -262,9 +260,9 @@ func finishReportFiles() {
 	if opt.Html == "" {
 		return
 	}
-	srclistTemp, _ := ioutil.ReadFile(opt.Html + "/" + HtmlTmplIndexSrclist)
-	replaceTagInFile(opt.Html+"/"+HtmlIndex, "@SRCLIST@", string(srclistTemp))
-	os.Remove(opt.Html + "/" + HtmlTmplIndexSrclist)
+	srclistTemp, _ := ioutil.ReadFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist))
+	replaceTagInFile(filepath.Join(opt.Html, HtmlIndex), "@SRCLIST@", string(srclistTemp))
+	os.Remove(filepath.Join(opt.Html, HtmlTmplIndexSrclist))
 }
 
 func LoadConfig(file []byte) *Config {
@@ -423,7 +421,7 @@ func Execute(o *Opt) (v []Violation, err error) {
 		err = newError("config directory is required.")
 		return
 	}
-	conf, err = ioutil.ReadFile(opt.ConfigPath + "/" + FileConfig)
+	conf, err = ioutil.ReadFile(filepath.Join(opt.ConfigPath, FileConfig))
 	if err != nil {
 		return
 	}
