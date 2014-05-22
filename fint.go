@@ -137,44 +137,20 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	for c := 0; c < strings.Count(filename, "/"); c++ {
 		rootPath = rootPath + "../"
 	}
-	var indexPath = rootPath + "index.html"
+	rootPath = strings.TrimSuffix(rootPath, "/")
 
 	fileexp, _ := regexp.Compile("/[^/]*$")
 	var dirname = fileexp.ReplaceAllString(filename, "")
 	os.MkdirAll(opt.Html+"/src/"+dirname, 0777)
 
-	fdetail, _ := os.OpenFile(opt.Html+"/src/"+filename+".html", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	defer fdetail.Close()
-	fdetail.WriteString(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>fint result</title>
-<link rel="stylesheet" type="text/css" href="`)
-	fdetail.WriteString(rootPath + "css/main.css")
-	fdetail.WriteString(`" />
-<link rel="stylesheet" type="text/css" href="`)
-	fdetail.WriteString(rootPath + "css/src.css")
-	fdetail.WriteString(`" />
-<script type="text/javascript" src="`)
-	fdetail.WriteString(rootPath + "js/src.js")
-	fdetail.WriteString(`"></script>
-</head><body>
-<h1><a href="`)
-	fdetail.WriteString(indexPath)
-	fdetail.WriteString(`">fint result</a></h1>
+	pathDetail := opt.Html+"/src/"+filename+".html"
+	CopyFile(opt.ConfigPath+"/templates/default/_src.html", pathDetail)
+	replaceTagInFile(pathDetail, "@ROOTPATH@", rootPath)
+	replaceTagInFile(pathDetail, "@SRCFILE@", filename)
 
-<h2>Source File</h2>
-<p>`)
-	fdetail.WriteString(filename)
-	fdetail.WriteString(`</p>
-
-<h2>Result</h2>
-<div id="srclist">
-<table id="src">
-<tbody>
-`)
+	pathDetailSrcline := pathDetail + ".srcline.tmp"
+	fsrcline, _ := os.OpenFile(pathDetailSrcline, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	defer fsrcline.Close()
 
 	fsrc, _ := os.Open(filename)
 	defer fsrc.Close()
@@ -190,31 +166,57 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 		} else {
 			vsclass = "ok"
 		}
-		fdetail.WriteString(fmt.Sprintf("<tr class=\"%s\" ", vsclass))
+		srclineBase, _ := ioutil.ReadFile(opt.ConfigPath+"/templates/default/_src_srcline.html")
+
+		exp, _ := regexp.Compile("@MARKER_CLASS@")
+		srclineBaseReplaced := exp.ReplaceAllString(string(srclineBase), vsclass)
+		exp, _ = regexp.Compile("@HAS_VIOLATIONS@")
+		var hasViolations string
 		if 0 < len(vs) {
-			fdetail.WriteString(fmt.Sprintf("onclick=\"toggleMessages('msg_l%d');\"", n))
+			hasViolations = "true"
+		} else {
+			hasViolations = "false"
 		}
-		fdetail.WriteString(fmt.Sprintf("><td class=\"line\">%d</td><td class=\"code\"><pre>%s</pre></td></tr>\r\n", n, line))
+		srclineBaseReplaced = exp.ReplaceAllString(srclineBaseReplaced, hasViolations)
+		exp, _ = regexp.Compile("@LINE@")
+		srclineBaseReplaced = exp.ReplaceAllString(srclineBaseReplaced, fmt.Sprintf("%d", n))
+		exp, _ = regexp.Compile("@CODE@")
+		srclineBaseReplaced = exp.ReplaceAllString(srclineBaseReplaced, line)
+		fsrcline.WriteString(srclineBaseReplaced + newlineDefault)
+
 		if 0 < len(vs) {
-			fdetail.WriteString(fmt.Sprintf("<tr id=\"msg_l%d\" class=\"row_msg\"><td class=\"line\">&nbsp;</td><td class=\"list\">", n))
+			msglistBase, _ := ioutil.ReadFile(opt.ConfigPath+"/templates/default/_src_violation_msglist.html")
+			msglistexp, _ := regexp.Compile("@LINE@")
+			msglistBaseReplaced := msglistexp.ReplaceAllString(string(msglistBase), fmt.Sprintf("%d", n))
+
+			pathDetailMsg := pathDetail + ".msg.tmp"
+			fmsg, _ := os.OpenFile(pathDetailMsg, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+			defer fmsg.Close()
+			msgBase, _ := ioutil.ReadFile(opt.ConfigPath+"/templates/default/_src_violation_msg.html")
+			msgexp, _ := regexp.Compile("@VIOLATION_MSG@")
 			for i := range vs {
-				fdetail.WriteString(fmt.Sprintf("<div class=\"msg\">%s</div>", vs[i].Message))
+				msg := msgexp.ReplaceAllString(string(msgBase), vs[i].Message)
+				fmsg.WriteString(msg + newlineDefault)
 			}
-			fdetail.WriteString("</td></tr>\r\n")
+			fmsg.Close()
+
+			msgTemp, _ := ioutil.ReadFile(pathDetailMsg)
+			msglistexp, _ = regexp.Compile("@VIOLATION_MSGLIST@")
+			msglistBaseReplaced = msglistexp.ReplaceAllString(msglistBaseReplaced, string(msgTemp))
+			os.Remove(pathDetailMsg)
+
+			fsrcline.WriteString(msglistBaseReplaced + newlineDefault)
 		}
 		if err == io.EOF {
 			break
 		}
 	}
 	fsrc.Close()
+	fsrcline.Close()
 
-	fdetail.WriteString(`</tbody>
-</table>
-</div>
-</body>
-</html>
-`)
-	fdetail.Close()
+	srclineTemp, _ := ioutil.ReadFile(pathDetailSrcline)
+	replaceTagInFile(pathDetail, "@SRCLINES@", string(srclineTemp))
+	os.Remove(pathDetailSrcline)
 }
 
 func replaceTagInFile(filename, tag, repl string) {
