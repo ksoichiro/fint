@@ -24,6 +24,12 @@ Check where are not covered:
 $ go tool cover -html=profile.cov
 ```
 
+In short, execute this command:
+
+```sh
+$ go test -coverprofile=profile.cov && go tool cover -html=profile.cov
+```
+
 Test data (source code) should be in `testdata` directory.
 
 ## Test on Travis CI
