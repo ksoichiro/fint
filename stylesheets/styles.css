@@ -103,6 +103,9 @@ a {
 strong {
   font-weight:bolder;
 }
+img {
+  max-width: 650px;
+}
 pre, p code {
   background:#FFF6DF;
   border:1px solid #FFD060;
