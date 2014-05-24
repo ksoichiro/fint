@@ -87,11 +87,11 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
 </thead>
 <tbody><tr>
   <td><code>-i</code></td>
-  <td>ID of the rule set.  Required.</td>
+  <td>ID of the target rule sets. Required.</td>
 </tr>
 <tr>
   <td><code>-s</code></td>
-  <td>Project source root directory. Required.</td>
+  <td>Source directory to be checked. Required.</td>
 </tr>
 <tr>
   <td><code>-c</code></td>
@@ -99,19 +99,23 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
 </tr>
 <tr>
   <td><code>-l</code></td>
-  <td>Message locale. Default value is <code>default</code>(English). Currently, <code>default</code> and <code>ja</code> is supported.</td>
+  <td>Message locale. Default value is <code>en</code>(English). Currently, <code>en</code> and <code>ja</code> is supported.</td>
 </tr>
 <tr>
   <td><code>-h</code></td>
-  <td>Generate result as HTML.</td>
+  <td>HTML report directory. Optional.</td>
 </tr>
 <tr>
   <td><code>-f</code></td>
-  <td>Force generating result to existing directory. Default is <code>false</code>.</td>
+  <td>Force generating report to existing directory. Default is <code>false</code>.</td>
 </tr>
 <tr>
   <td><code>-q</code></td>
   <td>Quiet mode. Suppresses output. Default is <code>false</code>.</td>
+</tr>
+<tr>
+  <td><code>-template</code></td>
+  <td>HTML report template name. Default is <code>default</code>.</td>
 </tr>
 </tbody></table>
 
@@ -120,10 +124,27 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
 
 <h3 id="structure">Structure</h3>
 
-<pre><code>.fint
-├── config.json
+<pre><code>.fint // can be changed by `-c` option
+├── builtin
+│&nbsp;&nbsp; ├── modules
+│&nbsp;&nbsp; │&nbsp;&nbsp; ├── max_length
+│&nbsp;&nbsp; │&nbsp;&nbsp; │&nbsp;&nbsp; └── config.json
+│&nbsp;&nbsp; │&nbsp;&nbsp; └── pattern_match
+│&nbsp;&nbsp; │&nbsp;&nbsp;     └── config.json
+│&nbsp;&nbsp; └── targets
+│&nbsp;&nbsp;     └── objc
+│&nbsp;&nbsp;         ├── locales
+│&nbsp;&nbsp;         │&nbsp;&nbsp; ├── en.json
+│&nbsp;&nbsp;         │&nbsp;&nbsp; └── ja.json
+│&nbsp;&nbsp;         └── ruleset.json
 └── templates
     └── default
+        ├── _index.html
+        ├── _index_srclist.html
+        ├── _src.html
+        ├── _src_srcline.html
+        ├── _src_violation_msg.html
+        ├── _src_violation_msglist.html
         ├── css
         │&nbsp;&nbsp; ├── index.css
         │&nbsp;&nbsp; ├── main.css
@@ -132,14 +153,9 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
             └── src.js
 </code></pre>
 
-<h3 id="config-file">Config file</h3>
-
-<p>Config file(JSON) name must be <code>config.json</code>, <br>
-which must be located to the directory set by <code>-c</code> option.  </p>
-
 <h3 id="rule-sets">Rule sets</h3>
 
-<p>Config file includes lint rule sets, which is the top level element. Array.</p>
+<p>Config file includes lint rule sets(<code>ruleset.json</code>), which is the top level element. Array.</p>
 
 <table>
 <thead>
@@ -189,8 +205,8 @@ Basic structure is below.</p>
   <td>Array of the specific rules.</td>
 </tr>
 <tr>
-  <td><code>rules</code> &gt; <code>pattern</code></td>
-  <td>Pattern for the lint logic.</td>
+  <td><code>rules</code> &gt; <code>id</code></td>
+  <td>ID of the rule.</td>
 </tr>
 <tr>
   <td><code>rules</code> &gt; <code>args</code></td>
@@ -198,12 +214,12 @@ Basic structure is below.</p>
 </tr>
 <tr>
   <td><code>rules</code> &gt; <code>message</code></td>
-  <td>Message to show when there is a violation of the rule. It is an array which has default(<code>default</code>) and localized message(<code>ja</code>).</td>
+  <td>Message to show when there is a violation of the rule. This is defined not in the <code>ruleset.json</code> but in the <code>locales/[LOCALE].json</code>.</td>
 </tr>
 </tbody></table>
 
 
-<p>Currently, the following modules are defined.</p>
+<p>Currently, the following modules are defined.</p><div class="se-section-delimiter"></div>
 
 <h4 id="pattern-match">Pattern match</h4>
 
