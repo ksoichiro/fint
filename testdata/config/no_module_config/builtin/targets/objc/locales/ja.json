@@ -1,0 +1,27 @@
+{
+  "rulesets": [
+    {
+      "id": "ObjectiveCSource",
+      "modules": [
+        {
+          "id": "pattern_match",
+          "rules": [
+            {"id": "WhitespaceAfterElse", "message": "elseの後にはスペースを入れてください"},
+            {"id": "WhitespaceBeforeElse", "message": "elseの前にはスペースを入れてください"},
+            {"id": "WhitespaceAfterIf", "message": "ifの後にはスペースを入れてください"},
+            {"id": "WhitespaceBetweenParAndBrace", "message": "')'と'{'の間にはスペースを入れてください"},
+            {"id": "WhitespaceAfterComma", "message": "','の後にはスペースを入れてください"},
+            {"id": "WhitespaceAtStartOfComment", "message": "'//'とコメントの間にはスペースを入れてください"},
+            {"id": "WhitespaceBetweenBracketAndMessage", "message": "']'とメッセージの間にはスペースを入れてください"}
+          ]
+        },
+        {
+          "id": "max_length",
+          "rules": [
+            {"id": "ExceedMaxLength", "message": "1行の長さが%d文字を超えています"}
+          ]
+        }
+      ]
+    }
+  ]
+}

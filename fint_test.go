@@ -11,21 +11,25 @@ import (
 )
 
 const (
-	EnvTerm                 = "TERM"
-	SrcRootObjcNormal       = "testdata/objc/FintExample"
-	SrcRootObjcEmpty        = "testdata/objc/FintExample_Empty"
-	SrcRootObjcSingleError  = "testdata/objc/FintExample_SingleError"
-	SrcSingleFile           = "testdata/objc/FintExample/FintExample/FEAppDelegate.m"
-	SrcNonExistent          = "testdata/non_existent_file"
-	TestReportDir           = "report_test_normal"
-	TestReportDirWithSubdir = "report_test_normal/subdir"
-	ConfigDefault           = ".fint"
-	ConfigNonExistent       = "non_existent_dir"
-	LintIdObjc              = "objc"
-	LocaleDefault           = "default"
-	LocaleJa                = "ja"
-	TemplateDefault         = "default"
-	ErrorsObjcNormal        = 22
+	EnvTerm                   = "TERM"
+	SrcRootObjcNormal         = "testdata/objc/FintExample"
+	SrcRootObjcEmpty          = "testdata/objc/FintExample_Empty"
+	SrcRootObjcSingleError    = "testdata/objc/FintExample_SingleError"
+	SrcSingleFile             = "testdata/objc/FintExample/FintExample/FEAppDelegate.m"
+	SrcNonExistent            = "testdata/non_existent_file"
+	SrcMatchingButNonExistent = "testdata/non_existent_file.m"
+	TestReportDir             = "report_test_normal"
+	TestReportDirWithSubdir   = "report_test_normal/subdir"
+	ConfigDefault             = ".fint"
+	ConfigNonExistent         = "non_existent_dir"
+	ConfigNoModules           = "testdata/config/no_module"
+	ConfigNoModuleConfig      = "testdata/config/no_module_config"
+	ConfigNoTarget            = "testdata/config/no_target"
+	LintIdObjc                = "objc"
+	LocaleDefault             = "en"
+	LocaleJa                  = "ja"
+	TemplateDefault           = "default"
+	ErrorsObjcNormal          = 22
 )
 
 func TestExecuteAsCommand(t *testing.T) {
@@ -64,12 +68,15 @@ func TestExecuteError(t *testing.T) {
 	testExecuteError(t, &fint.Opt{SrcRoot: "", ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, "fint: source directory is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: ""}, "fint: ID of the rule set is required.")
 	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: "", Locale: LocaleDefault, Id: LintIdObjc}, "fint: config directory is required.")
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: "foo"}, "fint: no matching ruleset to [foo]")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: "foo"}, "fint: no matching target to [foo]")
 	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, false)
 	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault},
 		"fint: report directory already exists. use `-f` option to force reporting.",
 		false, true)
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNonExistent, Locale: LocaleDefault, Id: LintIdObjc}, "open non_existent_dir/config.json: no such file or directory")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNonExistent, Locale: LocaleDefault, Id: LintIdObjc}, "stat non_existent_dir: no such file or directory")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoModules, Locale: LocaleDefault, Id: LintIdObjc}, "fint: modules directory not found in [testdata/config/no_module/builtin/modules]")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoModuleConfig, Locale: LocaleDefault, Id: LintIdObjc}, "open testdata/config/no_module_config/builtin/modules/pattern_match/config.json: no such file or directory")
+	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoTarget, Locale: LocaleDefault, Id: LintIdObjc}, "fint: no matching target to ["+LintIdObjc+"]")
 }
 
 func TestCheckSourceFile(t *testing.T) {
@@ -83,6 +90,12 @@ func TestCheckFile(t *testing.T) {
 	f, _ := os.Stat(".")
 	err := fint.CheckFile("", f, errIn)
 	testExpectErrorWithMessage(t, err, errIn.Error())
+
+	// Open non-existent file
+	// Execute once to load configs
+	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, ErrorsObjcNormal)
+	err = fint.CheckFile(SrcMatchingButNonExistent, f, nil)
+	testExpectErrorWithMessage(t, err, "fint: cannot open "+SrcMatchingButNonExistent)
 }
 
 func TestSetbufsize(t *testing.T) {
@@ -98,11 +111,16 @@ func TestSetbufsize(t *testing.T) {
 	testExpectErrorWithMessage(t, err, "fint: too long line: "+SrcSingleFile)
 }
 
+func TestCopyDir(t *testing.T) {
+	fint.CopyDir("testdata", "testdata_copy")
+	os.RemoveAll("testdata_copy")
+}
+
 func TestCopyFile(t *testing.T) {
 	err := fint.CopyFile(".fint/templates/non_existent_file", "")
 	testExpectErrorWithMessage(t, err, "open .fint/templates/non_existent_file: no such file or directory")
 
-	err = fint.CopyFile(".fint/config.json", "non_existent_dir/config.json")
+	err = fint.CopyFile(".fint/builtin/modules/max_length/config.json", "non_existent_dir/config.json")
 	testExpectErrorWithMessage(t, err, "open non_existent_dir/config.json: no such file or directory")
 }
 
@@ -160,6 +178,12 @@ func testExecuteError(t *testing.T, opt *fint.Opt, msg string) {
 	testExpectErrorWithMessage(t, err, msg)
 }
 
+func testExpectSuccess(t *testing.T, err error) {
+	if err != nil {
+		t.Errorf("Expected success but an error occurred")
+	}
+}
+
 func testExpectError(t *testing.T, err error) {
 	if err == nil {
 		t.Errorf("Expected error but not occurred")
@@ -168,7 +192,9 @@ func testExpectError(t *testing.T, err error) {
 
 func testExpectErrorWithMessage(t *testing.T, err error, msg string) {
 	testExpectError(t, err)
-	if err.Error() != msg {
+	if err == nil {
+		t.Errorf("Expected error message [%s] but there was no error", msg)
+	} else if err.Error() != msg {
 		t.Errorf("Expected error message [%s] but was [%s]", msg, err.Error())
 	}
 }

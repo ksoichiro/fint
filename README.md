@@ -70,22 +70,40 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 
 | Option | Description                                            |
 | ------ | ------------------------------------------------------ |
-| `-i`   | ID of the rule set.  Required.                         |
-| `-s`   | Project source root directory. Required.               |
-| `-c`   | Config files directory. Default value is `.fint`. |
-| `-l`   | Message locale. Default value is `default`(English). Currently, `default` and `ja` is supported. |
-| `-h`   | Generate result as HTML. |
-| `-f`   | Force generating result to existing directory. Default is `false`. |
-| `-q`   | Quiet mode. Suppresses output. Default is `false`. |
+| `-i`   | ID of the target rule sets. Required.                  |
+| `-s`   | Source directory to be checked. Required.              |
+| `-c`   | Config files directory. Default value is `.fint`.      |
+| `-l`   | Message locale. Default value is `en`(English). Currently, `en` and `ja` is supported. |
+| `-h`   | HTML report directory. Optional.                       |
+| `-f`   | Force generating report to existing directory. Default is `false`. |
+| `-q`   | Quiet mode. Suppresses output. Default is `false`.     |
+| `-template` | HTML report template name. Default is `default`.  |
 
 ## Configuration
 
 ### Structure
 
-    .fint
-    ├── config.json
+    .fint // can be changed by `-c` option
+    ├── builtin
+    │   ├── modules
+    │   │   ├── max_length
+    │   │   │   └── config.json
+    │   │   └── pattern_match
+    │   │       └── config.json
+    │   └── targets
+    │       └── objc
+    │           ├── locales
+    │           │   ├── en.json
+    │           │   └── ja.json
+    │           └── ruleset.json
     └── templates
         └── default
+            ├── _index.html
+            ├── _index_srclist.html
+            ├── _src.html
+            ├── _src_srcline.html
+            ├── _src_violation_msg.html
+            ├── _src_violation_msglist.html
             ├── css
             │   ├── index.css
             │   ├── main.css
@@ -93,14 +111,9 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
             └── js
                 └── src.js
 
-### Config file
-
-Config file(JSON) name must be `config.json`,  
-which must be located to the directory set by `-c` option.  
-
 ### Rule sets
 
-Config file includes lint rule sets, which is the top level element. Array.
+Config file includes lint rule sets(`ruleset.json`), which is the top level element. Array.
 
 | Item  | Description |
 | ----- | ----------- |
@@ -119,9 +132,9 @@ Basic structure is below.
 | ----- | ----------- |
 | `id` | ID of the lint logic. This is predefined in the program and not changeable. |
 | `rules` | Array of the specific rules. |
-| `rules` > `pattern` | Pattern for the lint logic. |
+| `rules` > `id`   | ID of the rule. |
 | `rules` > `args` | Argument for the lint logic. Optional. |
-| `rules` > `message` | Message to show when there is a violation of the rule. It is an array which has default(`default`) and localized message(`ja`). |
+| `rules` > `message` | Message to show when there is a violation of the rule. This is defined not in the `ruleset.json` but in the `locales/[LOCALE].json`. |
 
 Currently, the following modules are defined.
 

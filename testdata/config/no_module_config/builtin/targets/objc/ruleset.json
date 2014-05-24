@@ -1,0 +1,29 @@
+{
+  "rulesets": [
+    {
+      "id": "ObjectiveCSource",
+      "description": "Objective-C",
+      "pattern": ".*\\.(m|mm|h)$",
+      "modules": [
+        {
+          "id": "pattern_match",
+          "rules": [
+            {"id": "WhitespaceAfterElse", "args": ["else{"]},
+            {"id": "WhitespaceBeforeElse", "args": ["}else"]},
+            {"id": "WhitespaceAfterIf", "args": ["if\\("]},
+            {"id": "WhitespaceBetweenParAndBrace", "args": ["\\){"]},
+            {"id": "WhitespaceAfterComma", "args": [",[^ $]"]},
+            {"id": "WhitespaceAtStartOfComment", "args": ["//[^ ]"]},
+            {"id": "WhitespaceBetweenBracketAndMessage", "args": ["\\][a-zA-Z0-9_]"]}
+          ]
+        },
+        {
+          "id": "max_length",
+          "rules": [
+            {"id": "ExceedMaxLength", "args": [".*", 80]}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "type": "builtin",
+  "description": "Find illegal pattern by regexp matching."
+}

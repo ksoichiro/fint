@@ -1,0 +1,27 @@
+{
+  "rulesets": [
+    {
+      "id": "ObjectiveCSource",
+      "modules": [
+        {
+          "id": "pattern_match",
+          "rules": [
+            {"id": "WhitespaceAfterElse", "message": "Space must be inserted after else"},
+            {"id": "WhitespaceBeforeElse", "message": "Space must be inserted before else"},
+            {"id": "WhitespaceAfterIf", "message": "Space must be inserted after if"},
+            {"id": "WhitespaceBetweenParAndBrace", "message": "Space must be inserted between ')' and '{'"},
+            {"id": "WhitespaceAfterComma", "message": "Space must be inserted after ','"},
+            {"id": "WhitespaceAtStartOfComment", "message": "Space must be inserted between '//' and following comment"},
+            {"id": "WhitespaceBetweenBracketAndMessage", "message": "Space must be inserted between ']' and following message"}
+          ]
+        },
+        {
+          "id": "max_length",
+          "rules": [
+            {"id": "ExceedMaxLength", "message": "Line length exceeds %d characters"}
+          ]
+        }
+      ]
+    }
+  ]
+}

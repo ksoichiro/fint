@@ -15,14 +15,14 @@ const (
 
 func main() {
 	var (
-		srcRoot    = flag.String("s", "", "Source directory")
-		configPath = flag.String("c", ".fint", "Config files directory")
-		locale     = flag.String("l", "default", "Message locale")
-		id         = flag.String("i", "", "ID of the rule set")
-		html       = flag.String("h", "", "Generate result as HTML")
-		force      = flag.Bool("f", false, "Force generating result to existing directory")
-		quiet      = flag.Bool("q", false, "Quiet mode. Suppresses output.")
-		template   = flag.String("template", "default", "HTML report template")
+		srcRoot    = flag.String("s", "", "Source directory to be checked. Required.")
+		configPath = flag.String("c", ".fint", "Config files directory. Default value is `.fint`.")
+		locale     = flag.String("l", "en", "Message locale. Default value is `en`(English). Currently, `en` and `ja` is supported.")
+		id         = flag.String("i", "", "ID of the target rule sets. Required.")
+		html       = flag.String("h", "", "HTML report directory. Optional.")
+		force      = flag.Bool("f", false, "Force generating report to existing directory. Default is `false`.")
+		quiet      = flag.Bool("q", false, "Quiet mode. Suppresses output. Default is `false`.")
+		template   = flag.String("template", "default", "HTML report template name. Default is `default`.")
 	)
 	flag.Parse()
 

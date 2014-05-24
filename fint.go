@@ -58,8 +58,24 @@ type Opt struct {
 	Quiet      bool
 }
 
+type LocalizedRule struct {
+	Id      string
+	Message string
+}
+type LocalizedModules struct {
+	Id    string
+	Rules []LocalizedRule
+}
+type LocalizedRuleSet struct {
+	Id      string
+	Modules []LocalizedModules
+}
+type LocalizedTarget struct {
+	RuleSets []LocalizedRuleSet
+}
+
 type Rule struct {
-	Pattern string
+	Id      string
 	Args    []interface{}
 	Message map[string]string
 }
@@ -76,8 +92,23 @@ type RuleSet struct {
 	Modules     []Module
 }
 
-type Config struct {
+type Target struct {
+	Id       string
 	RuleSets []RuleSet
+	Locales  []string
+}
+
+type ModuleConfig struct {
+	Id          string
+	Type        string
+	Description string
+	Executable  string
+	Args        []interface{}
+}
+
+type Config struct {
+	ModuleConfigs []ModuleConfig
+	Targets       []Target
 }
 
 type Violation struct {
@@ -293,10 +324,90 @@ func finishReportFiles() {
 	os.Remove(filepath.Join(opt.Html, HtmlTmplIndexSrclist))
 }
 
-func LoadConfig(file []byte) *Config {
-	var c Config
-	json.Unmarshal(file, &c)
-	return &c
+func dirExists(path string) error {
+	if _, err := os.Stat(path); err != nil && os.IsNotExist(err) {
+		return err
+	}
+	return nil
+}
+func LoadConfig() (err error) {
+	// Get config directory(.fint)
+	pathConfig := opt.ConfigPath
+	if err = dirExists(pathConfig); err != nil {
+		return
+	}
+
+	// Get target ID directory
+	pathTarget := filepath.Join(pathConfig, "builtin", "targets", opt.Id)
+	if err = dirExists(pathTarget); err != nil {
+		return newError("no matching target to [" + opt.Id + "]")
+	}
+
+	// Get modules directory
+	pathModules := filepath.Join(pathConfig, "builtin", "modules")
+	if err = dirExists(pathModules); err != nil {
+		return newError("modules directory not found in [" + pathModules + "]")
+	}
+
+	// Load .fint/builtin/modules/*/config.json
+	config = new(Config)
+	filesModules, _ := ioutil.ReadDir(pathModules)
+	for i := range filesModules {
+		entry := filesModules[i]
+		if entry.IsDir() {
+			// entry name is the name of module
+			entryPath := filepath.Join(pathModules, entry.Name())
+			var configBytes []byte
+			configBytes, err = ioutil.ReadFile(filepath.Join(entryPath, FileConfig))
+			if err != nil {
+				return
+			}
+
+			var c ModuleConfig
+			json.Unmarshal(configBytes, &c)
+
+			// Set name as Id to be searchable
+			c.Id = entry.Name()
+			config.ModuleConfigs = append(config.ModuleConfigs, c)
+		}
+	}
+
+	// Load target ruleset
+	var configBytes []byte
+	configBytes, err = ioutil.ReadFile(filepath.Join(pathTarget, "ruleset.json"))
+	if err != nil {
+		return newError("no matching target to [" + opt.Id + "]")
+	}
+	var target Target
+	json.Unmarshal(configBytes, &target)
+	config.Targets = append(config.Targets, target)
+
+	// Load target locales
+	filesTargetLocales, _ := ioutil.ReadDir(filepath.Join(pathTarget, "locales"))
+	for i := range filesTargetLocales {
+		entry := filesTargetLocales[i]
+		locale := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
+
+		// Get contents of en.json, ja.json, ...
+		var configBytes []byte
+		configBytes, _ = ioutil.ReadFile(filepath.Join(pathTarget, "locales", entry.Name()))
+
+		var lt LocalizedTarget
+		json.Unmarshal(configBytes, &lt)
+
+		for i := range target.RuleSets {
+			for j := range target.RuleSets[i].Modules {
+				for k := range target.RuleSets[i].Modules[j].Rules {
+					// Pass all localized messages for each rules
+					if target.RuleSets[i].Modules[j].Rules[k].Message == nil {
+						target.RuleSets[i].Modules[j].Rules[k].Message = make(map[string]string)
+					}
+					target.RuleSets[i].Modules[j].Rules[k].Message[locale] = lt.RuleSets[i].Modules[j].Rules[k].Message
+				}
+			}
+		}
+	}
+	return
 }
 
 func Setbufsize(size int) {
@@ -338,7 +449,7 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 			switch rs.Modules[i].Id {
 			case "pattern_match":
 				for j := range rs.Modules[i].Rules {
-					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
+					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Args[0].(string), line); matched {
 						v = Violation{Filename: filename, Line: n, Message: rs.Modules[i].Rules[j].Message[opt.Locale]}
 						lvs = append(lvs, v)
 						vs = append(vs, v)
@@ -346,8 +457,8 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 				}
 			case "max_length":
 				for j := range rs.Modules[i].Rules {
-					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Pattern, line); matched {
-						max_len := int(rs.Modules[i].Rules[j].Args[0].(float64))
+					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Args[0].(string), line); matched {
+						max_len := int(rs.Modules[i].Rules[j].Args[1].(float64))
 						if too_long := max_len < len(line); too_long {
 							v = Violation{Filename: filename, Line: n, Message: fmt.Sprintf(rs.Modules[i].Rules[j].Message[opt.Locale], max_len)}
 							lvs = append(lvs, v)
@@ -369,35 +480,21 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 	return
 }
 
-func findRuleSet() (rs RuleSet, err error) {
-	for i := range config.RuleSets {
-		r := config.RuleSets[i]
-		if r.Id == opt.Id {
-			rs = r
-		}
-	}
-	if rs.Id == "" {
-		err = newError("no matching ruleset to [" + opt.Id + "]")
-	}
-	return
-}
-
 func CheckFile(path string, f os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
 
-	rs, errRs := findRuleSet()
-	if errRs != nil {
-		return errRs
-	}
-
-	if matched, _ := regexp.MatchString(rs.Pattern, path); matched {
-		v, e := CheckSourceFile(path, rs)
-		if e != nil {
-			return e
+	target := config.Targets[0]
+	for i := range target.RuleSets {
+		rs := target.RuleSets[i]
+		if matched, _ := regexp.MatchString(rs.Pattern, path); matched {
+			v, e := CheckSourceFile(path, rs)
+			if e != nil {
+				return e
+			}
+			violations = append(violations, v...)
 		}
-		violations = append(violations, v...)
 	}
 	return nil
 }
@@ -444,16 +541,15 @@ func Execute(o *Opt) (v []Violation, err error) {
 		return
 	}
 
-	var conf []byte
 	if opt.ConfigPath == "" {
 		err = newError("config directory is required.")
 		return
 	}
-	conf, err = ioutil.ReadFile(filepath.Join(opt.ConfigPath, FileConfig))
+
+	err = LoadConfig()
 	if err != nil {
 		return
 	}
-	config = LoadConfig(conf)
 
 	printReportHeader()
 
