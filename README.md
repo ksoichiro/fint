@@ -84,32 +84,32 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 ### Structure
 
     .fint // can be changed by `-c` option
-    ├── builtin
-    │   ├── modules
-    │   │   ├── max_length
-    │   │   │   └── config.json
-    │   │   └── pattern_match
-    │   │       └── config.json
-    │   └── targets
-    │       └── objc
-    │           ├── locales
-    │           │   ├── en.json
-    │           │   └── ja.json
-    │           └── ruleset.json
-    └── templates
-        └── default
-            ├── _index.html
-            ├── _index_srclist.html
-            ├── _src.html
-            ├── _src_srcline.html
-            ├── _src_violation_msg.html
-            ├── _src_violation_msglist.html
-            ├── css
-            │   ├── index.css
-            │   ├── main.css
-            │   └── src.css
-            └── js
-                └── src.js
+    └── builtin
+        ├── modules
+        │   ├── max_length
+        │   │   └── config.json
+        │   └── pattern_match
+        │       └── config.json
+        ├── targets
+        │   └── objc
+        │       ├── locales
+        │       │   ├── en.json
+        │       │   └── ja.json
+        │       └── ruleset.json
+        └── templates
+            └── default
+                ├── _index.html
+                ├── _index_srclist.html
+                ├── _src.html
+                ├── _src_srcline.html
+                ├── _src_violation_msg.html
+                ├── _src_violation_msglist.html
+                ├── css
+                │   ├── index.css
+                │   ├── main.css
+                │   └── src.css
+                └── js
+                    └── src.js
 
 ### Rule sets
 

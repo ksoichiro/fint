@@ -20,11 +20,16 @@ const (
 	errPrefix                   = "fint: "
 	defaultBufSize              = 4096
 	newlineDefault              = "\r\n"
+	DirBuiltin                  = "builtin"
+	DirModules                  = "modules"
+	DirTargets                  = "targets"
+	DirLocales                  = "locales"
 	DirTemplates                = "templates"
 	DirSrc                      = "src"
 	DirJs                       = "js"
 	DirCss                      = "css"
 	FileConfig                  = "config.json"
+	FileRuleSet                 = "ruleset.json"
 	HtmlIndex                   = "index.html"
 	HtmlTmplIndex               = "_index.html"
 	HtmlTmplIndexSrclist        = "_index_srclist.html"
@@ -179,7 +184,7 @@ func printReportHeader() {
 	}
 	os.MkdirAll(filepath.Join(opt.Html, DirJs), 0777)
 	os.MkdirAll(filepath.Join(opt.Html, DirCss), 0777)
-	pathTmpl := filepath.Join(opt.ConfigPath, DirTemplates, opt.Template)
+	pathTmpl := filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template)
 	CopyFile(filepath.Join(pathTmpl, HtmlTmplIndex), filepath.Join(opt.Html, HtmlIndex))
 	CopyDir(filepath.Join(pathTmpl, DirJs), filepath.Join(opt.Html, DirJs))
 	CopyDir(filepath.Join(pathTmpl, DirCss), filepath.Join(opt.Html, DirCss))
@@ -195,7 +200,7 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	f, _ := os.OpenFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer f.Close()
 
-	srclist := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplIndexSrclist))
+	srclist := readFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplIndexSrclist))
 	srclist = replaceTag(srclist, TagSrcPath, filename)
 	srclist = replaceTag(srclist, TagViolations, fmt.Sprintf("%d", len(vs)))
 
@@ -211,7 +216,7 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	os.MkdirAll(filepath.Join(opt.Html, DirSrc, filepath.Dir(filename)), 0777)
 
 	pathDetail := filepath.Join(opt.Html, DirSrc, filename+".html")
-	CopyFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrc), pathDetail)
+	CopyFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplSrc), pathDetail)
 	replaceTagInFile(pathDetail, TagRootPath, rootPath)
 	replaceTagInFile(pathDetail, TagSrcPath, filename)
 
@@ -233,7 +238,7 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 			markerCls = CssMarkerClsOk
 		}
 
-		srcline := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
+		srcline := readFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
 		srcline = replaceTag(string(srcline), TagMarkerClass, markerCls)
 		var hasViolations string
 		if 0 < len(vs) {
@@ -247,12 +252,12 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 		fsrcline.WriteString(srcline + newlineDefault)
 
 		if 0 < len(vs) {
-			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist)), TagLineNumber, fmt.Sprintf("%d", n))
+			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist)), TagLineNumber, fmt.Sprintf("%d", n))
 
 			pathDetailMsg := pathDetail + ".msg.tmp"
 			fmsg, _ := os.OpenFile(pathDetailMsg, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 			defer fmsg.Close()
-			msgTmpl := readFile(filepath.Join(opt.ConfigPath, DirTemplates, opt.Template, HtmlTmplSrcViolationMsg))
+			msgTmpl := readFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplSrcViolationMsg))
 			for i := range vs {
 				msg := replaceTag(msgTmpl, TagViolationMsg, vs[i].Message)
 				fmsg.WriteString(msg + newlineDefault)
@@ -338,13 +343,13 @@ func LoadConfig() (err error) {
 	}
 
 	// Get target ID directory
-	pathTarget := filepath.Join(pathConfig, "builtin", "targets", opt.Id)
+	pathTarget := filepath.Join(pathConfig, DirBuiltin, DirTargets, opt.Id)
 	if err = dirExists(pathTarget); err != nil {
 		return newError("no matching target to [" + opt.Id + "]")
 	}
 
 	// Get modules directory
-	pathModules := filepath.Join(pathConfig, "builtin", "modules")
+	pathModules := filepath.Join(pathConfig, DirBuiltin, DirModules)
 	if err = dirExists(pathModules); err != nil {
 		return newError("modules directory not found in [" + pathModules + "]")
 	}
@@ -374,7 +379,7 @@ func LoadConfig() (err error) {
 
 	// Load target ruleset
 	var configBytes []byte
-	configBytes, err = ioutil.ReadFile(filepath.Join(pathTarget, "ruleset.json"))
+	configBytes, err = ioutil.ReadFile(filepath.Join(pathTarget, FileRuleSet))
 	if err != nil {
 		return newError("no matching target to [" + opt.Id + "]")
 	}
@@ -383,14 +388,14 @@ func LoadConfig() (err error) {
 	config.Targets = append(config.Targets, target)
 
 	// Load target locales
-	filesTargetLocales, _ := ioutil.ReadDir(filepath.Join(pathTarget, "locales"))
+	filesTargetLocales, _ := ioutil.ReadDir(filepath.Join(pathTarget, DirLocales))
 	for i := range filesTargetLocales {
 		entry := filesTargetLocales[i]
 		locale := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
 
 		// Get contents of en.json, ja.json, ...
 		var configBytes []byte
-		configBytes, _ = ioutil.ReadFile(filepath.Join(pathTarget, "locales", entry.Name()))
+		configBytes, _ = ioutil.ReadFile(filepath.Join(pathTarget, DirLocales, entry.Name()))
 
 		var lt LocalizedTarget
 		json.Unmarshal(configBytes, &lt)
