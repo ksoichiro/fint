@@ -7,6 +7,8 @@
 but doesn't have syntax analysis feature -- so it is a fake lint :P  
 **fint** is portable, executable on multiple platform, easy to integrate into your build process.
 
+![Example](docs/screenshot.png)
+
 ## Installation
 
 [Get the latest release binary](https://github.com/ksoichiro/fint/releases/latest) for your environment.
