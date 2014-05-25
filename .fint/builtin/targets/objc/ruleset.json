@@ -14,7 +14,8 @@
             {"id": "WhitespaceBetweenParAndBrace", "args": ["\\){"]},
             {"id": "WhitespaceAfterComma", "args": [",[^ $]"]},
             {"id": "WhitespaceAtStartOfComment", "args": ["//[^ ]"]},
-            {"id": "WhitespaceBetweenBracketAndMessage", "args": ["\\][a-zA-Z0-9_]"]}
+            {"id": "WhitespaceBetweenBracketAndMessage", "args": ["\\][a-zA-Z0-9_]"]},
+            {"id": "TrailingWhitespace", "args": ["[^ ]+ +$"]}
           ]
         },
         {

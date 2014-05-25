@@ -12,7 +12,8 @@
             {"id": "WhitespaceBetweenParAndBrace", "message": "')'と'{'の間にはスペースを入れてください"},
             {"id": "WhitespaceAfterComma", "message": "','の後にはスペースを入れてください"},
             {"id": "WhitespaceAtStartOfComment", "message": "'//'とコメントの間にはスペースを入れてください"},
-            {"id": "WhitespaceBetweenBracketAndMessage", "message": "']'とメッセージの間にはスペースを入れてください"}
+            {"id": "WhitespaceBetweenBracketAndMessage", "message": "']'とメッセージの間にはスペースを入れてください"},
+            {"id": "TrailingWhitespace", "message": "行末のスペースを削除してください"}
           ]
         },
         {
