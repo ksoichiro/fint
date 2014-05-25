@@ -1,0 +1,59 @@
+h1 a{
+  text-decoration:none;
+  color:#fff;
+}
+#srclist{
+  background:#333;
+  width:920px;
+  padding:10px;
+}
+table#src{
+  border:none;
+  border-collapse:collapse;
+  width:920px;
+}
+tbody{
+  background:#000;
+}
+#src th,#src td{
+  border:none;
+  padding:2px;
+  font-size:0.9em;
+  color:#fff;
+  background:#000;
+}
+pre{
+  margin:0px 4px;
+  white-space:pre-line;
+  font-family:'Courier New',monospace,sans-serif;
+  color:#fff;
+}
+#src td.line{
+  background:#333;
+  font-size:0.9em;
+  text-align:right;
+  padding:2px 4px;
+  font-size:0.9em;
+  font-family:'Courier New',monospace,sans-serif;
+}
+.code{
+  background:#fff;
+}
+.ng{
+  cursor:pointer;
+}
+.ng .line{
+}
+#src .ng td.code{
+  background:#EC5014;
+}
+tr.row_msg{
+  display:table-row;
+}
+#src .row_msg td.list{
+  background:#832A00;
+}
+.msg{
+  font-size:0.9em;
+  padding-left:1em;
+}
