@@ -13,7 +13,8 @@
             {"id": "WhitespaceAfterComma", "message": "Space must be inserted after ','"},
             {"id": "WhitespaceAtStartOfComment", "message": "Space must be inserted between '//' and following comment"},
             {"id": "WhitespaceBetweenBracketAndMessage", "message": "Space must be inserted between ']' and following message"},
-            {"id": "TrailingWhitespace", "message": "Remove trailing spaces"}
+            {"id": "TrailingWhitespace", "message": "Remove trailing spaces"},
+            {"id": "TabIdentation", "message": "Use spaces for identation instead of tab"}
           ]
         },
         {

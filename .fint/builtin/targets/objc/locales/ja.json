@@ -13,7 +13,8 @@
             {"id": "WhitespaceAfterComma", "message": "','の後にはスペースを入れてください"},
             {"id": "WhitespaceAtStartOfComment", "message": "'//'とコメントの間にはスペースを入れてください"},
             {"id": "WhitespaceBetweenBracketAndMessage", "message": "']'とメッセージの間にはスペースを入れてください"},
-            {"id": "TrailingWhitespace", "message": "行末のスペースを削除してください"}
+            {"id": "TrailingWhitespace", "message": "行末のスペースを削除してください"},
+            {"id": "TabIdentation", "message": "インデントにはタブではなくスペースを使用してください"}
           ]
         },
         {

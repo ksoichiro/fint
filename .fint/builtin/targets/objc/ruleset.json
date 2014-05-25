@@ -15,7 +15,8 @@
             {"id": "WhitespaceAfterComma", "args": [",[^ $]"]},
             {"id": "WhitespaceAtStartOfComment", "args": ["//[^ ]"]},
             {"id": "WhitespaceBetweenBracketAndMessage", "args": ["\\][a-zA-Z0-9_]"]},
-            {"id": "TrailingWhitespace", "args": ["[^ ]+ +$"]}
+            {"id": "TrailingWhitespace", "args": ["[^ ]+ +$"]},
+            {"id": "TabIdentation", "args": ["^\\t+"]}
           ]
         },
         {
