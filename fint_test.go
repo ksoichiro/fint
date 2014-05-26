@@ -6,6 +6,7 @@ package fint_test
 import (
 	"errors"
 	"github.com/ksoichiro/fint"
+	"github.com/ksoichiro/fint/common"
 	"os"
 	"testing"
 )
@@ -37,50 +38,50 @@ func TestExecuteAsCommand(t *testing.T) {
 
 	// When using dumb TERM, messages should not be colorized.
 	os.Setenv(EnvTerm, "dumb")
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
+	err = fint.ExecuteAsCommand(&common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
 	testExpectError(t, err)
 
 	// When using other than dumb TERM, messages should be colorized.
 	os.Setenv(EnvTerm, "xterm-256color")
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
+	err = fint.ExecuteAsCommand(&common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
 	testExpectError(t, err)
 
 	// When there is only one violation, result message form should be singular.
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
+	err = fint.ExecuteAsCommand(&common.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
 	testExpectError(t, err)
 
 	// When SrcRoot is empty, lint should not be executed.
-	err = fint.ExecuteAsCommand(&fint.Opt{SrcRoot: "", ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
+	err = fint.ExecuteAsCommand(&common.Opt{SrcRoot: "", ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc})
 	testExpectErrorWithMessage(t, err, "fint: source directory is required.")
 }
 
 func TestExecute(t *testing.T) {
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, false)
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, false, true)
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDirWithSubdir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, true)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, ErrorsObjcNormal)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcEmpty, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 0)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 1)
-	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc, Quiet: true}, 1)
+	testExecuteNormalWithReport(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, false)
+	testExecuteNormalWithReport(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, false, true)
+	testExecuteNormalWithReport(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDirWithSubdir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, true)
+	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, ErrorsObjcNormal)
+	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcEmpty, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 0)
+	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 1)
+	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc, Quiet: true}, 1)
 }
 
 func TestExecuteError(t *testing.T) {
-	testExecuteError(t, &fint.Opt{SrcRoot: "", ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, "fint: source directory is required.")
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: ""}, "fint: ID of the rule set is required.")
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: "", Locale: LocaleDefault, Id: LintIdObjc}, "fint: config directory is required.")
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: "foo"}, "fint: no matching target to [foo]")
-	testExecuteNormalWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, false)
-	testExecuteErrorWithReport(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault},
+	testExecuteError(t, &common.Opt{SrcRoot: "", ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, "fint: source directory is required.")
+	testExecuteError(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: ""}, "fint: ID of the rule set is required.")
+	testExecuteError(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: "", Locale: LocaleDefault, Id: LintIdObjc}, "fint: config directory is required.")
+	testExecuteError(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: "foo"}, "fint: no matching target to [foo]")
+	testExecuteNormalWithReport(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault, Force: true}, ErrorsObjcNormal, true, false)
+	testExecuteErrorWithReport(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc, Html: TestReportDir, Template: TemplateDefault},
 		"fint: report directory already exists. use `-f` option to force reporting.",
 		false, true)
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNonExistent, Locale: LocaleDefault, Id: LintIdObjc}, "stat non_existent_dir: no such file or directory")
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoModules, Locale: LocaleDefault, Id: LintIdObjc}, "fint: modules directory not found in [testdata/config/no_module/builtin/modules]")
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoModuleConfig, Locale: LocaleDefault, Id: LintIdObjc}, "open testdata/config/no_module_config/builtin/modules/pattern_match/config.json: no such file or directory")
-	testExecuteError(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoTarget, Locale: LocaleDefault, Id: LintIdObjc}, "fint: no matching target to ["+LintIdObjc+"]")
+	testExecuteError(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNonExistent, Locale: LocaleDefault, Id: LintIdObjc}, "stat non_existent_dir: no such file or directory")
+	testExecuteError(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoModules, Locale: LocaleDefault, Id: LintIdObjc}, "fint: modules directory not found in [testdata/config/no_module/builtin/modules]")
+	testExecuteError(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoModuleConfig, Locale: LocaleDefault, Id: LintIdObjc}, "open testdata/config/no_module_config/builtin/modules/pattern_match/config.json: no such file or directory")
+	testExecuteError(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoTarget, Locale: LocaleDefault, Id: LintIdObjc}, "fint: no matching target to ["+LintIdObjc+"]")
 }
 
 func TestCheckSourceFile(t *testing.T) {
-	_, err := fint.CheckSourceFile(SrcNonExistent, fint.RuleSet{})
+	_, err := fint.CheckSourceFile(SrcNonExistent, common.RuleSet{})
 	testExpectErrorWithMessage(t, err, "fint: cannot open "+SrcNonExistent)
 }
 
@@ -93,7 +94,7 @@ func TestCheckFile(t *testing.T) {
 
 	// Open non-existent file
 	// Execute once to load configs
-	testExecuteNormal(t, &fint.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, ErrorsObjcNormal)
+	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, ErrorsObjcNormal)
 	err = fint.CheckFile(SrcMatchingButNonExistent, f, nil)
 	testExpectErrorWithMessage(t, err, "fint: cannot open "+SrcMatchingButNonExistent)
 }
@@ -101,13 +102,13 @@ func TestCheckFile(t *testing.T) {
 func TestSetbufsize(t *testing.T) {
 	// When the bufSize is set to 0, default size will be set.
 	fint.Setbufsize(0)
-	_, err := fint.CheckSourceFile(SrcSingleFile, fint.RuleSet{})
+	_, err := fint.CheckSourceFile(SrcSingleFile, common.RuleSet{})
 	if err != nil {
 		t.Errorf("Unexpected error occurred: %v", err)
 	}
 
 	fint.Setbufsize(1)
-	_, err = fint.CheckSourceFile(SrcSingleFile, fint.RuleSet{})
+	_, err = fint.CheckSourceFile(SrcSingleFile, common.RuleSet{})
 	testExpectErrorWithMessage(t, err, "fint: too long line: "+SrcSingleFile)
 }
 
@@ -130,7 +131,7 @@ func TestClean(t *testing.T) {
 }
 
 func testExecuteNormalWithReport(t *testing.T,
-	opt *fint.Opt,
+	opt *common.Opt,
 	expectedViolations int,
 	removeReportBefore bool,
 	removeReportAfter bool) {
@@ -147,7 +148,7 @@ func testExecuteNormalWithReport(t *testing.T,
 	}
 }
 
-func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
+func testExecuteNormal(t *testing.T, opt *common.Opt, expectedViolations int) {
 	v, _ := fint.Execute(opt)
 	if len(v) != expectedViolations {
 		t.Errorf("Expected violations are [%d] but [%d] found", expectedViolations, len(v))
@@ -156,7 +157,7 @@ func testExecuteNormal(t *testing.T, opt *fint.Opt, expectedViolations int) {
 
 func testExecuteErrorWithReport(
 	t *testing.T,
-	opt *fint.Opt,
+	opt *common.Opt,
 	msg string,
 	removeReportBefore bool,
 	removeReportAfter bool) {
@@ -173,7 +174,7 @@ func testExecuteErrorWithReport(
 	}
 }
 
-func testExecuteError(t *testing.T, opt *fint.Opt, msg string) {
+func testExecuteError(t *testing.T, opt *common.Opt, msg string) {
 	_, err := fint.Execute(opt)
 	testExpectErrorWithMessage(t, err, msg)
 }

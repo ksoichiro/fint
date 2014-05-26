@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ksoichiro/fint/common"
+	"github.com/ksoichiro/fint/modules"
 	"io"
 	"io/ioutil"
 	"os"
@@ -17,115 +19,15 @@ import (
 )
 
 const (
-	errPrefix                   = "fint: "
-	defaultBufSize              = 4096
-	newlineDefault              = "\r\n"
-	DirBuiltin                  = "builtin"
-	DirModules                  = "modules"
-	DirTargets                  = "targets"
-	DirLocales                  = "locales"
-	DirTemplates                = "templates"
-	DirSrc                      = "src"
-	DirJs                       = "js"
-	DirCss                      = "css"
-	FileConfig                  = "config.json"
-	FileRuleSet                 = "ruleset.json"
-	HtmlIndex                   = "index.html"
-	HtmlTmplIndex               = "_index.html"
-	HtmlTmplIndexSrclist        = "_index_srclist.html"
-	HtmlTmplSrc                 = "_src.html"
-	HtmlTmplSrcSrcline          = "_src_srcline.html"
-	HtmlTmplSrcViolationMsg     = "_src_violation_msg.html"
-	HtmlTmplSrcViolationMsglist = "_src_violation_msglist.html"
-	CssMarkerClsNg              = "ng"
-	CssMarkerClsOk              = "ok"
-	TagSrcPath                  = "@SRCPATH@"
-	TagViolations               = "@VIOLATIONS@"
-	TagRootPath                 = "@ROOTPATH@"
-	TagMarkerClass              = "@MARKER_CLASS@"
-	TagHasViolations            = "@HAS_VIOLATIONS@"
-	TagLineNumber               = "@LINE@"
-	TagCode                     = "@CODE@"
-	TagViolationMsg             = "@VIOLATION_MSG@"
-	TagViolationMsglist         = "@VIOLATION_MSGLIST@"
-	TagSrclines                 = "@SRCLINES@"
-	TagSrclist                  = "@SRCLIST@"
+	errPrefix      = "fint: "
+	defaultBufSize = 4096
+	newlineDefault = "\r\n"
 )
 
-type Opt struct {
-	SrcRoot    string
-	ConfigPath string
-	Locale     string
-	Id         string
-	Html       string
-	Template   string
-	Force      bool
-	Quiet      bool
-}
-
-type LocalizedRule struct {
-	Id      string
-	Message string
-}
-type LocalizedModules struct {
-	Id    string
-	Rules []LocalizedRule
-}
-type LocalizedRuleSet struct {
-	Id      string
-	Modules []LocalizedModules
-}
-type LocalizedTarget struct {
-	RuleSets []LocalizedRuleSet
-}
-
-type Rule struct {
-	Id      string
-	Args    []interface{}
-	Message map[string]string
-}
-
-type Module struct {
-	Id    string
-	Rules []Rule
-}
-
-type RuleSet struct {
-	Id          string
-	Description string
-	Pattern     string
-	Modules     []Module
-}
-
-type Target struct {
-	Id       string
-	RuleSets []RuleSet
-	Locales  []string
-}
-
-type ModuleConfig struct {
-	Id          string
-	Type        string
-	Description string
-	Executable  string
-	Args        []interface{}
-}
-
-type Config struct {
-	ModuleConfigs []ModuleConfig
-	Targets       []Target
-}
-
-type Violation struct {
-	Filename string
-	Line     int
-	Message  string
-}
-
 var (
-	opt        *Opt
-	config     *Config
-	violations []Violation
+	opt        *common.Opt
+	config     *common.Config
+	violations []common.Violation
 	term       string
 	bufSize    int
 )
@@ -168,7 +70,7 @@ func newError(message string) error {
 	return errors.New(errPrefix + message)
 }
 
-func printViolation(v Violation) {
+func printViolation(v common.Violation) {
 	var format string
 	if term == "dumb" {
 		format = "%s:%d:1: warning: %s\n"
@@ -182,27 +84,27 @@ func printReportHeader() {
 	if opt.Html == "" {
 		return
 	}
-	os.MkdirAll(filepath.Join(opt.Html, DirJs), 0777)
-	os.MkdirAll(filepath.Join(opt.Html, DirCss), 0777)
-	pathTmpl := filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template)
-	CopyFile(filepath.Join(pathTmpl, HtmlTmplIndex), filepath.Join(opt.Html, HtmlIndex))
-	CopyDir(filepath.Join(pathTmpl, DirJs), filepath.Join(opt.Html, DirJs))
-	CopyDir(filepath.Join(pathTmpl, DirCss), filepath.Join(opt.Html, DirCss))
+	os.MkdirAll(filepath.Join(opt.Html, common.DirJs), 0777)
+	os.MkdirAll(filepath.Join(opt.Html, common.DirCss), 0777)
+	pathTmpl := filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template)
+	CopyFile(filepath.Join(pathTmpl, common.HtmlTmplIndex), filepath.Join(opt.Html, common.HtmlIndex))
+	CopyDir(filepath.Join(pathTmpl, common.DirJs), filepath.Join(opt.Html, common.DirJs))
+	CopyDir(filepath.Join(pathTmpl, common.DirCss), filepath.Join(opt.Html, common.DirCss))
 }
 
-func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) {
+func printReportBody(filename string, vs []common.Violation, vmap map[int][]common.Violation) {
 	if opt.Html == "" {
 		return
 	}
 	MkReportDir(true)
 
 	// Add source file entry to index
-	f, _ := os.OpenFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, _ := os.OpenFile(filepath.Join(opt.Html, common.HtmlTmplIndexSrclist), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer f.Close()
 
-	srclist := readFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplIndexSrclist))
-	srclist = replaceTag(srclist, TagSrcPath, filename)
-	srclist = replaceTag(srclist, TagViolations, fmt.Sprintf("%d", len(vs)))
+	srclist := readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplIndexSrclist))
+	srclist = replaceTag(srclist, common.TagSrcPath, filename)
+	srclist = replaceTag(srclist, common.TagViolations, fmt.Sprintf("%d", len(vs)))
 
 	f.WriteString(srclist + newlineDefault)
 	f.Close()
@@ -213,12 +115,12 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	}
 	rootPath = strings.TrimSuffix(rootPath, string(filepath.Separator))
 
-	os.MkdirAll(filepath.Join(opt.Html, DirSrc, filepath.Dir(filename)), 0777)
+	os.MkdirAll(filepath.Join(opt.Html, common.DirSrc, filepath.Dir(filename)), 0777)
 
-	pathDetail := filepath.Join(opt.Html, DirSrc, filename+".html")
-	CopyFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplSrc), pathDetail)
-	replaceTagInFile(pathDetail, TagRootPath, rootPath)
-	replaceTagInFile(pathDetail, TagSrcPath, filename)
+	pathDetail := filepath.Join(opt.Html, common.DirSrc, filename+".html")
+	CopyFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrc), pathDetail)
+	replaceTagInFile(pathDetail, common.TagRootPath, rootPath)
+	replaceTagInFile(pathDetail, common.TagSrcPath, filename)
 
 	pathDetailSrcline := pathDetail + ".srcline.tmp"
 	fsrcline, _ := os.OpenFile(pathDetailSrcline, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -230,41 +132,41 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	for n := 1; true; n++ {
 		line, _, err := readLine(r)
 		var markerCls string
-		var vs []Violation
+		var vs []common.Violation
 		var ok bool
 		if vs, ok = vmap[n]; ok && 0 < len(vs) {
-			markerCls = CssMarkerClsNg
+			markerCls = common.CssMarkerClsNg
 		} else {
-			markerCls = CssMarkerClsOk
+			markerCls = common.CssMarkerClsOk
 		}
 
-		srcline := readFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplSrcSrcline))
-		srcline = replaceTag(string(srcline), TagMarkerClass, markerCls)
+		srcline := readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrcSrcline))
+		srcline = replaceTag(string(srcline), common.TagMarkerClass, markerCls)
 		var hasViolations string
 		if 0 < len(vs) {
 			hasViolations = "true"
 		} else {
 			hasViolations = "false"
 		}
-		srcline = replaceTag(srcline, TagHasViolations, hasViolations)
-		srcline = replaceTag(srcline, TagLineNumber, fmt.Sprintf("%d", n))
-		srcline = replaceTag(srcline, TagCode, line)
+		srcline = replaceTag(srcline, common.TagHasViolations, hasViolations)
+		srcline = replaceTag(srcline, common.TagLineNumber, fmt.Sprintf("%d", n))
+		srcline = replaceTag(srcline, common.TagCode, line)
 		fsrcline.WriteString(srcline + newlineDefault)
 
 		if 0 < len(vs) {
-			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplSrcViolationMsglist)), TagLineNumber, fmt.Sprintf("%d", n))
+			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrcViolationMsglist)), common.TagLineNumber, fmt.Sprintf("%d", n))
 
 			pathDetailMsg := pathDetail + ".msg.tmp"
 			fmsg, _ := os.OpenFile(pathDetailMsg, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 			defer fmsg.Close()
-			msgTmpl := readFile(filepath.Join(opt.ConfigPath, DirBuiltin, DirTemplates, opt.Template, HtmlTmplSrcViolationMsg))
+			msgTmpl := readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrcViolationMsg))
 			for i := range vs {
-				msg := replaceTag(msgTmpl, TagViolationMsg, vs[i].Message)
+				msg := replaceTag(msgTmpl, common.TagViolationMsg, vs[i].Message)
 				fmsg.WriteString(msg + newlineDefault)
 			}
 			fmsg.Close()
 
-			msglist = replaceTag(msglist, TagViolationMsglist, readFile(pathDetailMsg))
+			msglist = replaceTag(msglist, common.TagViolationMsglist, readFile(pathDetailMsg))
 			os.Remove(pathDetailMsg)
 
 			fsrcline.WriteString(msglist + newlineDefault)
@@ -276,7 +178,7 @@ func printReportBody(filename string, vs []Violation, vmap map[int][]Violation) 
 	fsrc.Close()
 	fsrcline.Close()
 
-	replaceTagInFile(pathDetail, TagSrclines, readFile(pathDetailSrcline))
+	replaceTagInFile(pathDetail, common.TagSrclines, readFile(pathDetailSrcline))
 	os.Remove(pathDetailSrcline)
 }
 
@@ -325,8 +227,8 @@ func finishReportFiles() {
 	if opt.Html == "" {
 		return
 	}
-	replaceTagInFile(filepath.Join(opt.Html, HtmlIndex), TagSrclist, readFile(filepath.Join(opt.Html, HtmlTmplIndexSrclist)))
-	os.Remove(filepath.Join(opt.Html, HtmlTmplIndexSrclist))
+	replaceTagInFile(filepath.Join(opt.Html, common.HtmlIndex), common.TagSrclist, readFile(filepath.Join(opt.Html, common.HtmlTmplIndexSrclist)))
+	os.Remove(filepath.Join(opt.Html, common.HtmlTmplIndexSrclist))
 }
 
 func dirExists(path string) error {
@@ -343,19 +245,19 @@ func LoadConfig() (err error) {
 	}
 
 	// Get target ID directory
-	pathTarget := filepath.Join(pathConfig, DirBuiltin, DirTargets, opt.Id)
+	pathTarget := filepath.Join(pathConfig, common.DirBuiltin, common.DirTargets, opt.Id)
 	if err = dirExists(pathTarget); err != nil {
 		return newError("no matching target to [" + opt.Id + "]")
 	}
 
 	// Get modules directory
-	pathModules := filepath.Join(pathConfig, DirBuiltin, DirModules)
+	pathModules := filepath.Join(pathConfig, common.DirBuiltin, common.DirModules)
 	if err = dirExists(pathModules); err != nil {
 		return newError("modules directory not found in [" + pathModules + "]")
 	}
 
 	// Load .fint/builtin/modules/*/config.json
-	config = new(Config)
+	config = new(common.Config)
 	filesModules, _ := ioutil.ReadDir(pathModules)
 	for i := range filesModules {
 		entry := filesModules[i]
@@ -363,12 +265,12 @@ func LoadConfig() (err error) {
 			// entry name is the name of module
 			entryPath := filepath.Join(pathModules, entry.Name())
 			var configBytes []byte
-			configBytes, err = ioutil.ReadFile(filepath.Join(entryPath, FileConfig))
+			configBytes, err = ioutil.ReadFile(filepath.Join(entryPath, common.FileConfig))
 			if err != nil {
 				return
 			}
 
-			var c ModuleConfig
+			var c common.ModuleConfig
 			json.Unmarshal(configBytes, &c)
 
 			// Set name as Id to be searchable
@@ -379,25 +281,25 @@ func LoadConfig() (err error) {
 
 	// Load target ruleset
 	var configBytes []byte
-	configBytes, err = ioutil.ReadFile(filepath.Join(pathTarget, FileRuleSet))
+	configBytes, err = ioutil.ReadFile(filepath.Join(pathTarget, common.FileRuleSet))
 	if err != nil {
 		return newError("no matching target to [" + opt.Id + "]")
 	}
-	var target Target
+	var target common.Target
 	json.Unmarshal(configBytes, &target)
 	config.Targets = append(config.Targets, target)
 
 	// Load target locales
-	filesTargetLocales, _ := ioutil.ReadDir(filepath.Join(pathTarget, DirLocales))
+	filesTargetLocales, _ := ioutil.ReadDir(filepath.Join(pathTarget, common.DirLocales))
 	for i := range filesTargetLocales {
 		entry := filesTargetLocales[i]
 		locale := strings.TrimSuffix(entry.Name(), filepath.Ext(entry.Name()))
 
 		// Get contents of en.json, ja.json, ...
 		var configBytes []byte
-		configBytes, _ = ioutil.ReadFile(filepath.Join(pathTarget, DirLocales, entry.Name()))
+		configBytes, _ = ioutil.ReadFile(filepath.Join(pathTarget, common.DirLocales, entry.Name()))
 
-		var lt LocalizedTarget
+		var lt common.LocalizedTarget
 		json.Unmarshal(configBytes, &lt)
 
 		for i := range target.RuleSets {
@@ -421,7 +323,7 @@ func Setbufsize(size int) {
 	}
 }
 
-func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
+func CheckSourceFile(filename string, rs common.RuleSet) (vs []common.Violation, err error) {
 	var f *os.File
 	f, err = os.Open(filename)
 	if err != nil {
@@ -433,7 +335,7 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 		bufSize = defaultBufSize
 	}
 	r := bufio.NewReaderSize(f, bufSize)
-	vmap := make(map[int][]Violation)
+	vmap := make(map[int][]common.Violation)
 	for n := 1; true; n++ {
 		var (
 			lineBytes []byte
@@ -448,29 +350,18 @@ func CheckSourceFile(filename string, rs RuleSet) (vs []Violation, err error) {
 		if err != io.EOF && err != nil {
 			return
 		}
-		var lvs []Violation
-		var v Violation
+		var lvs []common.Violation
 		for i := range rs.Modules {
+			var vsr []common.Violation
 			switch rs.Modules[i].Id {
 			case "pattern_match":
-				for j := range rs.Modules[i].Rules {
-					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Args[0].(string), line); matched {
-						v = Violation{Filename: filename, Line: n, Message: rs.Modules[i].Rules[j].Message[opt.Locale]}
-						lvs = append(lvs, v)
-						vs = append(vs, v)
-					}
-				}
+				vsr = modules.LintPatternMatch(rs.Modules[i], n, filename, line, opt.Locale)
 			case "max_length":
-				for j := range rs.Modules[i].Rules {
-					if matched, _ := regexp.MatchString(rs.Modules[i].Rules[j].Args[0].(string), line); matched {
-						max_len := int(rs.Modules[i].Rules[j].Args[1].(float64))
-						if too_long := max_len < len(line); too_long {
-							v = Violation{Filename: filename, Line: n, Message: fmt.Sprintf(rs.Modules[i].Rules[j].Message[opt.Locale], max_len)}
-							lvs = append(lvs, v)
-							vs = append(vs, v)
-						}
-					}
-				}
+				vsr = modules.LintMaxLength(rs.Modules[i], n, filename, line, opt.Locale)
+			}
+			if vsr != nil {
+				lvs = append(lvs, vsr...)
+				vs = append(vs, vsr...)
 			}
 		}
 		vmap[n] = lvs
@@ -527,9 +418,9 @@ func MkReportDir(whenNotExist bool) (err error) {
 	return
 }
 
-func Execute(o *Opt) (v []Violation, err error) {
+func Execute(o *common.Opt) (v []common.Violation, err error) {
 	// Clear global vars
-	violations = []Violation{}
+	violations = []common.Violation{}
 	bufSize = 0
 
 	if o.SrcRoot == "" {
@@ -565,7 +456,7 @@ func Execute(o *Opt) (v []Violation, err error) {
 	return violations, err
 }
 
-func ExecuteAsCommand(o *Opt) (err error) {
+func ExecuteAsCommand(o *common.Opt) (err error) {
 	term = os.Getenv("TERM")
 	_, err = Execute(o)
 	if err != nil {
