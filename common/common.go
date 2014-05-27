@@ -3,7 +3,15 @@
 
 package common
 
+import (
+	"errors"
+)
+
 const (
+	errPrefix      = "fint: "
+	DefaultBufSize = 4096
+	NewlineDefault = "\r\n"
+
 	DirBuiltin                  = "builtin"
 	DirModules                  = "modules"
 	DirTargets                  = "targets"
@@ -34,6 +42,10 @@ const (
 	TagViolationMsglist         = "@VIOLATION_MSGLIST@"
 	TagSrclines                 = "@SRCLINES@"
 	TagSrclist                  = "@SRCLIST@"
+)
+
+var (
+	BufSize int
 )
 
 type Opt struct {
@@ -70,14 +82,14 @@ type Rule struct {
 }
 
 type Module struct {
-	Id    string
-	Rules []Rule
+	Id      string
+	Pattern string
+	Rules   []Rule
 }
 
 type RuleSet struct {
 	Id          string
 	Description string
-	Pattern     string
 	Modules     []Module
 }
 
@@ -104,4 +116,8 @@ type Violation struct {
 	Filename string
 	Line     int
 	Message  string
+}
+
+func NewError(message string) error {
+	return errors.New(errPrefix + message)
 }

@@ -6,7 +6,6 @@ package fint
 import (
 	"bufio"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/ksoichiro/fint/common"
 	"github.com/ksoichiro/fint/modules"
@@ -18,18 +17,11 @@ import (
 	"strings"
 )
 
-const (
-	errPrefix      = "fint: "
-	defaultBufSize = 4096
-	newlineDefault = "\r\n"
-)
-
 var (
 	opt        *common.Opt
 	config     *common.Config
 	violations []common.Violation
 	term       string
-	bufSize    int
 )
 
 func CopyFile(src, dst string) (err error) {
@@ -66,10 +58,6 @@ func CopyDir(src, dst string) {
 	}
 }
 
-func newError(message string) error {
-	return errors.New(errPrefix + message)
-}
-
 func printViolation(v common.Violation) {
 	var format string
 	if term == "dumb" {
@@ -92,7 +80,7 @@ func printReportHeader() {
 	CopyDir(filepath.Join(pathTmpl, common.DirCss), filepath.Join(opt.Html, common.DirCss))
 }
 
-func printReportBody(filename string, vs []common.Violation, vmap map[int][]common.Violation) {
+func printReportBody(filename string, vcnt int, vmap map[int][]common.Violation) {
 	if opt.Html == "" {
 		return
 	}
@@ -104,9 +92,9 @@ func printReportBody(filename string, vs []common.Violation, vmap map[int][]comm
 
 	srclist := readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplIndexSrclist))
 	srclist = replaceTag(srclist, common.TagSrcPath, filename)
-	srclist = replaceTag(srclist, common.TagViolations, fmt.Sprintf("%d", len(vs)))
+	srclist = replaceTag(srclist, common.TagViolations, fmt.Sprintf("%d", vcnt))
 
-	f.WriteString(srclist + newlineDefault)
+	f.WriteString(srclist + common.NewlineDefault)
 	f.Close()
 
 	var rootPath = ".." + string(filepath.Separator)
@@ -128,7 +116,7 @@ func printReportBody(filename string, vs []common.Violation, vmap map[int][]comm
 
 	fsrc, _ := os.Open(filename)
 	defer fsrc.Close()
-	r := bufio.NewReaderSize(fsrc, bufSize)
+	r := bufio.NewReaderSize(fsrc, common.BufSize)
 	for n := 1; true; n++ {
 		line, _, err := readLine(r)
 		var markerCls string
@@ -151,7 +139,7 @@ func printReportBody(filename string, vs []common.Violation, vmap map[int][]comm
 		srcline = replaceTag(srcline, common.TagHasViolations, hasViolations)
 		srcline = replaceTag(srcline, common.TagLineNumber, fmt.Sprintf("%d", n))
 		srcline = replaceTag(srcline, common.TagCode, line)
-		fsrcline.WriteString(srcline + newlineDefault)
+		fsrcline.WriteString(srcline + common.NewlineDefault)
 
 		if 0 < len(vs) {
 			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrcViolationMsglist)), common.TagLineNumber, fmt.Sprintf("%d", n))
@@ -162,14 +150,14 @@ func printReportBody(filename string, vs []common.Violation, vmap map[int][]comm
 			msgTmpl := readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrcViolationMsg))
 			for i := range vs {
 				msg := replaceTag(msgTmpl, common.TagViolationMsg, vs[i].Message)
-				fmsg.WriteString(msg + newlineDefault)
+				fmsg.WriteString(msg + common.NewlineDefault)
 			}
 			fmsg.Close()
 
 			msglist = replaceTag(msglist, common.TagViolationMsglist, readFile(pathDetailMsg))
 			os.Remove(pathDetailMsg)
 
-			fsrcline.WriteString(msglist + newlineDefault)
+			fsrcline.WriteString(msglist + common.NewlineDefault)
 		}
 		if err == io.EOF {
 			break
@@ -198,13 +186,13 @@ func replaceTagInFile(filename, tag, repl string) {
 	ftmp, _ := os.OpenFile(filename+".tmp", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	defer ftmp.Close()
 
-	r := bufio.NewReaderSize(fin, bufSize)
+	r := bufio.NewReaderSize(fin, common.BufSize)
 	for n := 1; true; n++ {
 		line, _, err := readLine(r)
 
 		tagRegexp, _ := regexp.Compile(tag)
 		line = tagRegexp.ReplaceAllString(line, repl)
-		ftmp.WriteString(line + newlineDefault)
+		ftmp.WriteString(line + common.NewlineDefault)
 
 		if err == io.EOF {
 			break
@@ -247,13 +235,13 @@ func LoadConfig() (err error) {
 	// Get target ID directory
 	pathTarget := filepath.Join(pathConfig, common.DirBuiltin, common.DirTargets, opt.Id)
 	if err = dirExists(pathTarget); err != nil {
-		return newError("no matching target to [" + opt.Id + "]")
+		return common.NewError("no matching target to [" + opt.Id + "]")
 	}
 
 	// Get modules directory
 	pathModules := filepath.Join(pathConfig, common.DirBuiltin, common.DirModules)
 	if err = dirExists(pathModules); err != nil {
-		return newError("modules directory not found in [" + pathModules + "]")
+		return common.NewError("modules directory not found in [" + pathModules + "]")
 	}
 
 	// Load .fint/builtin/modules/*/config.json
@@ -283,7 +271,7 @@ func LoadConfig() (err error) {
 	var configBytes []byte
 	configBytes, err = ioutil.ReadFile(filepath.Join(pathTarget, common.FileRuleSet))
 	if err != nil {
-		return newError("no matching target to [" + opt.Id + "]")
+		return common.NewError("no matching target to [" + opt.Id + "]")
 	}
 	var target common.Target
 	json.Unmarshal(configBytes, &target)
@@ -319,80 +307,8 @@ func LoadConfig() (err error) {
 
 func Setbufsize(size int) {
 	if 0 < size {
-		bufSize = size
+		common.BufSize = size
 	}
-}
-
-func CheckSourceFile(filename string, rs common.RuleSet) (vs []common.Violation, err error) {
-	var f *os.File
-	f, err = os.Open(filename)
-	if err != nil {
-		err = newError("cannot open " + filename)
-		return
-	}
-	defer f.Close()
-	if bufSize == 0 {
-		bufSize = defaultBufSize
-	}
-	r := bufio.NewReaderSize(f, bufSize)
-	vmap := make(map[int][]common.Violation)
-	for n := 1; true; n++ {
-		var (
-			lineBytes []byte
-			isPrefix  bool
-		)
-		lineBytes, isPrefix, err = r.ReadLine()
-		if isPrefix {
-			err = newError(fmt.Sprintf("too long line: %s", filename))
-			return
-		}
-		line := string(lineBytes)
-		if err != io.EOF && err != nil {
-			return
-		}
-		var lvs []common.Violation
-		for i := range rs.Modules {
-			var vsr []common.Violation
-			switch rs.Modules[i].Id {
-			case "pattern_match":
-				vsr = modules.LintPatternMatch(rs.Modules[i], n, filename, line, opt.Locale)
-			case "max_length":
-				vsr = modules.LintMaxLength(rs.Modules[i], n, filename, line, opt.Locale)
-			}
-			if vsr != nil {
-				lvs = append(lvs, vsr...)
-				vs = append(vs, vsr...)
-			}
-		}
-		vmap[n] = lvs
-		if err == io.EOF {
-			err = nil
-			break
-		}
-	}
-
-	printReportBody(filename, vs, vmap)
-
-	return
-}
-
-func CheckFile(path string, f os.FileInfo, err error) error {
-	if err != nil {
-		return err
-	}
-
-	target := config.Targets[0]
-	for i := range target.RuleSets {
-		rs := target.RuleSets[i]
-		if matched, _ := regexp.MatchString(rs.Pattern, path); matched {
-			v, e := CheckSourceFile(path, rs)
-			if e != nil {
-				return e
-			}
-			violations = append(violations, v...)
-		}
-	}
-	return nil
 }
 
 func pluralize(value int, singular, plural string) string {
@@ -410,7 +326,7 @@ func MkReportDir(whenNotExist bool) (err error) {
 		if opt.Force {
 			os.RemoveAll(opt.Html)
 		} else {
-			err = newError("report directory already exists. use `-f` option to force reporting.")
+			err = common.NewError("report directory already exists. use `-f` option to force reporting.")
 			return
 		}
 	}
@@ -418,17 +334,60 @@ func MkReportDir(whenNotExist bool) (err error) {
 	return
 }
 
+func Lint(srcRoot string) (err error) {
+	target := config.Targets[0]
+	allmap := make(map[string]map[int][]common.Violation)
+	var allv []common.Violation
+	var fmap map[string]map[int][]common.Violation
+	for i := range target.RuleSets {
+		// Lint with each modules
+		rs := target.RuleSets[i]
+		for j := range rs.Modules {
+			switch rs.Modules[j].Id {
+			case "pattern_match":
+				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, modules.LintPatternMatchFunc)
+			case "max_length":
+				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, modules.LintMaxLengthFunc)
+			}
+			if err != nil {
+				return
+			}
+			// Merge into one map
+			if fmap != nil {
+				for f, vmap := range fmap {
+					if allmap[f] == nil {
+						allmap[f] = make(map[int][]common.Violation)
+					}
+					for n, vs := range vmap {
+						allmap[f][n] = append(allmap[f][n], vs...)
+						allv = append(allv, vs...)
+					}
+				}
+			}
+		}
+	}
+	violations = allv
+	for f, vmap := range allmap {
+		vcnt := 0
+		for _, vs := range vmap {
+			vcnt = vcnt + len(vs)
+		}
+		printReportBody(f, vcnt, vmap)
+	}
+	return
+}
+
 func Execute(o *common.Opt) (v []common.Violation, err error) {
 	// Clear global vars
 	violations = []common.Violation{}
-	bufSize = 0
+	common.BufSize = 0
 
 	if o.SrcRoot == "" {
-		err = newError("source directory is required.")
+		err = common.NewError("source directory is required.")
 		return
 	}
 	if o.Id == "" {
-		err = newError("ID of the rule set is required.")
+		err = common.NewError("ID of the rule set is required.")
 		return
 	}
 	opt = o
@@ -438,7 +397,7 @@ func Execute(o *common.Opt) (v []common.Violation, err error) {
 	}
 
 	if opt.ConfigPath == "" {
-		err = newError("config directory is required.")
+		err = common.NewError("config directory is required.")
 		return
 	}
 
@@ -449,7 +408,7 @@ func Execute(o *common.Opt) (v []common.Violation, err error) {
 
 	printReportHeader()
 
-	err = filepath.Walk(opt.SrcRoot, CheckFile)
+	err = Lint(opt.SrcRoot)
 
 	finishReportFiles()
 
@@ -476,7 +435,7 @@ func ExecuteAsCommand(o *common.Opt) (err error) {
 			fmt.Printf("\n%d %s generated.\n",
 				len(violations), pluralize(len(violations), "warning", "warnings"))
 		}
-		err = newError("error while executing lint")
+		err = common.NewError("error while executing lint")
 	}
 	return
 }

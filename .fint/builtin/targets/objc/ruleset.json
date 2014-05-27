@@ -3,10 +3,10 @@
     {
       "id": "ObjectiveCSource",
       "description": "Objective-C",
-      "pattern": ".*\\.(m|mm|h)$",
       "modules": [
         {
           "id": "pattern_match",
+          "pattern": ".*\\.(m|mm|h)$",
           "rules": [
             {"id": "WhitespaceAfterElse", "args": ["else{"]},
             {"id": "WhitespaceBeforeElse", "args": ["}else"]},
@@ -21,6 +21,7 @@
         },
         {
           "id": "max_length",
+          "pattern": ".*\\.(m|mm|h)$",
           "rules": [
             {"id": "ExceedMaxLength", "args": [".*", 80]}
           ]

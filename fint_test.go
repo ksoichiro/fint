@@ -4,9 +4,9 @@
 package fint_test
 
 import (
-	"errors"
 	"github.com/ksoichiro/fint"
 	"github.com/ksoichiro/fint/common"
+	"github.com/ksoichiro/fint/modules"
 	"os"
 	"testing"
 )
@@ -80,36 +80,30 @@ func TestExecuteError(t *testing.T) {
 	testExecuteError(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigNoTarget, Locale: LocaleDefault, Id: LintIdObjc}, "fint: no matching target to ["+LintIdObjc+"]")
 }
 
-func TestCheckSourceFile(t *testing.T) {
-	_, err := fint.CheckSourceFile(SrcNonExistent, common.RuleSet{})
-	testExpectErrorWithMessage(t, err, "fint: cannot open "+SrcNonExistent)
-}
+func TestSetbufsizeAndLint(t *testing.T) {
+	// normal
+	var m common.Module
+	m.Pattern = ".*\\.(m|mm|h)$"
+	m.Rules = []common.Rule{
+		common.Rule{Id: "ExceedMaxLength", Args: []interface{}{".*", 80.0}, Message: map[string]string{"en": "Line length exceeds %d characters"}}}
 
-func TestCheckFile(t *testing.T) {
-	// Pass an error message as filepath.Walk will do.
-	errIn := errors.New("test message")
-	f, _ := os.Stat(".")
-	err := fint.CheckFile("", f, errIn)
-	testExpectErrorWithMessage(t, err, errIn.Error())
-
-	// Open non-existent file
-	// Execute once to load configs
-	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleDefault, Id: LintIdObjc}, ErrorsObjcNormal)
-	err = fint.CheckFile(SrcMatchingButNonExistent, f, nil)
-	testExpectErrorWithMessage(t, err, "fint: cannot open "+SrcMatchingButNonExistent)
-}
-
-func TestSetbufsize(t *testing.T) {
 	// When the bufSize is set to 0, default size will be set.
 	fint.Setbufsize(0)
-	_, err := fint.CheckSourceFile(SrcSingleFile, common.RuleSet{})
+	_, err := modules.LintWalk(SrcRootObjcNormal, m, LocaleDefault, modules.LintMaxLengthFunc)
 	if err != nil {
 		t.Errorf("Unexpected error occurred: %v", err)
 	}
 
 	fint.Setbufsize(1)
-	_, err = fint.CheckSourceFile(SrcSingleFile, common.RuleSet{})
-	testExpectErrorWithMessage(t, err, "fint: too long line: "+SrcSingleFile)
+	_, err = modules.LintWalk(SrcRootObjcNormal, m, LocaleDefault, modules.LintMaxLengthFunc)
+	testExpectErrorWithMessage(t, err, "fint: too long line: testdata/objc/FintExample/FintExample/FEAppDelegate.h")
+
+	// Do normal test to initialize opt
+	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, ErrorsObjcNormal)
+
+	fint.Setbufsize(1)
+	err = fint.Lint(SrcRootObjcNormal)
+	testExpectErrorWithMessage(t, err, "fint: too long line: testdata/objc/FintExample/FintExample/FEAppDelegate.h")
 }
 
 func TestCopyDir(t *testing.T) {
