@@ -16,6 +16,7 @@ const (
 	SrcRootObjcNormal         = "testdata/objc/FintExample"
 	SrcRootObjcEmpty          = "testdata/objc/FintExample_Empty"
 	SrcRootObjcSingleError    = "testdata/objc/FintExample_SingleError"
+	SrcRootObjcSymlink        = "testdata/objc/link"
 	SrcSingleFile             = "testdata/objc/FintExample/FintExample/FEAppDelegate.m"
 	SrcNonExistent            = "testdata/non_existent_file"
 	SrcMatchingButNonExistent = "testdata/non_existent_file.m"
@@ -63,6 +64,7 @@ func TestExecute(t *testing.T) {
 	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcEmpty, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 0)
 	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, 1)
 	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcSingleError, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc, Quiet: true}, 1)
+	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcSymlink, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, ErrorsObjcNormal)
 }
 
 func TestExecuteError(t *testing.T) {
