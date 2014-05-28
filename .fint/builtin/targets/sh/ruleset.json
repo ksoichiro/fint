@@ -1,0 +1,24 @@
+{
+  "rulesets": [
+    {
+      "id": "Shell",
+      "description": "Shell Script",
+      "modules": [
+        {
+          "id": "pattern_match",
+          "pattern": ".*\\.sh$",
+          "rules": [
+            {"id": "InvalidRedirect", "args": ["&>"]}
+          ]
+        },
+        {
+          "id": "max_length",
+          "pattern": ".*\\.sh$",
+          "rules": [
+            {"id": "ExceedMaxLength", "args": [".*", 80]}
+          ]
+        }
+      ]
+    }
+  ]
+}

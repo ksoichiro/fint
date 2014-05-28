@@ -1,0 +1,21 @@
+{
+  "rulesets": [
+    {
+      "id": "Shell",
+      "modules": [
+        {
+          "id": "pattern_match",
+          "rules": [
+            {"id": "InvalidRedirect", "message": "Invalid redirect format"}
+          ]
+        },
+        {
+          "id": "max_length",
+          "rules": [
+            {"id": "ExceedMaxLength", "message": "Line length exceeds %d characters"}
+          ]
+        }
+      ]
+    }
+  ]
+}
