@@ -6,7 +6,8 @@
         {
           "id": "pattern_match",
           "rules": [
-            {"id": "InvalidRedirect", "message": "Invalid redirect format"}
+            {"id": "InvalidRedirect", "message": "Invalid redirect format"},
+            {"id": "TrailingWhitespace", "message": "Remove trailing spaces"}
           ]
         },
         {

@@ -7,3 +7,6 @@ something 2>&1
 something 2&>1
 
 if [ -d ${HOME} ]; then echo "do something blur blur blur..."; else echo "do something"; fi
+
+# Trailing space is not allowed
+echo "Hello, world!" 
