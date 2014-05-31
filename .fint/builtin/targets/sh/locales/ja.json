@@ -1,0 +1,22 @@
+{
+  "rulesets": [
+    {
+      "id": "Shell",
+      "modules": [
+        {
+          "id": "pattern_match",
+          "rules": [
+            {"id": "InvalidRedirect", "message": "誤ったリダイレクトの形式です"},
+            {"id": "TrailingWhitespace", "message": "行末のスペースを削除してください"}
+          ]
+        },
+        {
+          "id": "max_length",
+          "rules": [
+            {"id": "ExceedMaxLength", "message": "1行の長さが%d文字を超えています"}
+          ]
+        }
+      ]
+    }
+  ]
+}
