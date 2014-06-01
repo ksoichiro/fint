@@ -7,7 +7,7 @@
 but doesn't have syntax analysis feature -- so it is a fake lint :P  
 **fint** is portable, executable on multiple platform, easy to integrate into your build process.
 
-![Example](docs/screenshot.png)
+![Example](https://raw.githubusercontent.com/ksoichiro/fint/master/docs/screenshot.png)
 
 ## Installation
 
@@ -34,7 +34,7 @@ TERM=dumb ~/go/bin/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc
 If format error found, the command will exit with code 1, otherwise 0.  
 The results will be shown to the source code like normal syntax warnings.
 
-See sample Xcode projects in [`testdata/objc`](testdata/objc) directory for details.
+See sample Xcode projects in [`testdata/objc`](https://github.com/ksoichiro/fint/tree/master/testdata/objc) directory for details.
 
 ### Execute on command line
 
@@ -238,4 +238,4 @@ This module checks if the line exceeds a certain length.
 
 Copyright (c) 2014 Soichiro Kashima  
 Licensed under MIT license.  
-See the bundled [LICENSE](LICENSE) file for details.
+See the bundled [LICENSE](https://github.com/ksoichiro/fint/blob/master/LICENSE) file for details.
