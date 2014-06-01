@@ -7,7 +7,9 @@
 <link rel="stylesheet" type="text/css" href="../../../../../css/main.css" />
 <link rel="stylesheet" type="text/css" href="../../../../../css/src.css" />
 <script type="text/javascript" src="../../../../../js/src.js"></script>
-</head><body>
+</head>
+<body>
+<div>
 <h1><a href="../../../../../index.html">fint report</a></h1>
 
 <h2>Source File</h2>
@@ -55,15 +57,23 @@
 
 </td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l15', false);"><td class="line">15</td><td class="code"><pre>    // Override point for customization after application launch.</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l15', true);"><td class="line">15</td><td class="code"><pre>	// Override point for customization after application launch.</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l16', false);"><td class="line">16</td><td class="code"><pre>    self.window.backgroundColor = [UIColor whiteColor];</pre></td></tr>
+<tr id="msg_l15" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Use spaces for identation instead of tab</div>
+
+</td></tr>
+
+<tr class="ng" onclick="toggleMessages('msg_l16', true);"><td class="line">16</td><td class="code"><pre>    self.window.backgroundColor = [UIColor whiteColor];  </pre></td></tr>
+
+<tr id="msg_l16" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Remove trailing spaces</div>
+
+</td></tr>
 
 <tr class="ok" onclick="toggleMessages('msg_l17', false);"><td class="line">17</td><td class="code"><pre>    [self.window makeKeyAndVisible];</pre></td></tr>
 
 <tr class="ng" onclick="toggleMessages('msg_l18', true);"><td class="line">18</td><td class="code"><pre>    if(floor(NSFoundationVersionNumber_iOS_6_1) < NSFoundationVersionNumber){</pre></td></tr>
 
-<tr id="msg_l18" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted before if</div>
+<tr id="msg_l18" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after if</div>
 
 <div class="msg">Space must be inserted between ')' and '{'</div>
 
@@ -79,7 +89,7 @@
 
 <tr id="msg_l20" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted before else</div>
 
-<div class="msg">Space must be inserted before if</div>
+<div class="msg">Space must be inserted after if</div>
 
 <div class="msg">Space must be inserted between ')' and '{'</div>
 
@@ -139,7 +149,9 @@
 
 <tr class="ng" onclick="toggleMessages('msg_l38', true);"><td class="line">38</td><td class="code"><pre>    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. </pre></td></tr>
 
-<tr id="msg_l38" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+<tr id="msg_l38" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Remove trailing spaces</div>
+
+<div class="msg">Line length exceeds 80 characters</div>
 
 </td></tr>
 

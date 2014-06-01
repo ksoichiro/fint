@@ -19,6 +19,11 @@
     </div>
 
     <div id="contents">
+<h1 id="fint">fint</h1>
+
+<p><a href="https://travis-ci.org/ksoichiro/fint"><img src="https://travis-ci.org/ksoichiro/fint.svg?branch=master" alt="Build Status" title=""></a> <br>
+<a href="https://coveralls.io/r/ksoichiro/fint?branch=master"><img src="https://coveralls.io/repos/ksoichiro/fint/badge.png?branch=master" alt="Coverage Status" title=""></a></p>
+
 <p><strong>fint</strong> is a lightweight, simple source code check tool, <br>
 but doesn’t have syntax analysis feature – so it is a fake lint :P <br>
 <strong>fint</strong> is portable, executable on multiple platform, easy to integrate into your build process.</p>
@@ -46,7 +51,7 @@ to shell script form:</p>
 <p>If format error found, the command will exit with code 1, otherwise 0. <br>
 The results will be shown to the source code like normal syntax warnings.</p>
 
-<p>See sample Xcode projects in <a href="https://github.com/ksoichiro/fint/blob/master/testdata/objc"><code>testdata/objc</code></a> directory for details.</p>
+<p>See sample Xcode projects in <a href="https://github.com/ksoichiro/fint/tree/master/testdata/objc"><code>testdata/objc</code></a> directory for details.</p><div class="se-section-delimiter"></div>
 
 <h3 id="execute-on-command-line">Execute on command line</h3>
 
@@ -109,15 +114,15 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
 </tr>
 <tr>
   <td><code>-f</code></td>
-  <td>Force generating report to existing directory. Default is <code>false</code>.</td>
+  <td>Force generating report to existing directory. Default value is <code>false</code>.</td>
 </tr>
 <tr>
   <td><code>-q</code></td>
-  <td>Quiet mode. Suppresses output. Default is <code>false</code>.</td>
+  <td>Quiet mode. Suppresses output. Default value is <code>false</code>.</td>
 </tr>
 <tr>
   <td><code>-template</code></td>
-  <td>HTML report template name. Default is <code>default</code>.</td>
+  <td>HTML report template name. Default value is <code>default</code>.  Currently, <code>default</code> and <code>dark</code> is available.</td>
 </tr>
 </tbody></table>
 
@@ -126,7 +131,7 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
 
 <h3 id="structure">Structure</h3>
 
-<pre><code>.fint // can be changed by `-c` option
+<pre><code>.fint
 └── builtin
     ├── modules
     │&nbsp;&nbsp; ├── max_length
@@ -134,12 +139,30 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
     │&nbsp;&nbsp; └── pattern_match
     │&nbsp;&nbsp;     └── config.json
     ├── targets
-    │&nbsp;&nbsp; └── objc
+    │&nbsp;&nbsp; ├── objc
+    │&nbsp;&nbsp; │&nbsp;&nbsp; ├── locales
+    │&nbsp;&nbsp; │&nbsp;&nbsp; │&nbsp;&nbsp; ├── en.json
+    │&nbsp;&nbsp; │&nbsp;&nbsp; │&nbsp;&nbsp; └── ja.json
+    │&nbsp;&nbsp; │&nbsp;&nbsp; └── ruleset.json
+    │&nbsp;&nbsp; └── sh
     │&nbsp;&nbsp;     ├── locales
     │&nbsp;&nbsp;     │&nbsp;&nbsp; ├── en.json
     │&nbsp;&nbsp;     │&nbsp;&nbsp; └── ja.json
     │&nbsp;&nbsp;     └── ruleset.json
     └── templates
+        ├── dark
+        │&nbsp;&nbsp; ├── _index.html
+        │&nbsp;&nbsp; ├── _index_srclist.html
+        │&nbsp;&nbsp; ├── _src.html
+        │&nbsp;&nbsp; ├── _src_srcline.html
+        │&nbsp;&nbsp; ├── _src_violation_msg.html
+        │&nbsp;&nbsp; ├── _src_violation_msglist.html
+        │&nbsp;&nbsp; ├── css
+        │&nbsp;&nbsp; │&nbsp;&nbsp; ├── index.css
+        │&nbsp;&nbsp; │&nbsp;&nbsp; ├── main.css
+        │&nbsp;&nbsp; │&nbsp;&nbsp; └── src.css
+        │&nbsp;&nbsp; └── js
+        │&nbsp;&nbsp;     └── src.js
         └── default
             ├── _index.html
             ├── _index_srclist.html
@@ -153,11 +176,28 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
             │&nbsp;&nbsp; └── src.css
             └── js
                 └── src.js
-</code></pre><div class="se-section-delimiter"></div>
+</code></pre>
 
-<h3 id="rule-sets">Rule sets</h3>
+<h3 id="configuration-root-directory">Configuration root directory</h3>
 
-<p>Config file includes lint rule sets(<code>ruleset.json</code>), which is the top level element. Array.</p>
+<p>All the configurations for <code>fint</code> must be included in the <code>.fint</code> directory. <br>
+This directory can be changed by <code>-c</code> option.</p>
+
+<h3 id="targets">Targets</h3>
+
+<p><code>fint</code> needs to know which modules to use for lint and how to use the modules. <br>
+“Target” resolves them for a certain language or project. <br>
+Targets are located in <code>.fint/targets</code>. <br>
+To select a target, specify subdirectory name with <code>-i</code> option. <br>
+Available targets:</p>
+
+<ul>
+<li>objc</li>
+<li>sh</li>
+</ul>
+
+<p>In each target directories, <code>ruleset.json</code> must be located. <br>
+This file defines the lint rule sets in the JSON format.</p>
 
 <table>
 <thead>
@@ -167,29 +207,62 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
 </tr>
 </thead>
 <tbody><tr>
-  <td><code>id</code></td>
-  <td>ID of the rule set. This will be used to select rule set by option <code>-i</code>.</td>
+  <td><code>rulesets</code></td>
+  <td>JSON array that includes the rule sets. Target can have multiple rule sets because the projects will have multiple file-types and they need multiple rules for lint.</td>
 </tr>
 <tr>
-  <td><code>description</code></td>
+  <td><code>rulesets</code> &gt; <code>id</code></td>
+  <td>ID of the rule set. Currently, this is just a comment and not used for lint.</td>
+</tr>
+<tr>
+  <td><code>rulesets</code> &gt; <code>description</code></td>
   <td>Description of this rule set. This will not be used from the program for now.</td>
 </tr>
 <tr>
-  <td><code>pattern</code></td>
-  <td>File path pattern to apply this rule set. Regular expression.</td>
-</tr>
-<tr>
-  <td><code>modules</code></td>
-  <td>Details of the rule set. See ‘Modules’.</td>
+  <td><code>rulesets</code> &gt; <code>modules</code></td>
+  <td>Module configurations for this rule set. See ‘Modules’ for details.</td>
 </tr>
 </tbody></table>
 
 
 <h3 id="modules">Modules</h3>
 
-<p>Modules describe parameters, warning messages for the lint logics. <br>
-Each element of the array describes one lint logic type. <br>
-Basic structure is below.</p>
+<p>“Module” means the lint logic which defines how to check source files. <br>
+Modules’ has several descriptions and configurations.</p>
+
+<h4 id="description">Description</h4>
+
+<p>Descriptions for each modules are located in <code>.fint/modules</code>. <br>
+In <code>.fint/module/[MODULE_NAME]/config.json</code>, following information is defined:</p>
+
+<table>
+<thead>
+<tr>
+  <th>Item</th>
+  <th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+  <td><code>type</code></td>
+  <td>Is the module built-in or external?</td>
+</tr>
+<tr>
+  <td><code>executable</code></td>
+  <td>If it’s external module, where is it?</td>
+</tr>
+<tr>
+  <td><code>description</code></td>
+  <td>What is this module?</td>
+</tr>
+</tbody></table>
+
+
+<h4 id="configuration-1">Configuration</h4>
+
+<p>Each “targets” must have <code>ruleset.json</code> to define lint rule sets using “modules”. <br>
+So you should modify <code>ruleset.json</code> to configure modules.</p>
+
+<p>A normal built-in module have the following configuration structure:</p>
 
 <table>
 <thead>
@@ -200,32 +273,61 @@ Basic structure is below.</p>
 </thead>
 <tbody><tr>
   <td><code>id</code></td>
-  <td>ID of the lint logic. This is predefined in the program and not changeable.</td>
+  <td>ID of the module.</td>
+</tr>
+<tr>
+  <td><code>pattern</code></td>
+  <td>File path pattern to select target source file.</td>
 </tr>
 <tr>
   <td><code>rules</code></td>
-  <td>Array of the specific rules.</td>
+  <td>Rule for this modules.</td>
 </tr>
 <tr>
   <td><code>rules</code> &gt; <code>id</code></td>
-  <td>ID of the rule.</td>
+  <td>ID of the rule. This ID will be used in localization file.</td>
 </tr>
 <tr>
   <td><code>rules</code> &gt; <code>args</code></td>
-  <td>Argument for the lint logic. Optional.</td>
-</tr>
-<tr>
-  <td><code>rules</code> &gt; <code>message</code></td>
-  <td>Message to show when there is a violation of the rule. This is defined not in the <code>ruleset.json</code> but in the <code>locales/[LOCALE].json</code>.</td>
+  <td>Arguments for the rule. Usage of this item will be different for each modules.</td>
 </tr>
 </tbody></table>
 
 
-<p>Currently, the following modules are defined.</p><div class="se-section-delimiter"></div>
+<h4 id="localization">Localization</h4>
 
-<h4 id="pattern-match">Pattern match</h4>
+<p>Locale for lint warning messages. <br>
+To select locales, specify locale name with <code>-l</code> option. <br>
+Available locales:</p>
 
-<p>This module checks if the line matching the <code>pattern</code>.  </p>
+<ul>
+<li>en</li>
+<li>ja</li>
+</ul>
+
+<p>Localized messages are defined in <code>.fint/builtin/targets/[TARGET_NAME]/locales/[LOCALE].json</code>.</p>
+
+<h3 id="html-report">HTML report</h3>
+
+<p><code>fint</code> can output HTML report. <br>
+To use this feature, specify reporting directory with <code>-h</code> option.</p>
+
+<p>You can also configure HTML template. <br>
+To select a template, specify subdirectroy name with <code>-template</code> option. <br>
+Available templates:</p>
+
+<ul>
+<li>default</li>
+<li>dark</li>
+</ul>
+
+<p>Templates are located in <code>.fint/builtin/templates/[TEMPLATE_NAME]</code>.</p>
+
+<h2 id="built-in-modules">Built-in modules</h2>
+
+<h3 id="pattern-match">Pattern match</h3>
+
+<p>This module checks if the line matching the pattern.  </p>
 
 <table>
 <thead>
@@ -239,17 +341,13 @@ Basic structure is below.</p>
   <td><code>pattern_match</code></td>
 </tr>
 <tr>
-  <td><code>rules</code> &gt; <code>pattern</code></td>
+  <td><code>rules</code> &gt; <code>args</code> (0)</td>
   <td>Forbidden pattern of the line.</td>
-</tr>
-<tr>
-  <td><code>rules</code> &gt; <code>args</code></td>
-  <td>Not used.</td>
 </tr>
 </tbody></table>
 
 
-<h4 id="max-length">Max length</h4>
+<h3 id="max-length">Max length</h3>
 
 <p>This module checks if the line exceeds a certain length.</p>
 
@@ -265,16 +363,14 @@ Basic structure is below.</p>
   <td><code>max_length</code></td>
 </tr>
 <tr>
-  <td><code>rules</code> &gt; <code>pattern</code></td>
+  <td><code>rules</code> &gt; <code>args</code> (0)</td>
   <td>Pattern of the line to check length.</td>
 </tr>
 <tr>
-  <td><code>rules</code> &gt; <code>args</code></td>
+  <td><code>rules</code> &gt; <code>args</code> (1)</td>
   <td>One element with max length.</td>
 </tr>
 </tbody></table>
-
-
 <h2 id="license">License</h2>
 
 <p>Copyright (c) 2014 Soichiro Kashima <br>
