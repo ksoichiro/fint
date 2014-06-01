@@ -77,15 +77,15 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 | `-c`   | Config files directory. Default value is `.fint`.      |
 | `-l`   | Message locale. Default value is `en`(English). Currently, `en` and `ja` is supported. |
 | `-h`   | HTML report directory. Optional.                       |
-| `-f`   | Force generating report to existing directory. Default is `false`. |
-| `-q`   | Quiet mode. Suppresses output. Default is `false`.     |
-| `-template` | HTML report template name. Default is `default`.  |
+| `-f`   | Force generating report to existing directory. Default value is `false`. |
+| `-q`   | Quiet mode. Suppresses output. Default value is `false`. |
+| `-template` | HTML report template name. Default value is `default`.  Currently, `default` and `dark` is available. |
 
 ## Configuration
 
 ### Structure
 
-    .fint // can be changed by `-c` option
+    .fint
     └── builtin
         ├── modules
         │   ├── max_length
@@ -93,12 +93,30 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
         │   └── pattern_match
         │       └── config.json
         ├── targets
-        │   └── objc
+        │   ├── objc
+        │   │   ├── locales
+        │   │   │   ├── en.json
+        │   │   │   └── ja.json
+        │   │   └── ruleset.json
+        │   └── sh
         │       ├── locales
         │       │   ├── en.json
         │       │   └── ja.json
         │       └── ruleset.json
         └── templates
+            ├── dark
+            │   ├── _index.html
+            │   ├── _index_srclist.html
+            │   ├── _src.html
+            │   ├── _src_srcline.html
+            │   ├── _src_violation_msg.html
+            │   ├── _src_violation_msglist.html
+            │   ├── css
+            │   │   ├── index.css
+            │   │   ├── main.css
+            │   │   └── src.css
+            │   └── js
+            │       └── src.js
             └── default
                 ├── _index.html
                 ├── _index_srclist.html
@@ -113,52 +131,108 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
                 └── js
                     └── src.js
 
-### Rule sets
+### Configuration root directory
 
-Config file includes lint rule sets(`ruleset.json`), which is the top level element. Array.
+All the configurations for `fint` must be included in the `.fint` directory.  
+This directory can be changed by `-c` option.
+
+### Targets
+
+`fint` needs to know which modules to use for lint and how to use the modules.  
+"Target" resolves them for a certain language or project.  
+Targets are located in `.fint/targets`.  
+To select a target, specify subdirectory name with `-i` option.  
+Available targets:
+
+* objc
+* sh
+
+In each target directories, `ruleset.json` must be located.  
+This file defines the lint rule sets in the JSON format.
 
 | Item  | Description |
 | ----- | ----------- |
-| `id` |  ID of the rule set. This will be used to select rule set by option `-i`. |
-| `description` |  Description of this rule set. This will not be used from the program for now. |
-| `pattern` |  File path pattern to apply this rule set. Regular expression. |
-| `modules` |  Details of the rule set. See 'Modules'. |
+| `rulesets` | JSON array that includes the rule sets. Target can have multiple rule sets because the projects will have multiple file-types and they need multiple rules for lint. |
+| `rulesets` > `id` | ID of the rule set. Currently, this is just a comment and not used for lint. |
+| `rulesets` > `description` |  Description of this rule set. This will not be used from the program for now. |
+| `rulesets` > `modules` |  Module configurations for this rule set. See 'Modules' for details. |
 
 ### Modules
 
-Modules describe parameters, warning messages for the lint logics.  
-Each element of the array describes one lint logic type.  
-Basic structure is below.
+"Module" means the lint logic which defines how to check source files.  
+Modules' has several descriptions and configurations.
 
-| Item  | Description |
-| ----- | ----------- |
-| `id` | ID of the lint logic. This is predefined in the program and not changeable. |
-| `rules` | Array of the specific rules. |
-| `rules` > `id`   | ID of the rule. |
-| `rules` > `args` | Argument for the lint logic. Optional. |
-| `rules` > `message` | Message to show when there is a violation of the rule. This is defined not in the `ruleset.json` but in the `locales/[LOCALE].json`. |
+#### Description
 
-Currently, the following modules are defined.
+Descriptions for each modules are located in `.fint/modules`.  
+In `.fint/module/[MODULE_NAME]/config.json`, following information is defined:
 
-#### Pattern match
+| Item | Description |
+| ---- | ----------- |
+| `type` | Is the module built-in or external? |
+| `executable` | If it's external module, where is it? |
+| `description` | What is this module? |
 
-This module checks if the line matching the `pattern`.  
+#### Configuration
+
+Each "targets" must have `ruleset.json` to define lint rule sets using "modules".  
+So you should modify `ruleset.json` to configure modules.
+
+A normal built-in module have the following configuration structure:
+
+| Item | Description |
+| ---- | ----------- |
+| `id` | ID of the module. |
+| `pattern` | File path pattern to select target source file. |
+| `rules` | Rule for this modules. |
+| `rules` > `id` | ID of the rule. This ID will be used in localization file. |
+| `rules` > `args` | Arguments for the rule. Usage of this item will be different for each modules. |
+
+#### Localization
+
+Locale for lint warning messages.  
+To select locales, specify locale name with `-l` option.  
+Available locales:
+
+* en
+* ja
+
+Localized messages are defined in `.fint/builtin/targets/[TARGET_NAME]/locales/[LOCALE].json`.
+
+### HTML report
+
+`fint` can output HTML report.  
+To use this feature, specify reporting directory with `-h` option.
+
+You can also configure HTML template.  
+To select a template, specify subdirectroy name with `-template` option.  
+Available templates:
+
+* default
+* dark
+
+Templates are located in `.fint/builtin/templates/[TEMPLATE_NAME]`.
+
+## Built-in modules
+
+### Pattern match
+
+This module checks if the line matching the pattern.  
 
 | Item  | Description |
 | ----- | ----------- |
 | `id` | `pattern_match` |
-| `rules` > `pattern` | Forbidden pattern of the line. |
-| `rules` > `args` | Not used. |
+| `rules` > `args` (0) | Forbidden pattern of the line. |
 
-#### Max length
+### Max length
 
 This module checks if the line exceeds a certain length.
 
 | Item  | Description |
 | ----- | ----------- |
 | `id` | `max_length` |
-| `rules` > `pattern` | Pattern of the line to check length. |
-| `rules` > `args` | One element with max length. |
+| `rules` > `args` (0) | Pattern of the line to check length. |
+| `rules` > `args` (1) | One element with max length. |
 
 ## License
 
