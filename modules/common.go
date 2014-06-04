@@ -14,9 +14,9 @@ import (
 	"regexp"
 )
 
-type LintWalkFunc func(m common.Module, n int, filename, line, locale string) (vs []common.Violation)
+type LintWalkFunc func(m common.Module, n int, filename, line, locale string) (vs []common.Violation, fixedAny bool)
 
-func LintWalk(srcRoot string, m common.Module, locale string, lintWalkFunc LintWalkFunc) (fmap map[string]map[int][]common.Violation, err error) {
+func LintWalk(srcRoot string, m common.Module, locale string, fix bool, lintWalkFunc LintWalkFunc) (fmap map[string]map[int][]common.Violation, err error) {
 	if fmap == nil {
 		fmap = make(map[string]map[int][]common.Violation)
 	}
@@ -27,7 +27,7 @@ func LintWalk(srcRoot string, m common.Module, locale string, lintWalkFunc LintW
 		filename := filepath.Join(srcRoot, entry.Name())
 		if entry.IsDir() {
 			var fmapSub map[string]map[int][]common.Violation
-			fmapSub, err = LintWalk(filename, m, locale, lintWalkFunc)
+			fmapSub, err = LintWalk(filename, m, locale, fix, lintWalkFunc)
 			if err != nil {
 				return
 			}
@@ -54,6 +54,14 @@ func LintWalk(srcRoot string, m common.Module, locale string, lintWalkFunc LintW
 			return
 		}
 		defer f.Close()
+		var ftmp *os.File
+		if fix {
+			// Prepare fixed file
+			CopyFile(filename, filename+".tmp")
+			ftmp, _ = os.OpenFile(filename+".tmp", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+			fmt.Printf("copied %s to %s\n", filename, filename+".tmp")
+			defer ftmp.Close()
+		}
 		if common.BufSize == 0 {
 			common.BufSize = common.DefaultBufSize
 		}
@@ -74,9 +82,16 @@ func LintWalk(srcRoot string, m common.Module, locale string, lintWalkFunc LintW
 				return
 			}
 			var lvs []common.Violation
-			vsr := lintWalkFunc(m, n, filename, line, locale)
+			vsr, fixedAny := lintWalkFunc(m, n, filename, line, locale)
+			tmpLine := line
 			if vsr != nil {
 				lvs = append(lvs, vsr...)
+				if fixedAny {
+					tmpLine = vsr[len(vsr)-1].Fix
+				}
+			}
+			if fix {
+				ftmp.WriteString(tmpLine + common.NewlineDefault)
 			}
 			vmap[n] = lvs
 			if err == io.EOF {
@@ -84,10 +99,39 @@ func LintWalk(srcRoot string, m common.Module, locale string, lintWalkFunc LintW
 				break
 			}
 		}
+		if fix {
+			fmt.Printf("closed %s\n", filename+".tmp")
+			ftmp.Close()
+			os.Remove(filename)
+			CopyFile(filename+".tmp", filename)
+			os.Remove(filename + ".tmp")
+		}
 		if fmap[filename] == nil {
 			fmap[filename] = make(map[int][]common.Violation)
 		}
 		fmap[filename] = vmap
 	}
+	return
+}
+
+func CopyFile(src, dst string) (err error) {
+	fin, err := os.Open(src)
+	if err != nil {
+		return
+	}
+	defer fin.Close()
+	// Remove dst file once, if exists
+	if _, err := os.Stat(dst); err != nil && os.IsExist(err) {
+		os.Remove(dst)
+	}
+	fout, err := os.Create(dst)
+	if err != nil {
+		return
+	}
+	defer fout.Close()
+	if _, err = io.Copy(fout, fin); err != nil {
+		return
+	}
+	err = fout.Sync()
 	return
 }

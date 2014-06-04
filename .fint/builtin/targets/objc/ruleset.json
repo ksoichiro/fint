@@ -8,14 +8,14 @@
           "id": "pattern_match",
           "pattern": ".*\\.(m|mm|h)$",
           "rules": [
-            {"id": "WhitespaceAfterElse", "args": ["else{"]},
-            {"id": "WhitespaceBeforeElse", "args": ["}else"]},
-            {"id": "WhitespaceAfterIf", "args": ["if\\("]},
-            {"id": "WhitespaceBetweenParAndBrace", "args": ["\\){"]},
-            {"id": "WhitespaceAfterComma", "args": [",[^ $]"]},
-            {"id": "WhitespaceAtStartOfComment", "args": ["//[^ ]"]},
-            {"id": "WhitespaceBetweenBracketAndMessage", "args": ["\\][a-zA-Z0-9_]"]},
-            {"id": "TrailingWhitespace", "args": ["[^ ]+ +$"]},
+            {"id": "WhitespaceAfterElse", "args": ["else{", "else {"]},
+            {"id": "WhitespaceBeforeElse", "args": ["}else", "} else"]},
+            {"id": "WhitespaceAfterIf", "args": ["if\\(", "if \\("]},
+            {"id": "WhitespaceBetweenParAndBrace", "args": ["\\){", "\\) {"]},
+            {"id": "WhitespaceAfterComma", "args": [",([^ $])"]},
+            {"id": "WhitespaceAtStartOfComment", "args": ["//([^ ])"]},
+            {"id": "WhitespaceBetweenBracketAndMessage", "args": ["\\]([a-zA-Z0-9_])"]},
+            {"id": "TrailingWhitespace", "args": ["([^ ]+) +$"]},
             {"id": "TabIdentation", "args": ["^\\t+"]}
           ]
         },

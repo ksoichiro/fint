@@ -91,13 +91,13 @@ func TestSetbufsizeAndLint(t *testing.T) {
 
 	// When the bufSize is set to 0, default size will be set.
 	fint.Setbufsize(0)
-	_, err := modules.LintWalk(SrcRootObjcNormal, m, LocaleDefault, modules.LintMaxLengthFunc)
+	_, err := modules.LintWalk(SrcRootObjcNormal, m, LocaleDefault, false, modules.LintMaxLengthFunc)
 	if err != nil {
 		t.Errorf("Unexpected error occurred: %v", err)
 	}
 
 	fint.Setbufsize(1)
-	_, err = modules.LintWalk(SrcRootObjcNormal, m, LocaleDefault, modules.LintMaxLengthFunc)
+	_, err = modules.LintWalk(SrcRootObjcNormal, m, LocaleDefault, false, modules.LintMaxLengthFunc)
 	testExpectErrorWithMessage(t, err, "fint: too long line: testdata/objc/FintExample/FintExample/FEAppDelegate.h")
 
 	// Do normal test to initialize opt

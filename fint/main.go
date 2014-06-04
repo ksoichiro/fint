@@ -24,6 +24,7 @@ func main() {
 		force      = flag.Bool("f", false, "Force generating report to existing directory. Default is `false`.")
 		quiet      = flag.Bool("q", false, "Quiet mode. Suppresses output. Default is `false`.")
 		template   = flag.String("template", "default", "HTML report template name. Default is `default`.")
+		fix        = flag.Bool("fix", false, "Fix violations. Default is `false`.")
 	)
 	flag.Parse()
 
@@ -36,7 +37,8 @@ func main() {
 			Html:       *html,
 			Force:      *force,
 			Quiet:      *quiet,
-			Template:   *template})
+			Template:   *template,
+			Fix:        *fix})
 	if err != nil {
 		os.Exit(ExitCodeError)
 	}

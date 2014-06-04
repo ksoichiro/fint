@@ -57,6 +57,7 @@ type Opt struct {
 	Template   string
 	Force      bool
 	Quiet      bool
+	Fix        bool
 }
 
 type LocalizedRule struct {
@@ -116,6 +117,8 @@ type Violation struct {
 	Filename string
 	Line     int
 	Message  string
+	Fixed    bool
+	Fix      string
 }
 
 func NewError(message string) error {

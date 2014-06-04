@@ -345,9 +345,9 @@ func Lint(srcRoot string) (err error) {
 		for j := range rs.Modules {
 			switch rs.Modules[j].Id {
 			case "pattern_match":
-				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, modules.LintPatternMatchFunc)
+				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, opt.Fix, modules.LintPatternMatchFunc)
 			case "max_length":
-				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, modules.LintMaxLengthFunc)
+				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, opt.Fix, modules.LintMaxLengthFunc)
 			}
 			if err != nil {
 				return
