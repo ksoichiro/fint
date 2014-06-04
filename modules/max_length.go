@@ -9,7 +9,7 @@ import (
 	"regexp"
 )
 
-func LintMaxLengthFunc(m common.Module, n int, filename, line, locale string) (vs []common.Violation, fixedAny bool) {
+func LintMaxLengthFunc(m common.Module, n int, filename, line, locale string) (vs []common.Violation, fixedAny bool, fixedLine string) {
 	for i := range m.Rules {
 		if matched, _ := regexp.MatchString(m.Rules[i].Args[0].(string), line); matched {
 			max_len := int(m.Rules[i].Args[1].(float64))

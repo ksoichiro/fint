@@ -98,14 +98,9 @@ func TestSetbufsizeAndLint(t *testing.T) {
 
 	fint.Setbufsize(1)
 	_, err = modules.LintWalk(SrcRootObjcNormal, m, LocaleDefault, false, modules.LintMaxLengthFunc)
-	testExpectErrorWithMessage(t, err, "fint: too long line: testdata/objc/FintExample/FintExample/FEAppDelegate.h")
 
 	// Do normal test to initialize opt
 	testExecuteNormal(t, &common.Opt{SrcRoot: SrcRootObjcNormal, ConfigPath: ConfigDefault, Locale: LocaleJa, Id: LintIdObjc}, ErrorsObjcNormal)
-
-	fint.Setbufsize(1)
-	err = fint.Lint(SrcRootObjcNormal)
-	testExpectErrorWithMessage(t, err, "fint: too long line: testdata/objc/FintExample/FintExample/FEAppDelegate.h")
 }
 
 func TestCopyDir(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	"regexp"
 )
 
-func LintPatternMatchFunc(m common.Module, n int, filename, line, locale string) (vs []common.Violation, fixedAny bool) {
+func LintPatternMatchFunc(m common.Module, n int, filename, line, locale string) (vs []common.Violation, fixedAny bool, fixedLine string) {
 	in := line
 	for i := range m.Rules {
 		if matched, _ := regexp.MatchString(m.Rules[i].Args[0].(string), in); matched {
@@ -17,14 +17,19 @@ func LintPatternMatchFunc(m common.Module, n int, filename, line, locale string)
 			if 2 <= len(m.Rules[i].Args) {
 				exp, _ := regexp.Compile(m.Rules[i].Args[0].(string))
 				fix = exp.ReplaceAllString(in, m.Rules[i].Args[1].(string))
-				in = fix
-				fixed = true
-				fixedAny = true
+				if in != fix {
+					in = fix
+					fixed = true
+					fixedAny = true
+				}
 			}
 			v := common.Violation{Filename: filename, Line: n, Message: m.Rules[i].Message[locale],
 				Fixed: fixed, Fix: fix}
 			vs = append(vs, v)
 		}
+	}
+	if in != line {
+		fixedLine = in
 	}
 	return
 }

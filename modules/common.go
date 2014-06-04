@@ -5,16 +5,16 @@ package modules
 
 import (
 	"bufio"
-	"fmt"
 	"github.com/ksoichiro/fint/common"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
-type LintWalkFunc func(m common.Module, n int, filename, line, locale string) (vs []common.Violation, fixedAny bool)
+type LintWalkFunc func(m common.Module, n int, filename, line, locale string) (vs []common.Violation, fixedAny bool, fixedLine string)
 
 func LintWalk(srcRoot string, m common.Module, locale string, fix bool, lintWalkFunc LintWalkFunc) (fmap map[string]map[int][]common.Violation, err error) {
 	if fmap == nil {
@@ -57,9 +57,7 @@ func LintWalk(srcRoot string, m common.Module, locale string, fix bool, lintWalk
 		var ftmp *os.File
 		if fix {
 			// Prepare fixed file
-			CopyFile(filename, filename+".tmp")
-			ftmp, _ = os.OpenFile(filename+".tmp", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-			fmt.Printf("copied %s to %s\n", filename, filename+".tmp")
+			ftmp, _ = os.OpenFile(filename+".tmp", os.O_RDWR|os.O_CREATE, 0666)
 			defer ftmp.Close()
 		}
 		if common.BufSize == 0 {
@@ -68,30 +66,26 @@ func LintWalk(srcRoot string, m common.Module, locale string, fix bool, lintWalk
 		r := bufio.NewReaderSize(f, common.BufSize)
 		vmap := make(map[int][]common.Violation)
 		for n := 1; true; n++ {
-			var (
-				lineBytes []byte
-				isPrefix  bool
-			)
-			lineBytes, isPrefix, err = r.ReadLine()
-			if isPrefix {
-				err = common.NewError(fmt.Sprintf("too long line: %s", filename))
-				return
-			}
-			line := string(lineBytes)
+			var line string
+			line, err = r.ReadString(common.LinefeedRune)
 			if err != io.EOF && err != nil {
 				return
 			}
 			var lvs []common.Violation
-			vsr, fixedAny := lintWalkFunc(m, n, filename, line, locale)
+			vsr, fixedAny, fixedLine := lintWalkFunc(m, n, filename, strings.TrimSuffix(line, common.Linefeed), locale)
 			tmpLine := line
 			if vsr != nil {
 				lvs = append(lvs, vsr...)
 				if fixedAny {
-					tmpLine = vsr[len(vsr)-1].Fix
+					if strings.HasSuffix(line, common.Linefeed) {
+						tmpLine = fixedLine + common.Linefeed
+					} else {
+						tmpLine = fixedLine
+					}
 				}
 			}
 			if fix {
-				ftmp.WriteString(tmpLine + common.NewlineDefault)
+				ftmp.WriteString(tmpLine)
 			}
 			vmap[n] = lvs
 			if err == io.EOF {
@@ -100,7 +94,6 @@ func LintWalk(srcRoot string, m common.Module, locale string, fix bool, lintWalk
 			}
 		}
 		if fix {
-			fmt.Printf("closed %s\n", filename+".tmp")
 			ftmp.Close()
 			os.Remove(filename)
 			CopyFile(filename+".tmp", filename)
@@ -120,10 +113,7 @@ func CopyFile(src, dst string) (err error) {
 		return
 	}
 	defer fin.Close()
-	// Remove dst file once, if exists
-	if _, err := os.Stat(dst); err != nil && os.IsExist(err) {
-		os.Remove(dst)
-	}
+	os.Remove(dst)
 	fout, err := os.Create(dst)
 	if err != nil {
 		return

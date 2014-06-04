@@ -11,6 +11,8 @@ const (
 	errPrefix      = "fint: "
 	DefaultBufSize = 4096
 	NewlineDefault = "\r\n"
+	Linefeed       = "\n"
+	LinefeedRune   = '\n'
 
 	DirBuiltin                  = "builtin"
 	DirModules                  = "modules"
