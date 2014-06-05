@@ -80,6 +80,7 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 | `-f`   | Force generating report to existing directory. Default value is `false`. |
 | `-q`   | Quiet mode. Suppresses output. Default value is `false`. |
 | `-template` | HTML report template name. Default value is `default`.  Currently, `default` and `dark` is available. |
+| `-fix` | Fix violations if possible. Default is `false`. |
 
 ## Configuration
 
@@ -223,6 +224,7 @@ This module checks if the line matching the pattern.
 | ----- | ----------- |
 | `id` | `pattern_match` |
 | `rules` > `args` (0) | Forbidden pattern of the line. |
+| `rules` > `args` (1) | Replacement string for auto-fix feature. |
 
 ### Max length
 
