@@ -119,19 +119,27 @@ func printReportBody(filename string, vcnt int, vmap map[int][]common.Violation)
 	r := bufio.NewReaderSize(fsrc, common.BufSize)
 	for n := 1; true; n++ {
 		line, _, err := readLine(r)
-		var markerCls string
+		markerCls := common.CssMarkerClsOk
 		var vs []common.Violation
 		var ok bool
-		if vs, ok = vmap[n]; ok && 0 < len(vs) {
-			markerCls = common.CssMarkerClsNg
-		} else {
-			markerCls = common.CssMarkerClsOk
+		if vs, ok = vmap[n]; ok {
+			for i := range vs {
+				if !vs[i].Fixed {
+					markerCls = common.CssMarkerClsNg
+				}
+			}
 		}
 
 		srcline := readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrcSrcline))
 		srcline = replaceTag(string(srcline), common.TagMarkerClass, markerCls)
 		var hasViolations string
-		if 0 < len(vs) {
+		vcnt := 0
+		for i := range vs {
+			if !vs[i].Fixed {
+				vcnt++
+			}
+		}
+		if 0 < vcnt {
 			hasViolations = "true"
 		} else {
 			hasViolations = "false"
@@ -141,7 +149,7 @@ func printReportBody(filename string, vcnt int, vmap map[int][]common.Violation)
 		srcline = replaceTag(srcline, common.TagCode, line)
 		fsrcline.WriteString(srcline + common.NewlineDefault)
 
-		if 0 < len(vs) {
+		if 0 < vcnt {
 			msglist := replaceTag(readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrcViolationMsglist)), common.TagLineNumber, fmt.Sprintf("%d", n))
 
 			pathDetailMsg := pathDetail + ".msg.tmp"
@@ -149,8 +157,10 @@ func printReportBody(filename string, vcnt int, vmap map[int][]common.Violation)
 			defer fmsg.Close()
 			msgTmpl := readFile(filepath.Join(opt.ConfigPath, common.DirBuiltin, common.DirTemplates, opt.Template, common.HtmlTmplSrcViolationMsg))
 			for i := range vs {
-				msg := replaceTag(msgTmpl, common.TagViolationMsg, vs[i].Message)
-				fmsg.WriteString(msg + common.NewlineDefault)
+				if !vs[i].Fixed {
+					msg := replaceTag(msgTmpl, common.TagViolationMsg, vs[i].Message)
+					fmsg.WriteString(msg + common.NewlineDefault)
+				}
 			}
 			fmsg.Close()
 
@@ -370,7 +380,13 @@ func Lint(srcRoot string) (err error) {
 	for f, vmap := range allmap {
 		vcnt := 0
 		for _, vs := range vmap {
-			vcnt = vcnt + len(vs)
+			vvcnt := 0
+			for i := range vs {
+				if !vs[i].Fixed {
+					vvcnt++
+				}
+			}
+			vcnt = vcnt + vvcnt
 		}
 		printReportBody(f, vcnt, vmap)
 	}
@@ -426,14 +442,22 @@ func ExecuteAsCommand(o *common.Opt) (err error) {
 	}
 	if !o.Quiet {
 		for i := range violations {
-			printViolation(violations[i])
+			if !violations[i].Fixed {
+				printViolation(violations[i])
+			}
 		}
 	}
 
-	if 0 < len(violations) {
+	vcnt := 0
+	for i := range violations {
+		if !violations[i].Fixed {
+			vcnt++
+		}
+	}
+	if 0 < vcnt {
 		if !o.Quiet {
 			fmt.Printf("\n%d %s generated.\n",
-				len(violations), pluralize(len(violations), "warning", "warnings"))
+				vcnt, pluralize(vcnt, "warning", "warnings"))
 		}
 		err = common.NewError("error while executing lint")
 	}

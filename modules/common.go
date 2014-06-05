@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-type LintWalkFunc func(m common.Module, n int, filename, line, locale string) (vs []common.Violation, fixedAny bool, fixedLine string)
+type LintWalkFunc func(m common.Module, n int, filename, line, locale string, shouldFix bool) (vs []common.Violation, fixedAny bool, fixedLine string)
 
 func LintWalk(srcRoot string, m common.Module, locale string, fix bool, lintWalkFunc LintWalkFunc) (fmap map[string]map[int][]common.Violation, err error) {
 	if fmap == nil {
@@ -72,7 +72,7 @@ func LintWalk(srcRoot string, m common.Module, locale string, fix bool, lintWalk
 				return
 			}
 			var lvs []common.Violation
-			vsr, fixedAny, fixedLine := lintWalkFunc(m, n, filename, strings.TrimSuffix(line, common.Linefeed), locale)
+			vsr, fixedAny, fixedLine := lintWalkFunc(m, n, filename, strings.TrimSuffix(line, common.Linefeed), locale, fix)
 			tmpLine := line
 			if vsr != nil {
 				lvs = append(lvs, vsr...)
