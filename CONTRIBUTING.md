@@ -32,6 +32,15 @@ $ go test -coverprofile=profile.cov && go tool cover -html=profile.cov
 
 Test data (source code) should be in `testdata` directory.
 
+### Auto-fix test
+
+```sh
+$ rm -rf testdata/objc/FintExampleFix
+$ cp -pR testdata/objc/FintExample testdata/objc/FintExampleFix
+$ go run fint/main.go -s testdata/objc/FintExampleFix -i objc -h report -f -fix
+$ open report/index.html
+```
+
 ## Test on Travis CI
 
 If you push to this repository, build task on Travis CI will run.  
