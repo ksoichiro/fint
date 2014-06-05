@@ -119,6 +119,14 @@ func printReportBody(filename string, vcnt int, vmap map[int][]common.Violation)
 	r := bufio.NewReaderSize(fsrc, common.BufSize)
 	for n := 1; true; n++ {
 		line, _, err := readLine(r)
+		// Replace prefix spaces to nbsp
+		for l1, l2 := line, ""; true; l1 = l2 {
+			l2 = replaceTag(l1, "^( *) ([^ ])", "$1&nbsp;$2")
+			if l1 == l2 {
+				line = l2
+				break
+			}
+		}
 		markerCls := common.CssMarkerClsOk
 		var vs []common.Violation
 		var ok bool
