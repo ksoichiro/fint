@@ -9,6 +9,9 @@
 
 @implementation FEData
 
+///////////////////////////////////////
+// Sample method
+///////////////////////////////////////
 - (void)doSomething:(NSData *)d
 {
     NSString *s = @"//This is like a comment but just a string.";
