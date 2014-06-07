@@ -32,7 +32,19 @@ This will generate `fint/fint`.
 
 ## Test
 
-Execute test:
+Just execute test to see there are no compile errors:
+
+```sh
+$ go test
+```
+
+Execute test and check test coverage:
+
+```sh
+$ go test -cover
+```
+
+Execute test and print coverage file:
 
 ```sh
 $ go test -coverprofile=profile.cov
