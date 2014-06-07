@@ -88,3 +88,36 @@ $ ./crosscompile.sh
 
 This will generate program binaries in `build` directory  
 for each `GOOS`es and `GOARCH`s.
+
+## GitHub Pages
+
+### Install
+
+At first, install jekyll. 
+
+```sh
+$ bundle install
+```
+
+### Update
+
+Update README from master branch, create `fint` report.
+
+```sh
+$ ./_build.sh
+```
+
+### Confirm
+
+Execute jekyll and confirm the site in your environment.
+
+```sh
+$ bundle exec jekyll serve
+:
+    Server address: http://0.0.0.0:4000
+  Server running... press ctrl-c to stop.
+```
+
+### Commit
+
+Commit the changes and push them to GitHub.
