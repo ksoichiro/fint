@@ -17,12 +17,15 @@
     [self.window makeKeyAndVisible];
     if(floor(NSFoundationVersionNumber_iOS_6_1) < NSFoundationVersionNumber){
         //Do something
-    }else if(YES){
+    }else if( YES ){
         // Do something
     }else{
         // Do something
         NSString *msg = [self doSomething:0 withOptions:@[@"foo",@"bar"]];
         NSLog(@"a / b = %@", msg) ;
+    }
+    int x = 1;
+    if ((x * 2) < 10) {
     }
     for(int i=0;i<10;i++){
         ;
