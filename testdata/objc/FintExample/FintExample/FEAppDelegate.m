@@ -27,10 +27,12 @@
     int x = 1;
     if ((x * 2) < 10) {
     }
-    for(int i=0;i<10;i++){
+    for(int i=0;i<=10;i++){
         ;
         ; // Empty ; Dummy
     }
+    for (int i= 0;i<= 10;i++) {
+    } // a=b
     return YES;
 }
 
