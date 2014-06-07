@@ -9,6 +9,7 @@
             {"id": "WhitespaceAfterElse", "message": "Space must be inserted after else"},
             {"id": "WhitespaceBeforeElse", "message": "Space must be inserted before else"},
             {"id": "WhitespaceAfterIf", "message": "Space must be inserted after if"},
+            {"id": "WhitespaceAfterFor", "message": "Space must be inserted after for"},
             {"id": "WhitespaceBetweenParAndBrace", "message": "Space must be inserted between ')' and '{'"},
             {"id": "WhitespaceAfterComma", "message": "Space must be inserted after ','"},
             {"id": "WhitespaceAtStartOfComment", "message": "Space must be inserted between '//' and following comment"},

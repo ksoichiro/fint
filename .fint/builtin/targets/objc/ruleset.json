@@ -11,6 +11,7 @@
             {"id": "WhitespaceAfterElse", "args": ["else{", "else {"]},
             {"id": "WhitespaceBeforeElse", "args": ["}else", "} else"]},
             {"id": "WhitespaceAfterIf", "args": ["if\\(", "if ("]},
+            {"id": "WhitespaceAfterFor", "args": ["for\\(", "for ("]},
             {"id": "WhitespaceBetweenParAndBrace", "args": ["\\){", ") {"]},
             {"id": "WhitespaceAfterComma", "args": [",([^ $])", ", $1"]},
             {"id": "WhitespaceAtStartOfComment", "args": ["(^|[^\"]+)//([^/ ])", "$1// $2"]},

@@ -24,6 +24,9 @@
         NSString *msg = [self doSomething:0 withOptions:@[@"foo",@"bar"]];
         NSLog(@"%@", msg);
     }
+    for(int i=0;i<10;i++){
+        ; // Empty
+    }
     return YES;
 }
 
