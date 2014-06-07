@@ -2,6 +2,26 @@
 
 Just a memorandum for my work...
 
+## Guideline for adding rules
+
+Define concrete rules as much as possible.  
+
+### Why?
+
+#### Because it's easy to fix for the programmers
+
+A rule that covers many patterns is smart, but if there are many violations
+in one line, it will be better for the programmer to show
+`Insert space before '('` rather than `Fix format error`.
+
+#### Because 1 fix should solve 1 violation
+
+If a rule detects multiple format violation and you fix one of the violations,
+the violation error message will still be the same.  
+It's confusing because there are no changes in the result.  
+If a programmer make 1 fix for 1 violation message, it should disappear
+on the next `fint` execution.
+
 ## Build
 
 ```sh
