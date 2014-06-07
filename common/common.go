@@ -5,10 +5,13 @@ package common
 
 import (
 	"errors"
+	"fmt"
 )
 
 const (
-	errPrefix      = "fint: "
+	errPrefix = "fint: "
+
+	Version        = "0.4.0"
 	DefaultBufSize = 4096
 	NewlineDefault = "\r\n"
 	Linefeed       = "\n"
@@ -125,4 +128,21 @@ type Violation struct {
 
 func NewError(message string) error {
 	return errors.New(errPrefix + message)
+}
+
+func PrintUsage() {
+	fmt.Println(`fint is a lightweight source code check tool.
+
+Usage:
+	fint command [options]
+
+Command:
+	run      execute lint
+	help     show this help
+	version  show version of fint
+`)
+}
+
+func PrintVersion() {
+	fmt.Println("fint version \"" + Version + "\"")
 }

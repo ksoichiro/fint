@@ -11,10 +11,29 @@ import (
 )
 
 const (
-	ExitCodeError = 1
+	ExitCodeSuccess = 0
+	ExitCodeError   = 1
 )
 
 func main() {
+	// Parse command
+	if len(os.Args) == 1 {
+		common.PrintUsage()
+		os.Exit(ExitCodeError)
+	}
+	switch os.Args[1] {
+	case "run":
+	case "version":
+		common.PrintVersion()
+		os.Exit(ExitCodeSuccess)
+	case "help":
+		fallthrough
+	default:
+		common.PrintUsage()
+		os.Exit(ExitCodeError)
+	}
+
+	// Parse flags
 	var (
 		srcRoot    = flag.String("s", "", "Source directory to be checked. Required.")
 		configPath = flag.String("c", ".fint", "Config files directory. Default value is `.fint`.")
@@ -26,7 +45,8 @@ func main() {
 		template   = flag.String("template", "default", "HTML report template name. Default is `default`.")
 		fix        = flag.Bool("fix", false, "Fix violations. Default is `false`.")
 	)
-	flag.Parse()
+	// Parse without filename and command
+	flag.CommandLine.Parse(os.Args[2:])
 
 	err := fint.ExecuteAsCommand(
 		&common.Opt{

@@ -28,7 +28,7 @@ If your `GOPATH` is `~/go`, then put the following command
 to shell script form:
 
 ```sh
-TERM=dumb ~/go/bin/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc
+TERM=dumb ~/go/bin/fint run -s ${SRCROOT}/${PROJECT_NAME} -i objc
 ```
 
 If format error found, the command will exit with code 1, otherwise 0.  
@@ -41,7 +41,7 @@ See sample Xcode projects in [`testdata/objc`](https://github.com/ksoichiro/fint
 If you exported `GOPATH` and `${GOPATH}/bin` is in your `PATH` then:
 
 ```sh
-$ fint -s testdata/objc/FintExample -i objc
+$ fint run -s testdata/objc/FintExample -i objc
 testdata/objc/FintExample/FintExample/FEAppDelegate.m:12:1: warning: Line length exceeds 80 characters
 testdata/objc/FintExample/FintExample/FEAppDelegate.m:14:1: warning: Space must be inserted between ']' and following message
 testdata/objc/FintExample/FintExample/FEAppDelegate.m:14:1: warning: Line length exceeds 80 characters
