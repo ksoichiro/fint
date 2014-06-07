@@ -31,195 +31,243 @@
 
 <tr class="ok" onclick="toggleMessages('msg_l6', false);"><td class="line">6</td><td class="code"><pre>//</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l7', false);"><td class="line">7</td><td class="code"><pre></pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l7', false);"><td class="line">7</td><td class="code"><pre>//  fint - A lightweight source code check tool.</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l8', false);"><td class="line">8</td><td class="code"><pre>#import "FEAppDelegate.h"</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l8', false);"><td class="line">8</td><td class="code"><pre>//  https://github.com/ksoichiro/fint</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l9', false);"><td class="line">9</td><td class="code"><pre></pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l9', false);"><td class="line">9</td><td class="code"><pre>//</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l10', false);"><td class="line">10</td><td class="code"><pre>@implementation FEAppDelegate</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l10', false);"><td class="line">10</td><td class="code"><pre></pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l11', false);"><td class="line">11</td><td class="code"><pre></pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l11', false);"><td class="line">11</td><td class="code"><pre>#import "FEAppDelegate.h"</pre></td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l12', true);"><td class="line">12</td><td class="code"><pre>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l12', false);"><td class="line">12</td><td class="code"><pre></pre></td></tr>
 
-<tr id="msg_l12" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+<tr class="ok" onclick="toggleMessages('msg_l13', false);"><td class="line">13</td><td class="code"><pre>@implementation FEAppDelegate</pre></td></tr>
 
-</td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l14', false);"><td class="line">14</td><td class="code"><pre></pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l13', false);"><td class="line">13</td><td class="code"><pre>{</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l15', true);"><td class="line">15</td><td class="code"><pre>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</pre></td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l14', true);"><td class="line">14</td><td class="code"><pre>    self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen] bounds]];</pre></td></tr>
-
-<tr id="msg_l14" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted between ']' and following message</div>
-
-<div class="msg">Line length exceeds 80 characters</div>
+<tr id="msg_l15" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
 
 </td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l15', true);"><td class="line">15</td><td class="code"><pre>	// Override point for customization after application launch.</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l16', false);"><td class="line">16</td><td class="code"><pre>{</pre></td></tr>
 
-<tr id="msg_l15" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Use spaces for identation instead of tab</div>
+<tr class="ng" onclick="toggleMessages('msg_l17', true);"><td class="line">17</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;self.window=[[UIWindow alloc]initWithFrame:[[UIScreen mainScreen] bounds]];</pre></td></tr>
+
+<tr id="msg_l17" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after '='</div>
+
+<div class="msg">Space must be inserted before '='</div>
+
+<div class="msg">Space must be inserted between ']' and following message</div>
 
 </td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l16', true);"><td class="line">16</td><td class="code"><pre>    self.window.backgroundColor = [UIColor whiteColor];  </pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l18', true);"><td class="line">18</td><td class="code"><pre>	// Override point for customization after application launch.</pre></td></tr>
 
-<tr id="msg_l16" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Remove trailing spaces</div>
+<tr id="msg_l18" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Use spaces for identation instead of tab</div>
 
 </td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l17', false);"><td class="line">17</td><td class="code"><pre>    [self.window makeKeyAndVisible];</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l19', true);"><td class="line">19</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;self.window.backgroundColor = [UIColor whiteColor];  </pre></td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l18', true);"><td class="line">18</td><td class="code"><pre>    if(floor(NSFoundationVersionNumber_iOS_6_1) < NSFoundationVersionNumber){</pre></td></tr>
+<tr id="msg_l19" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Remove trailing spaces</div>
 
-<tr id="msg_l18" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after if</div>
+</td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l20', false);"><td class="line">20</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;[self.window makeKeyAndVisible];</pre></td></tr>
+
+<tr class="ng" onclick="toggleMessages('msg_l21', true);"><td class="line">21</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;if(floor(NSFoundationVersionNumber_iOS_6_1) < NSFoundationVersionNumber){</pre></td></tr>
+
+<tr id="msg_l21" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after if</div>
 
 <div class="msg">Space must be inserted between ')' and '{'</div>
 
 </td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l19', true);"><td class="line">19</td><td class="code"><pre>        //Do something</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l22', true);"><td class="line">22</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//Do something</pre></td></tr>
 
-<tr id="msg_l19" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted between '//' and following comment</div>
+<tr id="msg_l22" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted between '//' and following comment</div>
 
 </td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l20', true);"><td class="line">20</td><td class="code"><pre>    }else if(YES){</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l23', true);"><td class="line">23</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;}else if( YES ){</pre></td></tr>
 
-<tr id="msg_l20" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted before else</div>
+<tr id="msg_l23" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted before else</div>
 
 <div class="msg">Space must be inserted after if</div>
 
+<div class="msg">Space must not be inserted after '('</div>
+
+<div class="msg">Space must not be inserted before ')'</div>
+
 <div class="msg">Space must be inserted between ')' and '{'</div>
 
 </td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l21', false);"><td class="line">21</td><td class="code"><pre>        // Do something</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l24', false);"><td class="line">24</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Do something</pre></td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l22', true);"><td class="line">22</td><td class="code"><pre>    }else{</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l25', true);"><td class="line">25</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;}else{</pre></td></tr>
 
-<tr id="msg_l22" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after else</div>
+<tr id="msg_l25" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after else</div>
 
 <div class="msg">Space must be inserted before else</div>
 
 </td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l23', false);"><td class="line">23</td><td class="code"><pre>        // Do something</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l26', false);"><td class="line">26</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Do something</pre></td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l24', true);"><td class="line">24</td><td class="code"><pre>        NSString *msg = [self doSomething:0 withOptions:@[@"foo",@"bar"]];</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l27', true);"><td class="line">27</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NSString *msg = [self doSomething:0 withOptions:@[@"foo",@"bar"]];</pre></td></tr>
 
-<tr id="msg_l24" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after ','</div>
-
-</td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l25', false);"><td class="line">25</td><td class="code"><pre>        NSLog(@"%@", msg);</pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l26', false);"><td class="line">26</td><td class="code"><pre>    }</pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l27', false);"><td class="line">27</td><td class="code"><pre>    return YES;</pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l28', false);"><td class="line">28</td><td class="code"><pre>}</pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l29', false);"><td class="line">29</td><td class="code"><pre></pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l30', false);"><td class="line">30</td><td class="code"><pre>- (void)applicationWillResignActive:(UIApplication *)application</pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l31', false);"><td class="line">31</td><td class="code"><pre>{</pre></td></tr>
-
-<tr class="ng" onclick="toggleMessages('msg_l32', true);"><td class="line">32</td><td class="code"><pre>    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.</pre></td></tr>
-
-<tr id="msg_l32" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+<tr id="msg_l27" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after ','</div>
 
 </td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l33', true);"><td class="line">33</td><td class="code"><pre>    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l28', true);"><td class="line">28</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NSLog(@"a / b = %@", msg) ;</pre></td></tr>
 
-<tr id="msg_l33" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
-
-</td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l34', false);"><td class="line">34</td><td class="code"><pre>}</pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l35', false);"><td class="line">35</td><td class="code"><pre></pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l36', false);"><td class="line">36</td><td class="code"><pre>- (void)applicationDidEnterBackground:(UIApplication *)application</pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l37', false);"><td class="line">37</td><td class="code"><pre>{</pre></td></tr>
-
-<tr class="ng" onclick="toggleMessages('msg_l38', true);"><td class="line">38</td><td class="code"><pre>    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. </pre></td></tr>
-
-<tr id="msg_l38" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Remove trailing spaces</div>
-
-<div class="msg">Line length exceeds 80 characters</div>
+<tr id="msg_l28" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must not be inserted before semicolon</div>
 
 </td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l39', true);"><td class="line">39</td><td class="code"><pre>    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l29', false);"><td class="line">29</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;}</pre></td></tr>
 
-<tr id="msg_l39" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+<tr class="ok" onclick="toggleMessages('msg_l30', false);"><td class="line">30</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;int x = 1;</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l31', false);"><td class="line">31</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;if ((x * 2) < 10) {</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l32', false);"><td class="line">32</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;}</pre></td></tr>
+
+<tr class="ng" onclick="toggleMessages('msg_l33', true);"><td class="line">33</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;for(int i=0;i<=10;i++){</pre></td></tr>
+
+<tr id="msg_l33" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted after for</div>
+
+<div class="msg">Space must be inserted after '='</div>
+
+<div class="msg">Space must be inserted before '='</div>
+
+<div class="msg">Space must be inserted between ')' and '{'</div>
 
 </td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l34', false);"><td class="line">34</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l35', false);"><td class="line">35</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; // Empty ; Dummy</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l36', false);"><td class="line">36</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;}</pre></td></tr>
+
+<tr class="ng" onclick="toggleMessages('msg_l37', true);"><td class="line">37</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;for (int i= 0;i<= 10;i++) {</pre></td></tr>
+
+<tr id="msg_l37" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Space must be inserted before '='</div>
+
+</td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l38', false);"><td class="line">38</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;} // a=b</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l39', false);"><td class="line">39</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;return YES;</pre></td></tr>
 
 <tr class="ok" onclick="toggleMessages('msg_l40', false);"><td class="line">40</td><td class="code"><pre>}</pre></td></tr>
 
 <tr class="ok" onclick="toggleMessages('msg_l41', false);"><td class="line">41</td><td class="code"><pre></pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l42', false);"><td class="line">42</td><td class="code"><pre>- (void)applicationWillEnterForeground:(UIApplication *)application</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l42', false);"><td class="line">42</td><td class="code"><pre>- (void)applicationWillResignActive:(UIApplication *)application</pre></td></tr>
 
 <tr class="ok" onclick="toggleMessages('msg_l43', false);"><td class="line">43</td><td class="code"><pre>{</pre></td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l44', true);"><td class="line">44</td><td class="code"><pre>    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l44', true);"><td class="line">44</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;// Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.</pre></td></tr>
 
 <tr id="msg_l44" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
 
 </td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l45', false);"><td class="line">45</td><td class="code"><pre>}</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l45', true);"><td class="line">45</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;// Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l46', false);"><td class="line">46</td><td class="code"><pre></pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l47', false);"><td class="line">47</td><td class="code"><pre>- (void)applicationDidBecomeActive:(UIApplication *)application</pre></td></tr>
-
-<tr class="ok" onclick="toggleMessages('msg_l48', false);"><td class="line">48</td><td class="code"><pre>{</pre></td></tr>
-
-<tr class="ng" onclick="toggleMessages('msg_l49', true);"><td class="line">49</td><td class="code"><pre>    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.</pre></td></tr>
-
-<tr id="msg_l49" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+<tr id="msg_l45" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
 
 </td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l50', false);"><td class="line">50</td><td class="code"><pre>}</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l46', false);"><td class="line">46</td><td class="code"><pre>}</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l51', false);"><td class="line">51</td><td class="code"><pre></pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l47', false);"><td class="line">47</td><td class="code"><pre></pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l52', false);"><td class="line">52</td><td class="code"><pre>- (void)applicationWillTerminate:(UIApplication *)application</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l48', false);"><td class="line">48</td><td class="code"><pre>- (void)applicationDidEnterBackground:(UIApplication *)application</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l53', false);"><td class="line">53</td><td class="code"><pre>{</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l49', false);"><td class="line">49</td><td class="code"><pre>{</pre></td></tr>
 
-<tr class="ng" onclick="toggleMessages('msg_l54', true);"><td class="line">54</td><td class="code"><pre>    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l50', true);"><td class="line">50</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;// Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. </pre></td></tr>
 
-<tr id="msg_l54" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+<tr id="msg_l50" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Remove trailing spaces</div>
+
+<div class="msg">Line length exceeds 80 characters</div>
 
 </td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l55', false);"><td class="line">55</td><td class="code"><pre>}</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l51', true);"><td class="line">51</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;// If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l56', false);"><td class="line">56</td><td class="code"><pre></pre></td></tr>
+<tr id="msg_l51" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
 
-<tr class="ok" onclick="toggleMessages('msg_l57', false);"><td class="line">57</td><td class="code"><pre>- (NSString *)doSomething:(int)type withOptions:(NSArray *)options</pre></td></tr>
+</td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l58', false);"><td class="line">58</td><td class="code"><pre>{</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l52', false);"><td class="line">52</td><td class="code"><pre>}</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l59', false);"><td class="line">59</td><td class="code"><pre>    return @"Hello, World!";</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l53', false);"><td class="line">53</td><td class="code"><pre></pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l60', false);"><td class="line">60</td><td class="code"><pre>}</pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l54', false);"><td class="line">54</td><td class="code"><pre>- (void)applicationWillEnterForeground:(UIApplication *)application</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l61', false);"><td class="line">61</td><td class="code"><pre></pre></td></tr>
+<tr class="ok" onclick="toggleMessages('msg_l55', false);"><td class="line">55</td><td class="code"><pre>{</pre></td></tr>
 
-<tr class="ok" onclick="toggleMessages('msg_l62', false);"><td class="line">62</td><td class="code"><pre>@end</pre></td></tr>
+<tr class="ng" onclick="toggleMessages('msg_l56', true);"><td class="line">56</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;// Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.</pre></td></tr>
+
+<tr id="msg_l56" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+
+</td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l57', false);"><td class="line">57</td><td class="code"><pre>}</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l58', false);"><td class="line">58</td><td class="code"><pre></pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l59', false);"><td class="line">59</td><td class="code"><pre>- (void)applicationDidBecomeActive:(UIApplication *)application</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l60', false);"><td class="line">60</td><td class="code"><pre>{</pre></td></tr>
+
+<tr class="ng" onclick="toggleMessages('msg_l61', true);"><td class="line">61</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;// Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.</pre></td></tr>
+
+<tr id="msg_l61" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+
+</td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l62', false);"><td class="line">62</td><td class="code"><pre>}</pre></td></tr>
 
 <tr class="ok" onclick="toggleMessages('msg_l63', false);"><td class="line">63</td><td class="code"><pre></pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l64', false);"><td class="line">64</td><td class="code"><pre>- (void)applicationWillTerminate:(UIApplication *)application</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l65', false);"><td class="line">65</td><td class="code"><pre>{</pre></td></tr>
+
+<tr class="ng" onclick="toggleMessages('msg_l66', true);"><td class="line">66</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.</pre></td></tr>
+
+<tr id="msg_l66" class="row_msg"><td class="line">&nbsp;</td><td class="list"><div class="msg">Line length exceeds 80 characters</div>
+
+</td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l67', false);"><td class="line">67</td><td class="code"><pre>}</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l68', false);"><td class="line">68</td><td class="code"><pre></pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l69', false);"><td class="line">69</td><td class="code"><pre>- (NSString *)doSomething:(int)type withOptions:(NSArray *)options</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l70', false);"><td class="line">70</td><td class="code"><pre>{</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l71', false);"><td class="line">71</td><td class="code"><pre>&nbsp;&nbsp;&nbsp;&nbsp;return @"Hello, World!";</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l72', false);"><td class="line">72</td><td class="code"><pre>}</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l73', false);"><td class="line">73</td><td class="code"><pre></pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l74', false);"><td class="line">74</td><td class="code"><pre>@end</pre></td></tr>
+
+<tr class="ok" onclick="toggleMessages('msg_l75', false);"><td class="line">75</td><td class="code"><pre></pre></td></tr>
 
 
 </tbody>
