@@ -11,6 +11,7 @@
             {"id": "WhitespaceAfterIf", "message": "Space must be inserted after if"},
             {"id": "WhitespaceAfterFor", "message": "Space must be inserted after for"},
             {"id": "NoWhitespaceAfterOpenParenthesis", "message": "Space must not be inserted after '('"},
+            {"id": "NoWhitespaceBeforeCloseParenthesis", "message": "Space must not be inserted before ')'"},
             {"id": "NoWhitespaceBeforeSemicolon", "message": "Space must not be inserted before semicolon"},
             {"id": "WhitespaceBetweenParAndBrace", "message": "Space must be inserted between ')' and '{'"},
             {"id": "WhitespaceAfterComma", "message": "Space must be inserted after ','"},

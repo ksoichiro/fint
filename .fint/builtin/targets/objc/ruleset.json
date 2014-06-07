@@ -13,6 +13,7 @@
             {"id": "WhitespaceAfterIf", "args": ["if\\(", "if ("]},
             {"id": "WhitespaceAfterFor", "args": ["for\\(", "for ("]},
             {"id": "NoWhitespaceAfterOpenParenthesis", "args": ["\\( +([^\\(])", "($1"]},
+            {"id": "NoWhitespaceBeforeCloseParenthesis", "args": ["([^\\)]) +\\)", "$1)"]},
             {"id": "NoWhitespaceBeforeSemicolon", "args": ["^([^/ ]+|[^/]*/[^/]*) ;", "$1;"]},
             {"id": "WhitespaceBetweenParAndBrace", "args": ["\\){", ") {"]},
             {"id": "WhitespaceAfterComma", "args": [",([^ $])", ", $1"]},

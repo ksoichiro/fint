@@ -11,6 +11,7 @@
             {"id": "WhitespaceAfterIf", "message": "ifの後にはスペースを入れてください"},
             {"id": "WhitespaceAfterFor", "message": "forの後にはスペースを入れてください"},
             {"id": "NoWhitespaceAfterOpenParenthesis", "message": "'('の後にはスペースを入れないでください"},
+            {"id": "NoWhitespaceBeforeCloseParenthesis", "message": "')'の前にはスペースを入れないでください"},
             {"id": "NoWhitespaceBeforeSemicolon", "message": "セミコロンの前にはスペースを入れないでください"},
             {"id": "WhitespaceBetweenParAndBrace", "message": "')'と'{'の間にはスペースを入れてください"},
             {"id": "WhitespaceAfterComma", "message": "','の後にはスペースを入れてください"},
