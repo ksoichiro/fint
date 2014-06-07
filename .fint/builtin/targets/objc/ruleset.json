@@ -21,8 +21,14 @@
             {"id": "WhitespaceAfterComma", "args": [",([^ $])", "", ", $1"]},
             {"id": "WhitespaceAtStartOfComment", "args": ["(^|[^\"]+)//([^/ ])", "//.*//", "$1// $2"]},
             {"id": "WhitespaceBetweenBracketAndMessage", "args": ["\\]([a-zA-Z0-9_])", "", "] $1"]},
-            {"id": "TrailingWhitespace", "args": ["([^ ]+) +$", "", "$1"]},
-            {"id": "TabIdentation", "args": ["^\\t+", ""]}
+            {"id": "TrailingWhitespace", "args": ["([^ ]+) +$", "", "$1"]}
+          ]
+        },
+        {
+          "id": "indent",
+          "pattern": ".*\\.(m|mm|h)$",
+          "rules": [
+            {"id": "Whitespaces", "args": [4]}
           ]
         },
         {

@@ -364,6 +364,8 @@ func Lint(srcRoot string) (err error) {
 			switch rs.Modules[j].Id {
 			case "pattern_match":
 				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, opt.Fix, modules.LintPatternMatchFunc)
+			case "indent":
+				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, opt.Fix, modules.LintIndentFunc)
 			case "max_length":
 				fmap, err = modules.LintWalk(srcRoot, rs.Modules[j], opt.Locale, opt.Fix, modules.LintMaxLengthFunc)
 			}
