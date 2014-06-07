@@ -21,89 +21,105 @@ func LintWalk(srcRoot string, m common.Module, locale string, fix bool, lintWalk
 		fmap = make(map[string]map[int][]common.Violation)
 	}
 
+	if fi, _ := os.Stat(srcRoot); !fi.IsDir() {
+		fmap, err = LintFile(srcRoot, m, locale, fix, lintWalkFunc)
+		return
+	}
 	fis, _ := ioutil.ReadDir(srcRoot)
 	for i := range fis {
 		entry := fis[i]
 		filename := filepath.Join(srcRoot, entry.Name())
+		var fmapSub map[string]map[int][]common.Violation
 		if entry.IsDir() {
-			var fmapSub map[string]map[int][]common.Violation
 			fmapSub, err = LintWalk(filename, m, locale, fix, lintWalkFunc)
 			if err != nil {
 				return
 			}
-			// Merge into one map
-			if fmapSub != nil {
-				for f, vmap := range fmapSub {
-					if fmap[f] == nil {
-						fmap[f] = make(map[int][]common.Violation)
-					}
-					for n, vs := range vmap {
-						fmap[f][n] = append(fmap[f][n], vs...)
-					}
-				}
-			}
-			continue
-		}
-		if matched, _ := regexp.MatchString(m.Pattern, filename); !matched {
-			continue
-		}
-		var f *os.File
-		f, err = os.Open(filename)
-		if err != nil {
-			err = common.NewError("cannot open " + filename)
-			return
-		}
-		defer f.Close()
-		var ftmp *os.File
-		if fix {
-			// Prepare fixed file
-			ftmp, _ = os.OpenFile(filename+".tmp", os.O_RDWR|os.O_CREATE, 0666)
-			defer ftmp.Close()
-		}
-		if common.BufSize == 0 {
-			common.BufSize = common.DefaultBufSize
-		}
-		r := bufio.NewReaderSize(f, common.BufSize)
-		vmap := make(map[int][]common.Violation)
-		for n := 1; true; n++ {
-			var line string
-			line, err = r.ReadString(common.LinefeedRune)
-			if err != io.EOF && err != nil {
+		} else {
+			fmapSub, err = LintFile(filename, m, locale, fix, lintWalkFunc)
+			if err != nil {
 				return
 			}
-			var lvs []common.Violation
-			vsr, fixedAny, fixedLine := lintWalkFunc(m, n, filename, strings.TrimSuffix(line, common.Linefeed), locale, fix)
-			tmpLine := line
-			if vsr != nil {
-				lvs = append(lvs, vsr...)
-				if fixedAny {
-					if strings.HasSuffix(line, common.Linefeed) {
-						tmpLine = fixedLine + common.Linefeed
-					} else {
-						tmpLine = fixedLine
-					}
+		}
+		// Merge into one map
+		if fmapSub != nil {
+			for f, vmap := range fmapSub {
+				if fmap[f] == nil {
+					fmap[f] = make(map[int][]common.Violation)
+				}
+				for n, vs := range vmap {
+					fmap[f][n] = append(fmap[f][n], vs...)
 				}
 			}
-			if fix {
-				ftmp.WriteString(tmpLine)
-			}
-			vmap[n] = lvs
-			if err == io.EOF {
-				err = nil
-				break
+		}
+	}
+	return
+}
+
+func LintFile(srcRoot string, m common.Module, locale string, fix bool, lintWalkFunc LintWalkFunc) (fmap map[string]map[int][]common.Violation, err error) {
+	filename := srcRoot
+	if matched, _ := regexp.MatchString(m.Pattern, filename); !matched {
+		return
+	}
+	if fmap == nil {
+		fmap = make(map[string]map[int][]common.Violation)
+	}
+	var f *os.File
+	f, err = os.Open(filename)
+	if err != nil {
+		err = common.NewError("cannot open " + filename)
+		return
+	}
+	defer f.Close()
+	var ftmp *os.File
+	if fix {
+		// Prepare fixed file
+		ftmp, _ = os.OpenFile(filename+".tmp", os.O_RDWR|os.O_CREATE, 0666)
+		defer ftmp.Close()
+	}
+	if common.BufSize == 0 {
+		common.BufSize = common.DefaultBufSize
+	}
+	r := bufio.NewReaderSize(f, common.BufSize)
+	vmap := make(map[int][]common.Violation)
+	for n := 1; true; n++ {
+		var line string
+		line, err = r.ReadString(common.LinefeedRune)
+		if err != io.EOF && err != nil {
+			return
+		}
+		var lvs []common.Violation
+		vsr, fixedAny, fixedLine := lintWalkFunc(m, n, filename, strings.TrimSuffix(line, common.Linefeed), locale, fix)
+		tmpLine := line
+		if vsr != nil {
+			lvs = append(lvs, vsr...)
+			if fixedAny {
+				if strings.HasSuffix(line, common.Linefeed) {
+					tmpLine = fixedLine + common.Linefeed
+				} else {
+					tmpLine = fixedLine
+				}
 			}
 		}
 		if fix {
-			ftmp.Close()
-			os.Remove(filename)
-			CopyFile(filename+".tmp", filename)
-			os.Remove(filename + ".tmp")
+			ftmp.WriteString(tmpLine)
 		}
-		if fmap[filename] == nil {
-			fmap[filename] = make(map[int][]common.Violation)
+		vmap[n] = lvs
+		if err == io.EOF {
+			err = nil
+			break
 		}
-		fmap[filename] = vmap
 	}
+	if fix {
+		ftmp.Close()
+		os.Remove(filename)
+		CopyFile(filename+".tmp", filename)
+		os.Remove(filename + ".tmp")
+	}
+	if fmap[filename] == nil {
+		fmap[filename] = make(map[int][]common.Violation)
+	}
+	fmap[filename] = vmap
 	return
 }
 
