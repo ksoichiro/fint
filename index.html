@@ -28,7 +28,7 @@
 but doesn’t have syntax analysis feature – so it is a fake lint :P <br>
 <strong>fint</strong> is portable, executable on multiple platform, easy to integrate into your build process.</p>
 
-<p><img src="https://raw.githubusercontent.com/ksoichiro/fint/master/docs/screenshot.png" alt="Example" title=""></p><div class="se-section-delimiter"></div>
+<p><img src="https://raw.githubusercontent.com/ksoichiro/fint/master/docs/screenshot.png" alt="Example" title=""></p>
 
 <h2 id="installation">Installation</h2>
 
@@ -46,18 +46,18 @@ This is slightly unstable than release binaries, but may have some new useful fe
 <p>If your <code>GOPATH</code> is <code>~/go</code>, then put the following command <br>
 to shell script form:</p>
 
-<pre class="prettyprint prettyprinted"><code class="language-sh"><span class="pln">TERM</span><span class="pun">=</span><span class="pln">dumb </span><span class="pun">~/</span><span class="pln">go</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">fint </span><span class="pun">-</span><span class="pln">s $</span><span class="pun">{</span><span class="pln">SRCROOT</span><span class="pun">}/</span><span class="pln">$</span><span class="pun">{</span><span class="pln">PROJECT_NAME</span><span class="pun">}</span><span class="pln"> </span><span class="pun">-</span><span class="pln">i objc</span></code></pre>
+<pre class="prettyprint prettyprinted"><code class="language-sh"><span class="pln">TERM</span><span class="pun">=</span><span class="pln">dumb </span><span class="pun">~/</span><span class="pln">go</span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">fint run </span><span class="pun">-</span><span class="pln">s $</span><span class="pun">{</span><span class="pln">SRCROOT</span><span class="pun">}/</span><span class="pln">$</span><span class="pun">{</span><span class="pln">PROJECT_NAME</span><span class="pun">}</span><span class="pln"> </span><span class="pun">-</span><span class="pln">i objc</span></code></pre>
 
 <p>If format error found, the command will exit with code 1, otherwise 0. <br>
 The results will be shown to the source code like normal syntax warnings.</p>
 
-<p>See sample Xcode projects in <a href="https://github.com/ksoichiro/fint/tree/master/testdata/objc"><code>testdata/objc</code></a> directory for details.</p><div class="se-section-delimiter"></div>
+<p>See sample Xcode projects in <a href="https://github.com/ksoichiro/fint/tree/master/testdata/objc"><code>testdata/objc</code></a> directory for details.</p>
 
 <h3 id="execute-on-command-line">Execute on command line</h3>
 
 <p>If you exported <code>GOPATH</code> and <code>${GOPATH}/bin</code> is in your <code>PATH</code> then:</p>
 
-<pre class="prettyprint prettyprinted"><code class="language-sh"><span class="pln">$ fint </span><span class="pun">-</span><span class="pln">s testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pln"> </span><span class="pun">-</span><span class="pln">i objc
+<pre class="prettyprint prettyprinted"><code class="language-sh"><span class="pln">$ fint run </span><span class="pun">-</span><span class="pln">s testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pln"> </span><span class="pun">-</span><span class="pln">i objc
 testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">12</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
 testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">14</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Space</span><span class="pln"> must be inserted between </span><span class="str">']'</span><span class="pln"> and following message
 testdata</span><span class="pun">/</span><span class="pln">objc</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FintExample</span><span class="pun">/</span><span class="typ">FEAppDelegate</span><span class="pun">.</span><span class="pln">m</span><span class="pun">:</span><span class="lit">14</span><span class="pun">:</span><span class="lit">1</span><span class="pun">:</span><span class="pln"> warning</span><span class="pun">:</span><span class="pln"> </span><span class="typ">Line</span><span class="pln"> length exceeds </span><span class="lit">80</span><span class="pln"> characters
@@ -123,6 +123,10 @@ testdata</span><span class="pun">/</span><span class="pln">objc</span><span clas
 <tr>
   <td><code>-template</code></td>
   <td>HTML report template name. Default value is <code>default</code>.  Currently, <code>default</code> and <code>dark</code> is available.</td>
+</tr>
+<tr>
+  <td><code>-fix</code></td>
+  <td>Fix violations if possible. Default is <code>false</code>.</td>
 </tr>
 </tbody></table>
 
@@ -344,9 +348,15 @@ Available templates:</p>
   <td><code>rules</code> &gt; <code>args</code> (0)</td>
   <td>Forbidden pattern of the line.</td>
 </tr>
+<tr>
+  <td><code>rules</code> &gt; <code>args</code> (1)</td>
+  <td>Exclude pattern for matched string.</td>
+</tr>
+<tr>
+  <td><code>rules</code> &gt; <code>args</code> (2)</td>
+  <td>Replacement string for auto-fix feature.</td>
+</tr>
 </tbody></table>
-
-
 <h3 id="max-length">Max length</h3>
 
 <p>This module checks if the line exceeds a certain length.</p>
@@ -371,6 +381,8 @@ Available templates:</p>
   <td>One element with max length.</td>
 </tr>
 </tbody></table>
+
+
 <h2 id="license">License</h2>
 
 <p>Copyright (c) 2014 Soichiro Kashima <br>
