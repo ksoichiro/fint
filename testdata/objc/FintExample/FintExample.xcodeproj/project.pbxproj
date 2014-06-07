@@ -267,7 +267,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "TERM=dumb ${SRCROOT}/../../../fint/fint -s ${SRCROOT}/${PROJECT_NAME} -i objc -c ${SRCROOT}/../../../.fint";
+			shellScript = "TERM=dumb ${SRCROOT}/../../../fint/fint run -s ${SRCROOT}/${PROJECT_NAME} -i objc -c ${SRCROOT}/../../../.fint";
 		};
 /* End PBXShellScriptBuildPhase section */
 
