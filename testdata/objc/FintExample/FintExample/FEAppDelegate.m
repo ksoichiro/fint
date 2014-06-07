@@ -4,6 +4,9 @@
 //
 //  Copyright (c) 2014 Soichiro Kashima. All rights reserved.
 //
+//  fint - A lightweight source code check tool.
+//  https://github.com/ksoichiro/fint
+//
 
 #import "FEAppDelegate.h"
 

@@ -11,12 +11,22 @@ import (
 func LintPatternMatchFunc(m common.Module, n int, filename, line, locale string, shouldFix bool) (vs []common.Violation, fixedAny bool, fixedLine string) {
 	in := line
 	for i := range m.Rules {
-		if matched, _ := regexp.MatchString(m.Rules[i].Args[0].(string), in); matched {
+		pattern := m.Rules[i].Args[0].(string)
+		if matched, _ := regexp.MatchString(pattern, in); matched {
+			// Pattern to be excluded
+			excludePattern := m.Rules[i].Args[1].(string)
+			if excludePattern != "" {
+				exp, _ := regexp.Compile(pattern)
+				// Exclude this line if the rest string matches to excludePattern
+				if matched, _ := regexp.MatchString(excludePattern, exp.FindString(in)); matched {
+					continue
+				}
+			}
 			var fixed bool
 			var fix string
-			if shouldFix && 2 <= len(m.Rules[i].Args) {
+			if shouldFix && 3 <= len(m.Rules[i].Args) {
 				exp, _ := regexp.Compile(m.Rules[i].Args[0].(string))
-				fix = exp.ReplaceAllString(in, m.Rules[i].Args[1].(string))
+				fix = exp.ReplaceAllString(in, m.Rules[i].Args[2].(string))
 				if in != fix {
 					in = fix
 					fixed = true

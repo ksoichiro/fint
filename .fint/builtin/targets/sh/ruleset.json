@@ -8,8 +8,8 @@
           "id": "pattern_match",
           "pattern": ".*\\.sh$",
           "rules": [
-            {"id": "InvalidRedirect", "args": ["&>", ">&"]},
-            {"id": "TrailingWhitespace", "args": ["([^ ]+) +$", "$1"]}
+            {"id": "InvalidRedirect", "args": ["&>", "", ">&"]},
+            {"id": "TrailingWhitespace", "args": ["([^ ]+) +$", "", "$1"]}
           ]
         },
         {
