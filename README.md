@@ -224,7 +224,8 @@ This module checks if the line matching the pattern.
 | ----- | ----------- |
 | `id` | `pattern_match` |
 | `rules` > `args` (0) | Forbidden pattern of the line. |
-| `rules` > `args` (1) | Replacement string for auto-fix feature. |
+| `rules` > `args` (1) | Exclude pattern for matched string. |
+| `rules` > `args` (2) | Replacement string for auto-fix feature. |
 
 ### Max length
 
