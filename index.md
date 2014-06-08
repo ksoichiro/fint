@@ -70,6 +70,7 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 
 22 warnings generated.
 ```
+
 ### Commands
 
 | Option    | Description                                         |
