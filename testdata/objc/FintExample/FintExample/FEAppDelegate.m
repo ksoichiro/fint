@@ -12,6 +12,18 @@
 
 @implementation FEAppDelegate
 
+// Test method for violation detection.
+// Detect following format as violation:
+//   if( --> NG
+//   }else{  --> NG
+//   if ((  --> OK
+//   if ( ( --> NG
+//   for( --> NG
+//   ){ --> NG
+//   ) ) { --> NG
+//   alloc]init] --> NG
+//   @"" ; --> NG
+//   a=b --> NG
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window=[[UIWindow alloc]initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -37,6 +49,16 @@
     }
     for (int i= 0;i<= 10;i++) {
     } // a=b
+    @"   if("; // --> NG
+    @"   }else{"; // --> NG
+    @"   if (("; // --> OK
+    @"   if ( ("; // --> NG
+    @"   for("; // --> NG
+    @"   ){"; // --> NG
+    @"   ) ) {"; // --> NG
+    @"   alloc]init]"; // --> NG
+    @"   a=b"; // --> NG
+    @"   a,b,c"; // --> NG
     return YES;
 }
 
