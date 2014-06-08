@@ -1,0 +1,18 @@
+table{
+  border:0px;
+  border-collapse:collapse;
+}
+th{
+  text-align:left;
+  border-bottom:1px solid #999;
+  padding:0.4em;
+  color:#fff;
+}
+td{
+  border-bottom:1px solid #666;
+  padding:0.4em;
+  color:#fff;
+}
+tr:last-child td{
+  border-bottom:1px solid #999;
+}

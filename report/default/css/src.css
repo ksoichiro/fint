@@ -1,0 +1,54 @@
+h1 a{
+  text-decoration:none;
+  color:#333;
+}
+#srclist{
+  background:#eee;
+  width:920px;
+  padding:10px;
+}
+table#src{
+  border:none;
+  border-collapse:collapse;
+  width:920px;
+}
+#src th,#src td{
+  border:none;
+  padding:2px;
+  font-size:0.9em;
+}
+pre{
+  margin:0px 4px;
+  white-space:pre-line;
+  font-family:'Courier New',monospace,sans-serif;
+}
+#src td.line{
+  background:#eee;
+  font-size:0.9em;
+  text-align:right;
+  padding:2px 4px;
+  font-size:0.9em;
+  font-family:'Courier New',monospace,sans-serif;
+}
+.code{
+  background:#fff;
+}
+.ng{
+  cursor:pointer;
+}
+.ng .line{
+  background:rgba(236, 141, 20, 0.7);
+}
+.ng .code{
+  background:#EC8D14;
+}
+tr.row_msg{
+  display:table-row;
+}
+.row_msg{
+  background:#FFC83A;
+}
+.msg{
+  font-size:0.9em;
+  padding-left:1em;
+}
