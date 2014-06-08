@@ -4,7 +4,6 @@
 package modules
 
 import (
-	"fmt"
 	"github.com/ksoichiro/fint/common"
 	"regexp"
 )
@@ -38,7 +37,6 @@ func LintIndentFunc(m common.Module, n int, filename, line, locale string, shoul
 					}
 					exp, _ := regexp.Compile(patternRepl)
 					fix = exp.ReplaceAllString(in, repl)
-					fmt.Println("fix:" + fix)
 					if in != fix {
 						in = fix
 						fixed = true
