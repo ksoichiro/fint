@@ -27,6 +27,7 @@
         NSString *msg = [self doSomething:0 withOptions:@[@"foo",@"bar"]];
         NSLog(@"a / b = %@", msg) ;
     }
+    // a,b,c
     int x = 1;
     if ((x * 2) < 10) {
     }
