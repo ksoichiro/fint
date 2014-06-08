@@ -25,12 +25,18 @@ func LintPatternMatchFunc(m common.Module, n int, filename, line, locale string,
 			var fixed bool
 			var fix string
 			if shouldFix && 3 <= len(m.Rules[i].Args) {
-				exp, _ := regexp.Compile(m.Rules[i].Args[0].(string))
-				fix = exp.ReplaceAllString(in, m.Rules[i].Args[2].(string))
-				if in != fix {
-					in = fix
-					fixed = true
-					fixedAny = true
+				for true {
+					// Fix all violations in this line
+					repl := m.Rules[i].Args[2].(string)
+					exp, _ := regexp.Compile(pattern)
+					fix = exp.ReplaceAllString(in, repl)
+					if in == fix {
+						break
+					} else {
+						in = fix
+						fixed = true
+						fixedAny = true
+					}
 				}
 			}
 			v := common.Violation{Filename: filename, Line: n, Message: m.Rules[i].Message[locale],
