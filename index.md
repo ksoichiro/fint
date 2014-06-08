@@ -70,8 +70,15 @@ testdata/objc/FintExample/FintExampleTests/FintExampleTests.m:24:1: warning: Lin
 
 22 warnings generated.
 ```
+### Commands
 
-### Command line options
+| Option    | Description                                         |
+| --------- | --------------------------------------------------- |
+| `run`     | Execute lint.                                       |
+| `help`    | Show this help.                                     |
+| `version` | Show version of fint.                               |
+
+### Options
 
 | Option | Description                                            |
 | ------ | ------------------------------------------------------ |
