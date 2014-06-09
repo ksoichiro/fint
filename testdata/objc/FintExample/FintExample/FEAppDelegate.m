@@ -38,7 +38,7 @@
         // Do something
         NSString *msg = [self doSomething:0 withOptions:@[@"foo",@"bar"] ];
         NSLog(@"a / b = %@", msg) ;
-    }
+    }// Comment
     NSString *url = @"https://github.com/ksoichiro/fint";
     // a,b,c
     int x = 1;

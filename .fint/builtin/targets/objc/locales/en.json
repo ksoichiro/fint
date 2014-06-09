@@ -24,6 +24,7 @@
             {"id": "WhitespaceBetweenParAndBrace", "message": "Space must be inserted between ')' and '{'"},
             {"id": "WhitespaceAfterComma", "message": "Space must be inserted after ','"},
             {"id": "WhitespaceAtStartOfComment", "message": "Space must be inserted between '//' and following comment"},
+            {"id": "WhitespaceBeforeComment", "message": "Space must be inserted before comment"},
             {"id": "WhitespaceBetweenBracketAndMessage", "message": "Space must be inserted between ']' and following message"},
             {"id": "TrailingWhitespace", "message": "Remove trailing spaces"}
           ]
