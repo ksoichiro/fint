@@ -14,6 +14,7 @@
             {"id": "WhitespaceBeforeEqualOperator", "message": "Space must be inserted before '='"},
             {"id": "WhitespaceAfterAndOperator", "message": "Space must be inserted after '&'"},
             {"id": "WhitespaceBeforeAndOperator", "message": "Space must be inserted before '&'"},
+            {"id": "WhitespaceAfterOrOperator", "message": "Space must be inserted after '|'"},
             {"id": "WhitespaceBeforeOrOperator", "message": "Space must be inserted before '|'"},
             {"id": "NoWhitespaceAfterOpenParenthesis", "message": "Space must not be inserted after '('"},
             {"id": "NoWhitespaceBeforeCloseParenthesis", "message": "Space must not be inserted before ')'"},

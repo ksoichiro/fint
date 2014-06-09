@@ -14,6 +14,7 @@
             {"id": "WhitespaceBeforeEqualOperator", "message": "'='の前にはスペースを入れてください"},
             {"id": "WhitespaceAfterAndOperator", "message": "'&'の後にはスペースを入れてください"},
             {"id": "WhitespaceBeforeAndOperator", "message": "'&'の前にはスペースを入れてください"},
+            {"id": "WhitespaceAfterOrOperator", "message": "'|'の後にはスペースを入れてください"},
             {"id": "WhitespaceBeforeOrOperator", "message": "'|'の前にはスペースを入れてください"},
             {"id": "NoWhitespaceAfterOpenParenthesis", "message": "'('の後にはスペースを入れないでください"},
             {"id": "NoWhitespaceBeforeCloseParenthesis", "message": "')'の前にはスペースを入れないでください"},
