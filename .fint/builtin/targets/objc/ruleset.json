@@ -21,6 +21,7 @@
             {"id": "WhitespaceBeforeOrOperator", "args": ["^([^/]*|[^/]*/[^/]*)([^\\| ])(\\||\\|\\|)([^\\|])", "(//.*|@\"[^\"]*[^ ]\\|)", "$1$2 $3$4"]},
             {"id": "NoWhitespaceAfterOpenParenthesis", "args": ["^(.*)\\( +([^\\(])", "(//.*|@\"[^\"]*\\( +[^\\(])", "$1($2"]},
             {"id": "NoWhitespaceBeforeCloseParenthesis", "args": ["^(.*)([^\\)]) +\\)", "(//.*|@\"[^\"]*[^\\)] +\\))", "$1$2)"]},
+            {"id": "NoWhitespaceBeforeCloseBracket", "args": ["^([^/]*|[^/]*/[^/]*) \\]", "(//.*|[^%]@\"[^\"]*|^ +) \\]", "$1]"]},
             {"id": "NoWhitespaceBeforeSemicolon", "args": ["^([^/]*|[^/]*/[^/]*) ;", "(//.*|[^%]@\"[^\"]*|^ +) ;", "$1;"]},
             {"id": "WhitespaceBetweenParAndBrace", "args": ["(^.*)\\){", "(//.*|@\"[^\"]*)\\){", "$1) {"]},
             {"id": "WhitespaceAfterComma", "args": ["^(.*),([^ $])", "(//.*|@\"[^\"]*,[^ $]).*", "$1, $2"]},
