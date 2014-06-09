@@ -19,7 +19,7 @@
             {"id": "NoWhitespaceBeforeSemicolon", "args": ["^([^/]*|[^/]*/[^/]*) ;", "(//.*|[^%]@\"[^\"]*|^ +) ;", "$1;"]},
             {"id": "WhitespaceBetweenParAndBrace", "args": ["(^.*)\\){", "(//.*|@\"[^\"]*)\\){", "$1) {"]},
             {"id": "WhitespaceAfterComma", "args": ["^(.*),([^ $])", "(//.*|@\"[^\"]*,[^ $]).*", "$1, $2"]},
-            {"id": "WhitespaceAtStartOfComment", "args": ["(^|[^\"]+)//([^/ ])", "//.*//", "$1// $2"]},
+            {"id": "WhitespaceAtStartOfComment", "args": ["^([^\"]|@\"[^\"]*\")*//([^/ ])", "(@\"[^\"]*//[^\"]*|^^[^\"]*//.*)//", "$1// $2"]},
             {"id": "WhitespaceBetweenBracketAndMessage", "args": ["(^.*)\\]([a-zA-Z0-9_])", "(//.*|@\"[^\"]*)\\][a-zA-Z0-9_]", "$1] $2"]},
             {"id": "TrailingWhitespace", "args": ["([^ ]+) +$", "", "$1"]}
           ]
