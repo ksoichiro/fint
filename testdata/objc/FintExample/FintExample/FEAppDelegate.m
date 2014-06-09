@@ -87,6 +87,8 @@
         ;
         ; // Empty ; Dummy
     }
+    NSError *error = nil;
+    [self showError:&error];
     for (int i= 0;i<= 10;i++) {
     } // a=b
     switch(x) {
@@ -144,6 +146,10 @@
 +(int)doSomething
 {
     return 0;
+}
+
+- (void)showError:(NSError *)error
+{
 }
 
 @end
