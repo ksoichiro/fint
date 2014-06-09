@@ -10,6 +10,7 @@
             {"id": "WhitespaceBeforeElse", "message": "elseの前にはスペースを入れてください"},
             {"id": "WhitespaceAfterIf", "message": "ifの後にはスペースを入れてください"},
             {"id": "WhitespaceAfterFor", "message": "forの後にはスペースを入れてください"},
+            {"id": "WhitespaceAfterSwitch", "message": "switchの後にはスペースを入れてください"},
             {"id": "WhitespaceAfterEqualOperator", "message": "'='の後にはスペースを入れてください"},
             {"id": "WhitespaceBeforeEqualOperator", "message": "'='の前にはスペースを入れてください"},
             {"id": "WhitespaceAfterAndOperator", "message": "'&'の後にはスペースを入れてください"},

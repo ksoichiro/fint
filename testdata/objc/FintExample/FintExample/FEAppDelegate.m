@@ -89,6 +89,13 @@
     }
     for (int i= 0;i<= 10;i++) {
     } // a=b
+    switch(x) {
+        case 1:
+            NSLog(@"1");
+            break;
+        default:
+            break;
+    }
     @"   if("; // --> NG
     @"   }else{"; // --> NG
     @"   if (("; // --> OK
