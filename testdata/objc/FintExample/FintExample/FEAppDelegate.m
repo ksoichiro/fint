@@ -70,6 +70,19 @@
     }
     if ((x * 2) < 10) {
     }
+    BOOL a = NO, b = YES;
+    if (a && b) {
+    }
+    if (a || b) {
+    }
+    if (a&&b) {
+    }
+    if (a||b) {
+    }
+    a &= YES;
+    a |= YES;
+    a&=YES;
+    a|=YES;
     for(int i=0;i<=10;i++){
         ;
         ; // Empty ; Dummy

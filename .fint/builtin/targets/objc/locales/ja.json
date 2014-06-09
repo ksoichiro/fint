@@ -12,6 +12,7 @@
             {"id": "WhitespaceAfterFor", "message": "forの後にはスペースを入れてください"},
             {"id": "WhitespaceAfterEqualOperator", "message": "'='の後にはスペースを入れてください"},
             {"id": "WhitespaceBeforeEqualOperator", "message": "'='の前にはスペースを入れてください"},
+            {"id": "WhitespaceBeforeAndOperator", "message": "'&'の前にはスペースを入れてください"},
             {"id": "NoWhitespaceAfterOpenParenthesis", "message": "'('の後にはスペースを入れないでください"},
             {"id": "NoWhitespaceBeforeCloseParenthesis", "message": "')'の前にはスペースを入れないでください"},
             {"id": "NoWhitespaceBeforeSemicolon", "message": "セミコロンの前にはスペースを入れないでください"},

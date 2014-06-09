@@ -31,7 +31,7 @@ const (
 	LocaleDefault             = "en"
 	LocaleJa                  = "ja"
 	TemplateDefault           = "default"
-	ErrorsObjcNormal          = 54
+	ErrorsObjcNormal          = 58
 )
 
 func TestExecuteAsCommand(t *testing.T) {
