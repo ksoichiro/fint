@@ -34,7 +34,7 @@
         {
           "id": "indent",
           "rules": [
-            {"id": "Whitespaces", "message": "Use spaces for identation instead of tab"}
+            {"id": "Whitespaces", "message": "Use spaces for indentation instead of tab"}
           ]
         },
         {
