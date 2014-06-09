@@ -42,6 +42,32 @@
     NSString *url = @"https://github.com/ksoichiro/fint";
     // a,b,c
     int x = 1;
+    if (x == 2) {
+    }
+    x /= 1;
+    x *= 2;
+    x += 3;
+    x -= 4;
+    x %= 2;
+    x/= 2;
+    x /=8;
+    x/=1;
+    x*=2;
+    x+=3;
+    x-=4;
+    x%=2;
+    if (x != 2) {
+    }
+    if (x <= 2) {
+    }
+    if (x >= 2) {
+    }
+    if (x!=2) {
+    }
+    if (x<=2) {
+    }
+    if (x>=2) {
+    }
     if ((x * 2) < 10) {
     }
     for(int i=0;i<=10;i++){
