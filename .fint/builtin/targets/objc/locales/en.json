@@ -18,6 +18,7 @@
             {"id": "WhitespaceAfterOrOperator", "message": "Space must be inserted after '|'"},
             {"id": "WhitespaceBeforeOrOperator", "message": "Space must be inserted before '|'"},
             {"id": "WhitespaceBeforeOpenBrace", "message": "Space must be inserted before '{'"},
+            {"id": "WhitespaceAfterMethodAccessModifier", "message": "Space must be inserted after method access modifier"},
             {"id": "NoWhitespaceAfterOpenParenthesis", "message": "Space must not be inserted after '('"},
             {"id": "NoWhitespaceBeforeCloseParenthesis", "message": "Space must not be inserted before ')'"},
             {"id": "NoWhitespaceBeforeCloseBracket", "message": "Space must not be inserted before ']'"},

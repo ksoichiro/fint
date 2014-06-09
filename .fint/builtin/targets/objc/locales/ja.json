@@ -18,6 +18,7 @@
             {"id": "WhitespaceAfterOrOperator", "message": "'|'の後にはスペースを入れてください"},
             {"id": "WhitespaceBeforeOrOperator", "message": "'|'の前にはスペースを入れてください"},
             {"id": "WhitespaceBeforeOpenBrace", "message": "'{'の前にはスペースを入れてください"},
+            {"id": "WhitespaceAfterMethodAccessModifier", "message": "メソッドのアクセス修飾子の後にはスペースを入れてください"},
             {"id": "NoWhitespaceAfterOpenParenthesis", "message": "'('の後にはスペースを入れないでください"},
             {"id": "NoWhitespaceBeforeCloseParenthesis", "message": "')'の前にはスペースを入れないでください"},
             {"id": "NoWhitespaceBeforeCloseBracket", "message": "']'の前にはスペースを入れないでください"},
