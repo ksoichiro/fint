@@ -1,0 +1,18 @@
+FROM ubuntu:12.04
+
+# This should be detected as a violation
+FOO echo
+
+FROM
+MAINTAINER
+RUN
+CMD
+EXPOSE
+ENV
+ADD
+COPY
+ENTRYPOINT
+VOLUME
+USER
+WORKDIR
+ONBUILD
