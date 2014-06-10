@@ -1,0 +1,17 @@
+{
+  "rulesets": [
+    {
+      "id": "Dockerfile",
+      "description": "Dockerfile",
+      "modules": [
+        {
+          "id": "pattern_match",
+          "pattern": "Dockerfile$",
+          "rules": [
+            {"id": "InstructionsOrComment", "args": ["^.+$", "^(#|FROM|MAINTAINER|RUN|CMD|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ONBUILD)"]}
+          ]
+        }
+      ]
+    }
+  ]
+}

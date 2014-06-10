@@ -1,0 +1,15 @@
+{
+  "rulesets": [
+    {
+      "id": "Dockerfile",
+      "modules": [
+        {
+          "id": "pattern_match",
+          "rules": [
+            {"id": "InstructionsOrComment", "message": "Invalid instruction"}
+          ]
+        }
+      ]
+    }
+  ]
+}
