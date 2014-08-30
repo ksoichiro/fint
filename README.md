@@ -11,13 +11,58 @@ but doesn't have syntax analysis feature -- so it is a fake lint :P
 
 ## Installation
 
+There are several methods to install fint.
+
+### Release binary
+
 [Get the latest release binary](https://github.com/ksoichiro/fint/releases/latest) for your environment.
+
+### Homebrew
+
+For OS X users, you can install it with [Homebrew](http://brew.sh/).
+
+```sh
+$ brew tap ksoichiro/fint
+$ brew install fint
+```
+
+### Install as a golang package
 
 You can also install it from master branch with golang environment.  
 This is slightly unstable than release binaries, but may have some new useful features.
 
 ```sh
 $ go get github.com/ksoichiro/fint
+```
+
+### Use gom
+
+If you use this tool in a Xcode build process,
+using [gom](https://github.com/mattn/gom) is the recommended way.  
+With this tool, you can manage fint's version in your VCS.
+
+```sh
+$ go get github.com/mattn/gom
+$ echo "gom 'github.com/ksoichiro/fint'" > Gomfile
+$ gom install
+$ tree -L 5
+.
+├── Gomfile
+└── _vendor
+    ├── bin
+    │   └── fint
+    └── src
+        └── github.com
+            └── ksoichiro
+                └── fint
+```
+
+Now you can use font tool like following command:
+
+```sh
+$ PATH=_vendor/bin:$PATH fint ...
+or
+$ _vendor/bin/fint ...
 ```
 
 ## Usage
