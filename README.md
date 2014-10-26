@@ -1,7 +1,7 @@
 # fint
 
 [![Build Status](https://travis-ci.org/ksoichiro/fint.svg?branch=master)](https://travis-ci.org/ksoichiro/fint)
-[![Coverage Status](https://coveralls.io/repos/ksoichiro/fint/badge.png?branch=master)](https://coveralls.io/r/ksoichiro/fint?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/ksoichiro/fint/master.svg)](https://coveralls.io/r/ksoichiro/fint?branch=master)
 
 **fint** is a lightweight, simple source code check tool,  
 but doesn't have syntax analysis feature -- so it is a fake lint :P  
